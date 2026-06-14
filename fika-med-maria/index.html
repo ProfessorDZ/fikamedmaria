@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fika med Maria — ta en paus, häng med</title>
+  <meta name="description" content="Fika med Maria — varma samtal, gott kaffe och en stunds paus. Anmäl dig och häng med på nästa fika." />
+
+  <!-- Open Graph / social preview -->
+  <meta property="og:title" content="Fika med Maria" />
+  <meta property="og:description" content="Varma samtal, gott kaffe och en stunds paus. Häng med på nästa fika." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top">
+      <span class="brand-mark">☕</span>
+      <span class="brand-name">Fika med Maria</span>
+    </a>
+    <nav class="nav">
+      <a href="#about">Om</a>
+      <a href="#what">Vad väntar</a>
+      <a href="#join" class="nav-cta">Häng med</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Sätt dig ner en stund</p>
+        <h1>Fika med Maria</h1>
+        <p class="lead">
+          Varma samtal, gott kaffe och en kanelbulle till. En liten paus i veckan
+          där vi saktar ner, pratar på riktigt och laddar om — tillsammans.
+        </p>
+        <div class="hero-actions">
+          <a href="#join" class="btn btn-primary">Häng med på nästa fika</a>
+          <a href="#about" class="btn btn-ghost">Läs mer</a>
+        </div>
+      </div>
+      <div class="hero-cup" aria-hidden="true">
+        <div class="steam"><span></span><span></span><span></span></div>
+        <div class="cup"></div>
+        <div class="saucer"></div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section about">
+      <div class="section-head">
+        <h2>Vad är <em>fika</em>, egentligen?</h2>
+        <p>
+          Fika är inte bara en kaffepaus. Det är att stanna upp, koppla bort skärmen
+          och ge varandra full uppmärksamhet — om så bara för en kvart. Det är här
+          de bästa samtalen brukar hända.
+        </p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <span class="card-icon">🫖</span>
+          <h3>Ingen agenda</h3>
+          <p>Inga säljpitchar, inga prestationer. Bara ärliga samtal och en stunds lugn.</p>
+        </article>
+        <article class="card">
+          <span class="card-icon">🥐</span>
+          <h3>Alltid något gott</h3>
+          <p>Kanelbulle, kardemummabulle eller bara en bra kopp kaffe. Du väljer.</p>
+        </article>
+        <article class="card">
+          <span class="card-icon">🤝</span>
+          <h3>Nya och gamla vänner</h3>
+          <p>Kom som du är. Här finns plats för alla som gillar en god paus.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- WHAT TO EXPECT -->
+    <section id="what" class="section what">
+      <div class="what-grid">
+        <div class="what-text">
+          <h2>Vad väntar dig?</h2>
+          <ul class="checklist">
+            <li>Återkommande träffar — på plats och online</li>
+            <li>Korta, varma samtal om vardagen och livet</li>
+            <li>Tips på det godaste fikabrödet i stan</li>
+            <li>En liten gemenskap som hejar på varandra</li>
+          </ul>
+          <a href="#join" class="btn btn-primary">Jag vill vara med</a>
+        </div>
+        <blockquote class="quote">
+          <p>“De bästa samtalen smakar kaffe och kardemumma.”</p>
+          <footer>— Maria</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- JOIN / EMAIL CAPTURE -->
+    <section id="join" class="section join">
+      <div class="join-card">
+        <h2>Häng med på nästa fika</h2>
+        <p>Lämna din e-post så hör du av mig när nästa träff är på gång. Inget spam — bara en inbjudan då och då.</p>
+        <form id="signup-form" class="signup" novalidate>
+          <label class="sr-only" for="email">E-postadress</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
+                 placeholder="din@epost.se" required />
+          <button type="submit" class="btn btn-primary">Anmäl mig</button>
+        </form>
+        <p id="form-msg" class="form-msg" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-brand">☕ Fika med Maria</p>
+    <p class="footer-note">Gjord med värme. © <span id="year"></span></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
