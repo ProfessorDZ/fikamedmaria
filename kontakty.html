@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Контакти й запис — Fika med Maria</title>
+  <meta name="description" content="Записатися на навчання або консультацію зі шведської. Напиши Марії — підберемо формат під твій рівень і цілі." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body data-page="contact">
+  <div data-include-header></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <div class="breadcrumb"><a href="index.html">Головна</a> → Контакти</div>
+        <span class="eyebrow">Записатися</span>
+        <h1>Почнемо твою шведську історію</h1>
+        <p class="lead">Залиш заявку — і я звʼяжуся з тобою, щоб разом підібрати формат, рівень і зручний час. Можна почати з безкоштовної консультації.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap contact-grid">
+        <!-- FORM -->
+        <div>
+          <h2 class="section-title" style="font-size:1.7rem">Заявка на навчання</h2>
+          <p style="color:var(--muted)">Заповни форму — це ні до чого не зобовʼязує.</p>
+          <form data-contact style="margin-top:1rem">
+            <div class="field"><label for="name">Імʼя</label><input id="name" name="name" type="text" placeholder="Як до тебе звертатися?" required /></div>
+            <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="твоя@пошта.com" required /></div>
+            <div class="field">
+              <label for="level">Рівень шведської</label>
+              <select id="level" name="level">
+                <option>Починаю з нуля</option>
+                <option>Трохи розумію (A1–A2)</option>
+                <option>Середній (B1–B2)</option>
+                <option>Впевнений (B2+)</option>
+                <option>Не впевнена / не знаю</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="goal">Що цікавить</label>
+              <select id="goal" name="goal">
+                <option>Курс «Шведська з нуля»</option>
+                <option>Розмовна шведська</option>
+                <option>Шведська для життя у Швеції</option>
+                <option>Шведська через культуру</option>
+                <option>Індивідуальна програма</option>
+                <option>Консультація</option>
+              </select>
+            </div>
+            <div class="field"><label for="msg">Повідомлення (необовʼязково)</label><textarea id="msg" name="msg" rows="4" placeholder="Розкажи трохи про свої цілі"></textarea></div>
+            <button class="btn btn-primary" type="submit">Надіслати заявку</button>
+            <p class="form-msg" data-msg style="color:var(--blue);margin-top:.8rem"></p>
+          </form>
+        </div>
+
+        <!-- INFO -->
+        <aside class="contact-info">
+          <div class="card">
+            <h3>Звʼязатися напряму</h3>
+            <div class="ci"><span class="ico">✉️</span><div><b>Email</b><br><a href="mailto:hej@fikamedmaria.com">hej@fikamedmaria.com</a></div></div>
+            <div class="ci"><span class="ico">💬</span><div><b>Telegram</b><br><span style="color:var(--muted)">@fikamedmaria <span style="font-size:.8rem">(додати)</span></span></div></div>
+            <div class="ci"><span class="ico">📸</span><div><b>Instagram</b><br><span style="color:var(--muted)">@fikamedmaria <span style="font-size:.8rem">(додати)</span></span></div></div>
+            <div class="ci"><span class="ico">🕐</span><div><b>Формат</b><br><span style="color:var(--muted)">Індивідуальні онлайн-заняття</span></div></div>
+          </div>
+          <div class="card" style="margin-top:1.4rem;background:var(--blue-soft);border-color:transparent">
+            <h3>Не готова записуватися?</h3>
+            <p style="color:var(--ink-soft)">Почни з безкоштовних матеріалів або підпишись на Fika-лист — маленьку порцію шведської раз на тиждень.</p>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <a class="btn btn-ghost btn-sm" href="bezkoshtovni.html">Безкоштовні матеріали</a>
+              <a class="btn btn-accent btn-sm" href="misyachnyk.html">Місячник</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/data.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>

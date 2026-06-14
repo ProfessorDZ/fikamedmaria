@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Блог про шведську — Fika med Maria</title>
+  <meta name="description" content="Граматика простими словами, слова та вирази, культура й життя у Швеції, поради, як вчити шведську. Блог Fika med Maria." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body data-page="blog">
+  <div data-include-header></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <div class="breadcrumb"><a href="index.html">Головна</a> → Блог</div>
+        <span class="eyebrow">Блог</span>
+        <h1>Шведська простими словами</h1>
+        <p class="lead">Граматика без болю, слова й вирази, культура Швеції, життя у Швеції та поради, як вчити мову регулярно.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem">
+          <span class="btn btn-ghost btn-sm">Усі</span>
+          <span class="btn btn-ghost btn-sm">Граматика</span>
+          <span class="btn btn-ghost btn-sm">Слова та вирази</span>
+          <span class="btn btn-ghost btn-sm">Культура Швеції</span>
+          <span class="btn btn-ghost btn-sm">Життя у Швеції</span>
+          <span class="btn btn-ghost btn-sm">Як вчити</span>
+          <span class="btn btn-ghost btn-sm">Книги / серіали / подкасти</span>
+        </div>
+        <div class="grid grid-3" data-posts></div>
+      </div>
+    </section>
+
+    <section class="section newsletter">
+      <div class="wrap"><div class="band">
+        <span class="eyebrow">Fika-лист</span>
+        <h2 class="section-title" style="color:#fff">Не пропусти нові статті</h2>
+        <p class="lead" style="color:rgba(255,255,255,.9);max-width:56ch">Раз на тиждень — нова порція шведської: стаття, фраза або культурний факт прямо на пошту.</p>
+        <form class="signup" data-newsletter>
+          <input type="email" placeholder="твоя@пошта.com" aria-label="Email" required />
+          <button class="btn btn-accent" type="submit">Підписатися</button>
+        </form>
+        <p class="form-msg" data-msg style="color:var(--honey)"></p>
+      </div></div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/data.js"></script>
+  <script src="assets/main.js"></script>
+</body>
+</html>
