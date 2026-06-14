@@ -1,62 +1,80 @@
 # ☕ Fika med Maria
 
-A warm, Swedish-*fika*-themed landing page — built to invite people to slow down,
-grab a coffee, and join the next gathering.
+A warm, premium, Scandinavian-inspired **Ukrainian-language website** for *Fika med Maria* —
+a founder-led Swedish-learning brand for adults. Built from Maria's brief.
 
-It's a single static page (no build step, no dependencies), so it runs anywhere
-and deploys in minutes.
+It's a static multi-page site (no build step, no dependencies), so it runs anywhere
+and deploys in minutes — ideal for a quick preview link.
 
-## Files
+## Pages
 
-| File | What it is |
-|------|------------|
-| `index.html` | The page markup and copy (in Swedish — easy to edit) |
-| `styles.css` | All styling: warm fika palette, responsive layout, animated coffee cup |
-| `script.js` | Footer year + signup form handling (demo, see below) |
+| File | Page |
+|------|------|
+| `index.html` | Головна (Home) |
+| `pro-mariu.html` | Про Марію (About Maria) |
+| `kursy.html` | Курси (Courses overview) |
+| `kurs.html` | Course detail template (Шведська з нуля) |
+| `bezkoshtovni.html` | Безкоштовні матеріали (Free materials) |
+| `misyachnyk.html` | Місячник (Monthly mini-magazine) |
+| `blog.html` | Блог (Blog overview) |
+| `kontakty.html` | Контакти / запис (Contact & application) |
 
-## Run it locally
+## How it's structured
 
-No tooling required — just open the file:
+- **`assets/styles.css`** — the full design system (warm cream + brand blue `#0d4a85` +
+  honey accent, editorial Playfair Display headings + Inter body, all responsive).
+- **`assets/data.js`** — **all editable content** in reusable arrays: `courses`,
+  `resources`, `posts`, `faq`, `courseFaq`, `testimonials`. Edit text here and it
+  updates across every page.
+- **`assets/main.js`** — injects the shared header/footer, renders card grids from
+  `data.js`, handles the mobile menu, FAQ accordions, and demo forms.
+
+Card grids are placed with simple markers, e.g.:
+`<div class="grid grid-3" data-courses="featured" data-limit="3"></div>`,
+`<div data-resources></div>`, `<div data-posts></div>`, `<div class="faq" data-faq="course"></div>`.
+
+## Run / preview locally
 
 ```bash
-# from this folder
-open index.html        # macOS
-xdg-open index.html    # Linux
-```
-
-Or serve it (nicer for testing):
-
-```bash
+cd fika-med-maria
 python3 -m http.server 8000
-# then visit http://localhost:8000
+# open http://localhost:8000
 ```
 
-## Customize
+> Open via a server (not `file://`) so the shared header/footer and cards render.
 
-- **Copy & sections** — edit `index.html`. Each section is clearly labelled
-  (`HERO`, `ABOUT`, `WHAT TO EXPECT`, `JOIN`).
-- **Colors** — change the CSS variables at the top of `styles.css` (`:root`).
-- **Fonts** — swap the Google Fonts link in `index.html` (`Fraunces` + `Inter`).
+## Deploy a preview link (to send over Telegram)
 
-## Hooking up the signup form
+It's a plain static site — any of these give a shareable URL in minutes:
 
-Right now `script.js` only validates the email and stores it in `localStorage`
-as a placeholder — nothing is sent anywhere yet. To actually collect emails,
-pick one:
-
-- **Formspree** — set `<form action="https://formspree.io/f/your-id" method="POST">`
-  and remove the `event.preventDefault()` demo handler.
-- **Buttondown / Mailchimp** — paste their embed form in the `#join` section.
-- **Your own API** — `fetch()` POST the email to your endpoint inside the submit handler.
-
-## Deploy
-
-This is a static site, so any of these work with zero config:
-
-- **Vercel** — `vercel` (or import the repo at vercel.com). No framework preset needed.
-- **Netlify** — drag-and-drop this folder, or connect the repo.
+- **Vercel** — `vercel` from this folder (no framework preset needed), or import the repo.
+- **Netlify** — drag-and-drop this folder onto app.netlify.com/drop.
 - **GitHub Pages** — Settings → Pages → deploy from branch.
+
+## What's placeholder (for Maria to provide)
+
+The brief lists these as "still missing" — they're marked in the UI as placeholders:
+
+- Maria's real photo (hero shows a styled monogram placeholder)
+- Final bio, exact course names/formats, **prices** (shown as «Уточнюється»)
+- Real testimonials (section shows placeholder cards, no fake names)
+- Free resource files, newsletter provider, contact handles (Telegram/Instagram)
+- Legal/privacy pages
+
+## Hooking up forms (newsletter + contact)
+
+Forms are front-end-only right now (validate + store to `localStorage`). To collect
+real data, wire each `form[data-newsletter]` / `form[data-contact]` to a provider
+(Mailchimp, Buttondown, Formspree) or your own endpoint inside `wireForms()` in
+`assets/main.js`.
+
+## Design references honoured
+
+- **Swedish with Yulia** — main visual / UX / ecosystem inspiration (typography, warmth,
+  free + paid materials, monthly mini-magazine, premium school feeling).
+- **Humla** — structural reference only (course pages, pricing, FAQ, free materials,
+  newsletter). Its visual style was intentionally **not** copied.
 
 ---
 
-Made with warmth. 🫶
+Зроблено з теплом. 🫶
