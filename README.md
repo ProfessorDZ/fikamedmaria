@@ -42,13 +42,21 @@ python3 -m http.server 8000
 
 > Open via a server (not `file://`) so the shared header/footer and cards render.
 
-## Deploy a preview link (to send over Telegram)
+## Deploy
 
-The site is at the repo root, so it's a zero-config static deploy:
+The site is at the repo root — a zero-config static deploy. It is live in two places:
 
-- **Vercel** — import the repo (no framework preset, no build command needed).
-- **Netlify** — drag-and-drop the repo folder onto app.netlify.com/drop.
-- **GitHub Pages** — Settings → Pages → deploy from branch.
+- **Vercel (production)** — https://fikamedmaria.vercel.app
+  Project `fikamedmaria` on the marketinggrizly Vercel account. To redeploy after
+  changes, either connect this GitHub repo to the Vercel project (Vercel dashboard →
+  Project → Settings → Git) so every push to `main` auto-deploys, or run `vercel --prod`
+  from the repo root with the Vercel CLI. No framework preset and no build command —
+  deploy the 11 site files (8 HTML pages + `assets/`) as-is.
+- **GitHub Pages** — `.github/workflows/pages.yml` publishes automatically on every
+  push to `main`.
+
+Pushing to `main` is therefore the single step that updates Pages; Vercel updates
+automatically too once the repo is connected in the Vercel dashboard.
 
 ## What's placeholder (for Maria to provide)
 
