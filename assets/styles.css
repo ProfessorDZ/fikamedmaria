@@ -238,6 +238,13 @@ img { max-width: 100%; display: block; }
 .method-item .num {
   font-family: "Playfair Display", serif; font-size: 1.5rem; color: var(--honey);
   background: var(--blue); width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+  /* Playfair defaults to old-style figures: 3, 4 and 5 drop about 3.5px below
+     the baseline while 1 and 2 sit on it, so place-items centred the line box
+     and the digits still looked ragged. Lining figures give every digit the
+     same box, and line-height: 1 stops the inherited 1.65 from skewing it. */
+  line-height: 1;
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum" 1;
 }
 .method-item h3 { font-size: 1.18rem; margin-bottom: 0.3rem; }
 .method-item p { color: var(--muted); margin: 0; }
@@ -462,3 +469,16 @@ summary:focus-visible,
 .hero-actions   { animation-delay: .10s; }
 .hero-meta      { animation-delay: .14s; }
 .hero-visual    { animation-delay: .18s; }
+
+/* ---------- Hero portrait photo ---------- */
+/* The frame owns the ratio. Left as a grid item the image's intrinsic
+   944x1400 overrode .portrait's aspect-ratio and rendered 2:3, so the image
+   is taken out of flow and the 4:5 frame stays authoritative. */
+.portrait { padding: 0; display: block; position: relative; }
+.portrait-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  /* Candid shot: face sits high and slightly left of centre, so anchor the
+     crop there. A default centre crop would cut through the forehead. */
+  object-position: 52% 28%;
+}
