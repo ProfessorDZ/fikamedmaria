@@ -1,0 +1,7 @@
+# Vercel project link (contains orgId/projectId — local only)
+.vercel
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.env*
