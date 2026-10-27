@@ -10,6 +10,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+  <!-- i18n:alternates -->
+  <link rel="alternate" hreflang="uk" href="https://fikamedmaria.vercel.app/kontakty.html" />
+  <link rel="alternate" hreflang="sv" href="https://fikamedmaria.vercel.app/sv/kontakty.html" />
+  <link rel="alternate" hreflang="en" href="https://fikamedmaria.vercel.app/en/kontakty.html" />
+  <link rel="alternate" hreflang="pl" href="https://fikamedmaria.vercel.app/pl/kontakty.html" />
+  <link rel="alternate" hreflang="x-default" href="https://fikamedmaria.vercel.app/kontakty.html" />
+  <meta property="og:locale" content="uk_UA" />
+  <!-- /i18n:alternates -->
 </head>
 <body data-page="contact">
   <div data-include-header></div>
@@ -36,27 +44,43 @@
             <div class="field">
               <label for="level">Рівень шведської</label>
               <select id="level" name="level">
-                <option>Починаю з нуля</option>
-                <option>Трохи розумію (A1–A2)</option>
-                <option>Середній (B1–B2)</option>
-                <option>Впевнений (B2+)</option>
-                <option>Не впевнена / не знаю</option>
+                <option value="" selected>Обери рівень</option>
+                <option value="zero">Починаю з нуля</option>
+                <option value="a1_a2">Трохи розумію (A1–A2)</option>
+                <option value="b1_b2">Середній (B1–B2)</option>
+                <option value="b2_plus">Впевнений (B2+)</option>
+                <option value="unknown">Не впевнена / не знаю</option>
               </select>
             </div>
             <div class="field">
               <label for="goal">Що цікавить</label>
               <select id="goal" name="goal">
-                <option>Курс «Шведська з нуля»</option>
-                <option>Розмовна шведська</option>
-                <option>Шведська для життя у Швеції</option>
-                <option>Шведська через культуру</option>
-                <option>Індивідуальна програма</option>
-                <option>Консультація</option>
+                <option value="" selected>Обери, що цікавить</option>
+                <option value="indyvidualni-zanyattya">Індивідуальні заняття</option>
+                <option value="parni-zanyattya">Парні заняття</option>
+                <option value="sprakkafe">Språkkafe</option>
+                <option value="knyzhkovyi-klub">Книжковий клуб шведською мовою</option>
+                <option value="consultation">Консультація</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="heard_from">Звідки ти про мене знаєш? (необовʼязково)</label>
+              <select id="heard_from" name="heard_from">
+                <option value="" selected>Обери варіант</option>
+                <option value="instagram">Instagram</option>
+                <option value="youtube">YouTube</option>
+                <option value="telegram">Telegram</option>
+                <option value="friends">Порадили знайомі</option>
+                <option value="google">Пошук у Google</option>
+                <option value="blog">Блог на цьому сайті</option>
+                <option value="other">Інше</option>
               </select>
             </div>
             <div class="field"><label for="msg">Повідомлення (необовʼязково)</label><textarea id="msg" name="msg" rows="4" placeholder="Розкажи трохи про свої цілі"></textarea></div>
+            <div class="hp-field" aria-hidden="true"><label>Не заповнюй це поле <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <button class="btn btn-primary" type="submit">Надіслати заявку</button>
-            <p class="form-msg" data-msg style="color:var(--blue);margin-top:.8rem"></p>
+            <p class="form-privacy" id="fmm-privacy-line">Надсилаючи заявку, ти погоджуєшся, що я збережу ці дані, щоб відповісти тобі.</p>
+            <p class="form-msg" data-msg role="status" aria-live="polite" style="margin-top:.8rem"></p>
           </form>
         </div>
 
@@ -64,17 +88,17 @@
         <aside class="contact-info">
           <div class="card">
             <h3>Звʼязатися напряму</h3>
-            <div class="ci"><span class="ico">✉️</span><div><b>Email</b><br><a href="mailto:hej@fikamedmaria.com">hej@fikamedmaria.com</a></div></div>
-            <div class="ci"><span class="ico">💬</span><div><b>Telegram</b><br><span style="color:var(--muted)">@fikamedmaria <span style="font-size:.8rem">(додати)</span></span></div></div>
-            <div class="ci"><span class="ico">📸</span><div><b>Instagram</b><br><span style="color:var(--muted)">@fikamedmaria <span style="font-size:.8rem">(додати)</span></span></div></div>
+            <div class="ci"><span class="ico">✉️</span><div><b>Email</b><br><a href="mailto:fika.med.maria@gmail.com">fika.med.maria@gmail.com</a><button class="copy-email-link" type="button" data-copy-email="fika.med.maria@gmail.com">копіювати</button></div></div>
+            <div class="ci"><span class="ico">💬</span><div><b>Telegram</b><br><a href="https://t.me/MaryZubchenko" target="_blank" rel="noopener">@MaryZubchenko</a></div></div>
+            <div class="ci"><span class="ico">📸</span><div><b>Instagram</b><br><a href="https://instagram.com/fika.med.maria" target="_blank" rel="noopener">@fika.med.maria</a></div></div>
             <div class="ci"><span class="ico">🕐</span><div><b>Формат</b><br><span style="color:var(--muted)">Індивідуальні онлайн-заняття</span></div></div>
           </div>
           <div class="card" style="margin-top:1.4rem;background:var(--blue-soft);border-color:transparent">
             <h3>Не готова записуватися?</h3>
-            <p style="color:var(--ink-soft)">Почни з безкоштовних матеріалів або підпишись на Fika-лист — маленьку порцію шведської раз на тиждень.</p>
+            <p style="color:var(--ink-soft)">Почни з готових уроків або зазирни до Медіатеки.</p>
             <div style="display:flex;gap:.6rem;flex-wrap:wrap">
-              <a class="btn btn-ghost btn-sm" href="bezkoshtovni.html">Безкоштовні матеріали</a>
-              <a class="btn btn-accent btn-sm" href="misyachnyk.html">Місячник</a>
+              <a class="btn btn-ghost btn-sm" href="bezkoshtovni.html">Готові уроки</a>
+              <a class="btn btn-accent btn-sm" href="misyachnyk.html">Медіатека</a>
             </div>
           </div>
         </aside>
@@ -83,7 +107,9 @@
   </main>
 
   <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html>

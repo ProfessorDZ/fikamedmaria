@@ -5,3 +5,6 @@
 .DS_Store
 Thumbs.db
 .env*
+
+# Translation work files (temporary; the catalogs in i18n/catalogs are the source of truth)
+i18n/work/

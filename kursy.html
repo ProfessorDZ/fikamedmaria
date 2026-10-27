@@ -4,12 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Курси шведської — Fika med Maria</title>
-  <meta name="description" content="Курси шведської для дорослих: з нуля, розмовна, для життя у Швеції, через культуру та індивідуальне навчання з Марією." />
+  <meta name="description" content="Курси шведської для дорослих: живі заняття з Марією (індивідуальні, парні, Språkkafe, книжковий клуб) і курси для самостійного опрацювання." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+  <!-- i18n:alternates -->
+  <link rel="alternate" hreflang="uk" href="https://fikamedmaria.vercel.app/kursy.html" />
+  <link rel="alternate" hreflang="sv" href="https://fikamedmaria.vercel.app/sv/kursy.html" />
+  <link rel="alternate" hreflang="en" href="https://fikamedmaria.vercel.app/en/kursy.html" />
+  <link rel="alternate" hreflang="pl" href="https://fikamedmaria.vercel.app/pl/kursy.html" />
+  <link rel="alternate" hreflang="x-default" href="https://fikamedmaria.vercel.app/kursy.html" />
+  <meta property="og:locale" content="uk_UA" />
+  <!-- /i18n:alternates -->
 </head>
 <body data-page="courses">
   <div data-include-header></div>
@@ -24,10 +32,15 @@
       </div>
     </section>
 
+    <!-- PART 1: Live lessons with Maria -->
     <section class="section">
-      <div class="wrap">
-        <div class="grid grid-3" data-courses="all"></div>
-        <p class="center" style="color:var(--muted);margin-top:1.5rem">Ціни уточнюються індивідуально під формат і кількість занять. Напиши — підберемо оптимальний варіант.</p>
+      <div class="wrap center">
+        <span class="eyebrow">Разом з Марією</span>
+        <h2 class="section-title">Курси з Марією</h2>
+        <p class="section-intro">Живі онлайн-заняття з Марією — індивідуально, у парі або в групі.</p>
+      </div>
+      <div class="wrap" style="margin-top:2.5rem">
+        <div class="grid grid-2" data-courses="live" style="max-width:820px;margin-inline:auto"></div>
       </div>
     </section>
 
@@ -46,6 +59,18 @@
       </div>
     </section>
 
+    <!-- PART 2: Self-study courses -->
+    <section class="section">
+      <div class="wrap center">
+        <span class="eyebrow">Самостійне навчання</span>
+        <h2 class="section-title">Курси для самостійного опрацювання</h2>
+        <p class="section-intro">Після оплати ти отримуєш доступ до платформи й проходиш уроки у своєму темпі, а Марія особисто дає зворотний звʼязок по кожному курсу. Не всі курси ще доступні для купівлі — інші зʼявляться протягом наступних місяців.</p>
+      </div>
+      <div class="wrap" style="margin-top:2.5rem">
+        <div class="grid grid-3" data-courses="self-study"></div>
+      </div>
+    </section>
+
     <section class="section">
       <div class="wrap center">
         <span class="eyebrow">Питання</span>
@@ -61,15 +86,17 @@
         <h2 class="section-title" style="color:#fff">Не знаєш, з чого почати?</h2>
         <p class="lead" style="color:rgba(255,255,255,.9);max-width:52ch;margin-inline:auto">Напиши мені — підкажу напрям під твій рівень і цілі.</p>
         <div class="hero-actions">
-          <a class="btn btn-accent" href="kontakty.html">Записатися на консультацію</a>
-          <a class="btn btn-light" href="bezkoshtovni.html">Спочатку безкоштовні матеріали</a>
+          <a class="btn btn-accent" href="kontakty.html?offer=consultation">Записатися на консультацію</a>
+          <a class="btn btn-light" href="bezkoshtovni.html">Спочатку готові уроки</a>
         </div>
       </div></div>
     </section>
   </main>
 
   <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html>
