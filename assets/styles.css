@@ -462,8 +462,9 @@ img { max-width: 100%; display: block; }
 .price-card li::before { content: "✓"; position: absolute; left: 0; color: var(--blue); font-weight: 700; }
 
 /* ---------- Testimonials ---------- */
-.testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
-.testi { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
+/* masonry columns: each card keeps its own height instead of stretching to the tallest in its row */
+.testi-grid { columns: 300px 3; column-gap: 1.2rem; }
+.testi { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; break-inside: avoid; margin-bottom: 1.2rem; }
 .testi p { color: var(--muted); font-style: italic; }
 .testi .who { display: flex; align-items: center; gap: 0.7rem; margin-top: 1rem; }
 .testi .who .av {
