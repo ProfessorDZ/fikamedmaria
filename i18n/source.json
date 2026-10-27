@@ -10,7 +10,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Готові уроки",
+  "key": "<a href=\"./\">Головна</a> → Готові уроки",
   "kinds": [
    "html"
   ],
@@ -197,7 +197,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Блог",
+  "key": "<a href=\"./\">Головна</a> → Блог",
   "kinds": [
    "html"
   ],
@@ -1080,7 +1080,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Контакти",
+  "key": "<a href=\"./\">Головна</a> → Контакти",
   "kinds": [
    "html"
   ],
@@ -1504,7 +1504,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → <a href=\"vykladacham.html\">Викладачам</a> → Міні-курс",
+  "key": "<a href=\"./\">Головна</a> → <a href=\"vykladacham.html\">Викладачам</a> → Міні-курс",
   "kinds": [
    "html"
   ],
@@ -3323,7 +3323,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Курси",
+  "key": "<a href=\"./\">Головна</a> → Курси",
   "kinds": [
    "html"
   ],
@@ -3575,7 +3575,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Медіатека",
+  "key": "<a href=\"./\">Головна</a> → Медіатека",
   "kinds": [
    "html"
   ],
@@ -3957,7 +3957,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"index.html\">Головна</a> → Викладачам",
+  "key": "<a href=\"./\">Головна</a> → Викладачам",
   "kinds": [
    "html"
   ],
@@ -4170,7 +4170,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Діалекти шведської",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Діалекти шведської",
   "kinds": [
    "html"
   ],
@@ -4597,7 +4597,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Fredagsmys і söndagsångest",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Fredagsmys і söndagsångest",
   "kinds": [
    "html"
   ],
@@ -5053,7 +5053,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Ju, väl, nog, typ і liksom",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Ju, väl, nog, typ і liksom",
   "kinds": [
    "html"
   ],
@@ -5665,7 +5665,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Що таке fika",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Що таке fika",
   "kinds": [
    "html"
   ],
@@ -6221,7 +6221,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Шведська для роботи",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Шведська для роботи",
   "kinds": [
    "html"
   ],
@@ -6677,7 +6677,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Свобода і правила",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Свобода і правила",
   "kinds": [
    "html"
   ],
@@ -7093,7 +7093,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Шведська ввічливість і українська щирість",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Шведська ввічливість і українська щирість",
   "kinds": [
    "html"
   ],
@@ -7569,7 +7569,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Вимова і акцент",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Вимова і акцент",
   "kinds": [
    "html"
   ],
@@ -8107,7 +8107,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Сучасна шведська: сленг і англіцизми",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Сучасна шведська: сленг і англіцизми",
   "kinds": [
    "html"
   ],
@@ -8613,7 +8613,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Як говорять із дітьми у Швеції",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Як говорять із дітьми у Швеції",
   "kinds": [
    "html"
   ],
@@ -9130,7 +9130,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Невдоволення шведською",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Невдоволення шведською",
   "kinds": [
    "html"
   ],
@@ -9676,7 +9676,7 @@
   "ctx": "title"
  },
  {
-  "key": "<a href=\"../index.html\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Жива шведська",
+  "key": "<a href=\"../\">Головна</a> → <a href=\"../blog.html\">Блог</a> → Жива шведська",
   "kinds": [
    "html"
   ],

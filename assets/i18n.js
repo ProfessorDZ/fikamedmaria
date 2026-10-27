@@ -58,8 +58,16 @@
   function url(path) {
     path = String(path == null ? "" : path);
     if (path === "" || isAbsolute(path)) return path;
-    if (path.charAt(0) === "/") return root + path.slice(1);
-    return langRoot + path;
+    if (path.charAt(0) === "/") return folderUrl(root + path.slice(1));
+    return folderUrl(langRoot + path);
+  }
+
+  /* ".../index.html" -> ".../": the address bar shows the folder, which the
+     server answers with the same page. Kept on file://, where a folder does
+     not open its index. */
+  function folderUrl(href) {
+    if (window.location.protocol === "file:") return href;
+    return href.replace(/\/index\.html(?=[?#]|$)/, "/");
   }
 
   /* A shared file (images, scripts): asset("assets/maria.jpg"). */
@@ -108,7 +116,7 @@
   }
 
   function switchUrl(code) {
-    return root + (code === "uk" ? "" : code + "/") + currentPath();
+    return folderUrl(root + (code === "uk" ? "" : code + "/") + currentPath());
   }
 
   function remember(code) {
