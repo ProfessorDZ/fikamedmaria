@@ -44,7 +44,7 @@ ALL_LANGS = ["uk"] + LANGS
 OG_LOCALE = {"uk": "uk_UA", "sv": "sv_SE", "en": "en_GB", "pl": "pl_PL"}
 # Absolute address used only for <link rel="alternate" hreflang>. Change it when
 # the site gets its own domain, then run `build` again.
-SITE_URL = "https://fikamedmaria.vercel.app"
+SITE_URL = "https://fikamedmaria.com"
 
 # Ukrainian pages that get language copies (paths relative to the site root).
 def source_pages():

@@ -79,7 +79,7 @@ python3 -m http.server 8000
 
 The site is at the repo root — a zero-config static deploy. It is live in two places:
 
-- **Vercel (production)** — https://fikamedmaria.vercel.app
+- **Vercel (production)** — https://fikamedmaria.com (also served at https://fikamedmaria.vercel.app)
   Project `fikamedmaria` on the marketinggrizly Vercel account. To redeploy after
   changes, either connect this GitHub repo to the Vercel project (Vercel dashboard →
   Project → Settings → Git) so every push to `main` auto-deploys, or run `vercel --prod`
