@@ -1,0 +1,74 @@
+{
+  "dialekty-shvedskoi-movy.webp": {
+    "uk": {"black": ["У Швеції немає"], "red": ["однієї шведської"]},
+    "sv": {"black": ["Det finns inte"], "red": ["bara en svenska"]},
+    "en": {"black": ["Sweden has no"], "red": ["single Swedish"]},
+    "pl": {"black": ["W Szwecji nie ma"], "red": ["jednego", "szwedzkiego"]}
+  },
+  "fredagsmys-lordagsgodis-sondagsangest.webp": {
+    "uk": {"black": ["Емоційна"], "red": ["карта", "шведського тижня"]},
+    "sv": {"black": ["En känslokarta"], "red": ["över den", "svenska veckan"]},
+    "en": {"black": ["An emotional"], "red": ["map of the", "Swedish week"]},
+    "pl": {"black": ["Emocjonalna"], "red": ["mapa szwedzkiego", "tygodnia"]}
+  },
+  "ju-val-nog-typ-liksom.webp": {
+    "uk": {"black": ["Маленькі слова,"], "red": ["велика влада"]},
+    "sv": {"black": ["Små ord,"], "red": ["stor makt"]},
+    "en": {"black": ["Small words,"], "red": ["big power"]},
+    "pl": {"black": ["Małe słowa,"], "red": ["wielka moc"]}
+  },
+  "shcho-take-fika-u-shvetsii.webp": {
+    "uk": {"black": ["Fika —"], "red": ["не просто", "перерва на каву"]},
+    "sv": {"black": ["Fika –"], "red": ["inte bara", "en kaffepaus"]},
+    "en": {"black": ["Fika is"], "red": ["not just", "a coffee break"]},
+    "pl": {"black": ["Fika –"], "red": ["nie tylko", "przerwa na kawę"]}
+  },
+  "shvedska-dlia-roboty-kliuchovi-slova.webp": {
+    "uk": {"black": ["Словник"], "red": ["шведської роботи"]},
+    "sv": {"black": ["Ordlista för"], "red": ["svenskt arbetsliv"]},
+    "en": {"black": ["The vocabulary"], "red": ["of Swedish", "working life"]},
+    "pl": {"black": ["Słownik"], "red": ["pracy w Szwecji"]}
+  },
+  "shvedska-svoboda-i-pravyla.webp": {
+    "uk": {"black": ["Шведська свобода"], "red": ["має інструкцію"]},
+    "sv": {"black": ["Svensk frihet med"], "red": ["bruksanvisning"]},
+    "en": {"black": ["Swedish freedom"], "red": ["comes with", "instructions"]},
+    "pl": {"black": ["Szwedzka wolność"], "red": ["ma instrukcję", "obsługi"]}
+  },
+  "shvedska-vvichlyvist-i-ukrainska-shchyrist.webp": {
+    "uk": {"black": ["Шведська", "ввічливість", "vs"], "red": ["українська щирість"]},
+    "sv": {"black": ["Svensk artighet", "vs"], "red": ["ukrainsk", "uppriktighet"]},
+    "en": {"black": ["Swedish", "politeness", "vs"], "red": ["Ukrainian sincerity"]},
+    "pl": {"black": ["Szwedzka", "uprzejmość", "vs"], "red": ["ukraińska szczerość"]}
+  },
+  "shvedska-vymova-i-aktsent.webp": {
+    "uk": {"black": ["Шведська", "вимова без сорому"], "red": ["за акцент"]},
+    "sv": {"black": ["Svenskt uttal", "utan att skämmas"], "red": ["för sin", "brytning"]},
+    "en": {"black": ["Swedish", "pronunciation –", "no shame in"], "red": ["your accent"]},
+    "pl": {"black": ["Szwedzka wymowa:", "nie wstydź się"], "red": ["akcentu"]}
+  },
+  "suchasna-shvedska-anhlitsyzmy-slenh.webp": {
+    "uk": {"black": ["Шведська мова"], "red": ["майбутнього"]},
+    "sv": {"black": ["Framtidens"], "red": ["svenska"]},
+    "en": {"black": ["The Swedish"], "red": ["of the future"]},
+    "pl": {"black": ["Język szwedzki"], "red": ["przyszłości"]}
+  },
+  "yak-hovoriat-iz-ditmy-u-shvetsii.webp": {
+    "uk": {"black": ["Чому шведські", "діти говорять"], "red": ["із дорослими", "як із рівними"]},
+    "sv": {"black": ["Varför svenska", "barn pratar"], "red": ["med vuxna på", "lika villkor"]},
+    "en": {"black": ["Why Swedish", "children talk"], "red": ["to adults", "as equals"]},
+    "pl": {"black": ["Dlaczego", "szwedzkie dzieci", "rozmawiają"], "red": ["z dorosłymi", "jak z równymi"]}
+  },
+  "yak-shvedy-vyslovliuiut-nevdovolennia.webp": {
+    "uk": {"black": ["Ви навіть не", "помітили, що"], "red": ["швед розсердився"]},
+    "sv": {"black": ["Du märkte", "inte ens att"], "red": ["svensken blev arg"]},
+    "en": {"black": ["You didn’t even", "notice the Swede"], "red": ["was angry with you"]},
+    "pl": {"black": ["Nawet nie", "zauważysz, że"], "red": ["Szwed się", "zdenerwował"]}
+  },
+  "zhyva-shvedska-ne-yak-u-pidruchnyku.webp": {
+    "uk": {"black": ["Шведська,"], "red": ["якої не існує"]},
+    "sv": {"black": ["Svenskan som"], "red": ["inte finns"]},
+    "en": {"black": ["The Swedish"], "red": ["that doesn’t", "exist"]},
+    "pl": {"black": ["Szwedzki,"], "red": ["który", "nie istnieje"]}
+  }
+}

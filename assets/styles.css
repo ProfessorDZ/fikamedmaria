@@ -19,7 +19,9 @@
   --honey: #e9a93b;          /* warm yellow accent */
   --honey-soft: #f7e6c4;
   --terracotta: #c47a5c;     /* fika warmth */
+  --terracotta-soft: #f5e2da;
   --sage: #8a9a83;
+  --sage-soft: #e7ede5;
 
   /* Text */
   --ink: #20303f;
@@ -146,6 +148,11 @@ img { max-width: 100%; display: block; }
 }
 .nav-toggle svg { width: 26px; height: 26px; }
 
+/* "Викладачам" lives as a header button on desktop; on mobile the header
+   button hides along with the other nav buttons (see .nav .btn below), so
+   it's reachable instead as a plain link inside the dropdown menu. */
+.nav-teachers-link { display: none; }
+
 /* ---------- Hero ---------- */
 .hero { position: relative; overflow: hidden; background:
   radial-gradient(120% 90% at 85% -10%, var(--honey-soft) 0%, transparent 55%),
@@ -199,12 +206,13 @@ img { max-width: 100%; display: block; }
 .card p { color: var(--muted); margin-bottom: 1rem; }
 .card .card-foot { margin-top: auto; }
 
-/* Course card */
-.course-card .badge {
+/* Card status badge — works on any .card, not just course cards */
+.card .badge {
   align-self: flex-start; background: var(--honey-soft); color: #7a5510;
   font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 999px;
   letter-spacing: 0.03em; margin-bottom: 0.9rem;
 }
+.card .badge.badge-soon { background: var(--blue-soft); color: var(--blue); }
 .course-card h3 { font-size: 1.35rem; }
 .course-card .rows { margin: 0.4rem 0 1.2rem; display: grid; gap: 0.55rem; }
 .course-card .row { display: flex; gap: 0.6rem; font-size: 0.95rem; color: var(--ink-soft); }
@@ -212,17 +220,111 @@ img { max-width: 100%; display: block; }
 .course-card .price { font-weight: 700; color: var(--blue); }
 .course-card .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
 
-/* Resource card */
-.resource-card { background: var(--paper-2); }
-.resource-card .tag {
-  display: inline-flex; gap: 0.4rem; align-self: flex-start; font-size: 0.78rem; font-weight: 700;
-  color: var(--terracotta); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.7rem;
+/* Level + topic pills — on lesson cards and on a lesson's own page */
+.levels { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.9rem; }
+.level-badge {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px;
+  padding: 0 0.45rem; border-radius: 999px; background: var(--honey-soft); color: #7a5510;
+  font-size: 0.72rem; font-weight: 700;
 }
+.topic-pill {
+  display: inline-flex; align-items: center; height: 30px; padding: 0 0.8rem; border-radius: 999px;
+  background: var(--blue-soft); color: var(--blue); font-size: 0.72rem; font-weight: 700;
+}
+
+/* Lesson card: cover image on top, the whole card opens the lesson page */
+.resource-card { background: var(--paper-2); padding: 0; overflow: hidden; position: relative; }
+.resource-card .resource-media { aspect-ratio: 16 / 9; background: var(--paper); border-bottom: 1px solid var(--line); }
+.resource-card .resource-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.resource-card .resource-body { padding: 1.3rem 1.5rem 1.5rem; display: flex; flex-direction: column; flex: 1; }
+.resource-card .card-link { color: inherit; }
+.resource-card .card-link:hover { color: var(--blue); }
+.resource-card .card-link::after { content: ""; position: absolute; inset: 0; }
+.resource-card .card-link:focus-visible { outline: none; }
+.resource-card .card-link:focus-visible::after { outline: 3px solid var(--honey); outline-offset: -3px; border-radius: var(--radius); }
+.resource-card .card-foot .btn { position: relative; z-index: 1; }
 .resource-card .fmt { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+
+/* Six "what's included" cards: 3 + 3, never 5 + 1 */
+.values.values-six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .values.values-six { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .values.values-six { grid-template-columns: 1fr; } }
+
+/* ---------- Lesson page (urok.html) ---------- */
+.lesson-top { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+.lesson-gallery .gallery-main {
+  aspect-ratio: 16 / 9; background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.lesson-gallery .gallery-main img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.gallery-thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.7rem; }
+.gallery-thumb {
+  padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden;
+  background: var(--paper); cursor: pointer; aspect-ratio: 16 / 10; box-shadow: var(--shadow-sm);
+}
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.gallery-thumb.active { border-color: var(--blue); }
+.lesson-info h1 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin-bottom: 1rem; }
+.lesson-info .lead { font-size: 1.05rem; }
+.lesson-facts { margin: 1.4rem 0 1.6rem; display: grid; gap: 0.5rem; }
+.lesson-facts > div { display: flex; gap: 0.8rem; font-size: 0.95rem; color: var(--ink-soft); }
+.lesson-facts dt { color: var(--muted); font-weight: 600; min-width: 9.5rem; }
+.lesson-facts dd { margin: 0; }
+.btn-buy { padding: 1.05rem 2.4rem; font-size: 1.05rem; }
+.buy-note { color: var(--muted); font-size: 0.88rem; margin: 0.8rem 0 0; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0.4rem 0 0; }
+.chip-list li { background: var(--blue-soft); color: var(--blue); font-size: 0.85rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 999px; }
+.plan-list { list-style: none; margin: 1.2rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+.plan-list li {
+  display: grid; grid-template-columns: 9.5rem 1fr auto; gap: 0.8rem; align-items: baseline;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 0.7rem 1rem;
+}
+.plan-kind { font-size: 0.78rem; font-weight: 700; color: var(--terracotta); text-transform: uppercase; letter-spacing: 0.04em; }
+.plan-title { color: var(--ink); font-weight: 600; }
+.plan-min { color: var(--muted); font-size: 0.88rem; white-space: nowrap; }
+.plan-total { margin: 0.9rem 0 0; font-weight: 700; color: var(--ink); }
+.plan-sub { font-size: 1.15rem; margin-top: 1.6rem; }
+@media (max-width: 860px) {
+  .lesson-top { grid-template-columns: 1fr; }
+  .plan-list li { grid-template-columns: 1fr auto; }
+  .plan-kind { grid-column: 1 / -1; }
+}
+@media (max-width: 480px) {
+  .lesson-facts > div { flex-direction: column; gap: 0; }
+  .btn-buy { width: 100%; justify-content: center; }
+}
+
+/* Ready lessons catalogue: one headed block per topic */
+.topic-block + .topic-block { margin-top: 3.2rem; }
+.topic-head { margin-bottom: 1.4rem; }
+.topic-head h3 { font-size: 1.6rem; }
+.topic-head p { margin: 0.3rem 0 0; color: var(--muted); }
+
+/* ---------- Resource filters (bezkoshtovni.html) ---------- */
+.resource-filters {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.5rem 1.7rem; display: grid; gap: 1rem;
+}
+.resource-filters .filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.4rem; }
+.resource-filters .filter-group-label { font-weight: 700; font-size: 0.92rem; color: var(--ink); min-width: 100%; }
+@media (min-width: 640px) { .resource-filters .filter-group-label { min-width: 8rem; } }
+.filter-check { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.94rem; color: var(--ink-soft); }
+.filter-check input {
+  appearance: none; width: 18px; height: 18px; border: 2px solid var(--line); border-radius: 50%;
+  margin: 0; flex: none; position: relative; cursor: pointer;
+}
+.filter-check input:checked { border-color: var(--blue); }
+.filter-check input:checked::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--blue);
+}
+.filter-check:has(input:checked) { color: var(--ink); font-weight: 600; }
 
 /* Blog card */
 .post-card { overflow: hidden; padding: 0; }
-.post-card .post-top { height: 7px; background: linear-gradient(90deg, var(--blue), var(--honey)); }
+.post-card .post-cover { height: 140px; display: flex; align-items: center; justify-content: center; }
+.post-card .post-cover-icon { font-size: 2.8rem; }
+.post-card .post-cover-photo { padding: 0; }
+.post-card .post-cover-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .post-card .post-body { padding: 1.5rem 1.6rem; display: flex; flex-direction: column; flex: 1; }
 .post-card .meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem; display: flex; gap: 0.7rem; }
 .post-card .cat { color: var(--blue); font-weight: 700; }
@@ -260,6 +362,10 @@ img { max-width: 100%; display: block; }
 .band h2, .band h3 { color: #fff; }
 .band p { color: rgba(255,255,255,0.85); }
 .band .eyebrow { color: var(--honey); }
+/* Headings reset to margin: 0, and nothing else here adds space before the
+   lead paragraph (unlike .hero .lead / .page-hero .lead), so title and body
+   text sat flush against each other. */
+.band .lead { margin-top: 0.8rem; }
 
 /* Mini-magazine feature */
 .maga-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
@@ -305,14 +411,25 @@ img { max-width: 100%; display: block; }
 .step p { color: var(--muted); margin: 0; }
 
 /* ---------- Page hero (inner pages) ---------- */
-.page-hero { padding-block: clamp(2.5rem, 6vw, 4rem); background:
-  radial-gradient(80% 120% at 100% 0%, var(--honey-soft) 0%, transparent 45%), var(--cream); }
+.page-hero { position: relative; padding-block: clamp(2.5rem, 6vw, 4rem); background:
+  radial-gradient(80% 120% at 100% 0%, var(--honey-soft) 0%, transparent 45%), var(--cream); overflow: hidden; }
+
+/* ---------- Seasonal decor ---------- */
+.season-decor {
+  position: absolute; font-size: 1.8rem; line-height: 1; opacity: 0.55;
+  pointer-events: none; user-select: none; z-index: 1;
+}
+.season-decor.tl { top: 1.1rem; left: 1.1rem; transform: rotate(-12deg); }
+.season-decor.br { bottom: 1.1rem; right: 1.1rem; transform: rotate(10deg); }
+@media (max-width: 600px) { .season-decor { display: none; } }
 .page-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
 .page-hero .lead { margin-top: 1rem; max-width: 60ch; }
 .breadcrumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
 .breadcrumb a { color: var(--muted); }
 
 /* ---------- Two-column prose (About) ---------- */
+.blog-cover { width: 100%; height: auto; border-radius: var(--radius-lg); display: block; margin-bottom: 0.5rem; }
+
 .prose { max-width: 70ch; }
 .prose h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); margin: 2.2rem 0 0.8rem; }
 .prose p { color: var(--ink-soft); }
@@ -321,6 +438,9 @@ img { max-width: 100%; display: block; }
   background: var(--paper); border-radius: 0 14px 14px 0; font-family: "Playfair Display", serif;
   font-size: 1.25rem; font-style: italic; color: var(--blue-dark);
 }
+.prose table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; }
+.prose th, .prose td { text-align: left; padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--line); }
+.prose th { background: var(--paper-2); font-weight: 600; }
 
 /* ---------- Values ---------- */
 .values { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
@@ -333,22 +453,28 @@ img { max-width: 100%; display: block; }
 .pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.3rem; }
 .price-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.8rem; text-align: center; }
 .price-card.featured { border-color: var(--honey); box-shadow: var(--shadow); position: relative; }
-.price-card.featured::before { content: "Популярний"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--honey); color: #4a3410; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 999px; }
+/* The label text lives in the HTML (data-label) so each language page can have its own. */
+.price-card.featured::before { content: attr(data-label); position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--honey); color: #4a3410; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 999px; }
 .price-card .amount { font-family: "Playfair Display", serif; font-size: 2.4rem; color: var(--blue); margin: 0.4rem 0; }
 .price-card .per { color: var(--muted); font-size: 0.9rem; }
 .price-card ul { list-style: none; padding: 0; margin: 1.2rem 0; text-align: left; }
 .price-card li { padding-left: 1.6rem; position: relative; margin-bottom: 0.5rem; color: var(--ink-soft); }
 .price-card li::before { content: "✓"; position: absolute; left: 0; color: var(--blue); font-weight: 700; }
 
-/* ---------- Testimonials placeholder ---------- */
+/* ---------- Testimonials ---------- */
 .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
-.testi { background: var(--paper); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1.6rem; }
-.testi .stars { color: var(--honey); margin-bottom: 0.6rem; letter-spacing: 0.1em; }
+.testi { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
 .testi p { color: var(--muted); font-style: italic; }
 .testi .who { display: flex; align-items: center; gap: 0.7rem; margin-top: 1rem; }
-.testi .who .av { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-soft); }
+.testi .who .av {
+  width: 38px; height: 38px; border-radius: 50%; background: var(--blue); color: #fff;
+  flex: none; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  font-family: "Inter", sans-serif; font-weight: 700; font-size: 0.9rem;
+}
+.testi .who .av img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .testi .who b { font-size: 0.95rem; }
-.testi .placeholder-note { font-size: 0.78rem; color: var(--terracotta); font-weight: 600; }
+.testi .testi-source { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.testi .testi-note { font-size: 0.78rem; color: var(--muted); font-style: italic; margin: -0.4rem 0 0; }
 
 /* ---------- Final CTA ---------- */
 .final-cta { text-align: center; }
@@ -366,18 +492,36 @@ img { max-width: 100%; display: block; }
 .field input:focus, .field textarea:focus, .field select:focus { outline: 2px solid var(--blue); border-color: transparent; }
 .contact-info .ci { display: flex; gap: 0.7rem; margin-bottom: 1.1rem; align-items: flex-start; }
 .contact-info .ci .ico { font-size: 1.3rem; }
+.copy-email-link {
+  background: none; border: none; padding: 0; margin-left: 0.4rem; font: inherit;
+  color: inherit; text-decoration: underline; opacity: 0.8; cursor: pointer;
+}
+.copy-email-link:hover { opacity: 1; }
 
 /* ---------- Footer ---------- */
 .site-footer { background: var(--blue-dark); color: rgba(255,255,255,0.82); padding-block: 3rem 2rem; margin-top: var(--space); }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.3fr; gap: 2rem; }
+
+/* Instagram strip — square tiles linking out to the profile (or, once
+   Maria gives real post links, each tile can point at its own post). */
+.insta-strip { margin-bottom: 2.2rem; }
+.insta-strip .insta-heading { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.insta-strip .insta-heading b { color: #fff; font-family: "Inter", sans-serif; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.insta-strip .insta-heading a { color: var(--honey); font-weight: 600; }
+.insta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 0.7rem; max-width: 640px; }
+.insta-tile {
+  aspect-ratio: 1; border-radius: 14px; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--honey-soft), var(--blue-soft)); transition: transform .15s ease, opacity .15s ease;
+}
+.insta-tile:hover { transform: translateY(-3px); opacity: 0.85; }
+.insta-tile .insta-ico { font-size: 1.6rem; }
+
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
 .site-footer h4 { color: #fff; font-family: "Inter", sans-serif; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.9rem; }
 .site-footer a { color: rgba(255,255,255,0.78); font-size: 0.95rem; }
 .site-footer a:hover { color: var(--honey); }
 .site-footer .f-links { display: grid; gap: 0.5rem; }
 .site-footer .f-brand .brand-name { color: #fff; }
 .site-footer .f-brand p { color: rgba(255,255,255,0.7); font-size: 0.95rem; max-width: 34ch; }
-.f-signup { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
-.f-signup input { flex: 1; padding: 0.7rem 0.9rem; border-radius: 10px; border: none; font-family: inherit; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.15); margin-top: 2.2rem; padding-top: 1.3rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.8rem; font-size: 0.85rem; color: rgba(255,255,255,0.6); }
 
 /* ---------- Mobile nav ---------- */
@@ -392,6 +536,7 @@ img { max-width: 100%; display: block; }
   .nav-links a { padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
   .nav-links a.active::after { display: none; }
   .nav .btn { display: none; }
+  .nav-teachers-link { display: block; }
 }
 
 @media (max-width: 860px) {
@@ -404,8 +549,20 @@ img { max-width: 100%; display: block; }
   .hero .lead { max-width: none; }
   .maga-grid, .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
-  .float-1, .float-2, .float-3 { position: static; display: inline-flex; margin: 0.4rem 0.4rem 0 0; }
-  .hero-visual { min-height: 0; }
+  .float-1, .float-2, .float-3 {
+    position: static; display: inline-flex; margin: 0;
+    padding: 0.6rem 0.8rem; gap: 0.4rem; font-size: 0.82rem;
+  }
+  .float-card .ico { font-size: 1.05rem; }
+  .hero-visual {
+    /* !important needed: some pages set an inline min-height (a leftover
+       hint for the old absolutely-positioned pills) that would otherwise
+       leave a large blank gap below the photo now that the pills sit in
+       normal flow. */
+    min-height: 0 !important; display: flex; flex-wrap: wrap;
+    justify-content: center; align-items: flex-start; gap: 0.9rem 0.5rem;
+  }
+  .hero-visual .portrait { flex: 0 0 100%; }
 }
 @media (max-width: 480px) {
   .hero-meta { gap: 0.6rem 1rem; }
@@ -444,7 +601,7 @@ summary:focus-visible,
        The hero visual is decorative, so it now follows the copy
        instead of being promoted above it with order: -1. --- */
 @media (max-width: 760px) {
-  .hero-grid { padding-block: 1.75rem 2.75rem; }
+  .hero-grid { padding-block: 1.75rem 2rem; }
   .hero .lead { margin: 0.9rem 0 1.5rem; font-size: 1rem; line-height: 1.55; }
   .hero-actions { gap: 0.6rem; }
   .hero-actions .btn { width: 100%; justify-content: center; }
@@ -482,3 +639,214 @@ summary:focus-visible,
      crop there. A default centre crop would cut through the forehead. */
   object-position: 52% 28%;
 }
+
+/* =====================================================================
+   Course sales page (kurs-vykladacham.html): package grid and two tiers
+   ===================================================================== */
+
+/* Check-mark list, same look as the ticks inside .price-card */
+.check-list { list-style: none; padding: 0; margin: 0; text-align: left; }
+.check-list li { padding-left: 1.6rem; position: relative; margin-bottom: 0.45rem; color: var(--ink-soft); break-inside: avoid; }
+.check-list li::before { content: "✓"; position: absolute; left: 0; color: var(--blue); font-weight: 700; }
+
+/* "What is included": one column on phones (cards follow the HTML order),
+   two columns on tablets, three on desktop where the bonus card runs down
+   two rows. Grid areas are only set from 640px up. Setting grid-area on a
+   one-column grid would invent extra implicit tracks. */
+.package { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.4rem; margin-top: 2rem; }
+.card.pk-bonus { background: var(--honey-soft); border-color: rgba(233, 169, 59, 0.55); }
+.card.pk-bonus .ico { background: #fff; }
+.card.pk-bonus .badge { background: var(--honey); color: #4a3410; }
+.card.pk-bonus p { margin-bottom: 0.8rem; }
+
+@media (min-width: 640px) {
+  .package {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "video video-w"
+      "sys   calc"
+      "bonus bonus"
+      "chat  meet"
+      "cert  cert";
+  }
+  .package .pk-video { grid-area: video; }
+  .package .pk-work  { grid-area: video-w; }
+  .package .pk-sys   { grid-area: sys; }
+  .package .pk-calc  { grid-area: calc; }
+  .package .pk-bonus { grid-area: bonus; }
+  .package .pk-chat  { grid-area: chat; }
+  .package .pk-meet  { grid-area: meet; }
+  .package .pk-cert  { grid-area: cert; }
+  .card.pk-bonus .check-list { columns: 2; column-gap: 2rem; }
+}
+@media (min-width: 980px) {
+  .package {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "video video-w bonus"
+      "sys   calc    bonus"
+      "chat  meet    cert";
+  }
+  .card.pk-bonus .check-list { columns: 1; }
+}
+
+/* Two tiers ($149 / $249). Two columns when there is room, one on phones. */
+.pricing.pricing-tiers {
+  max-width: 900px; margin: 2.5rem auto 0; gap: 1.6rem; align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.pricing-tiers .price-card { display: flex; flex-direction: column; padding: 2rem 1.8rem; }
+.pricing-tiers .price-card h3 { font-size: 1.45rem; }
+.pricing-tiers .price-card .per { margin: 0 0 0.2rem; }
+.pricing-tiers .price-card ul { margin: 1.3rem 0 1.5rem; }
+.pricing-tiers .price-card .btn { margin-top: auto; width: 100%; justify-content: center; }
+/* Highlighted, not pushed: a warm border and a plain factual label. */
+.price-card.price-card-vip { position: relative; border-color: var(--honey); box-shadow: var(--shadow); }
+.price-card.price-card-vip::before {
+  content: attr(data-label); position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--honey); color: #4a3410; font-size: 0.75rem; font-weight: 700;
+  padding: 0.2rem 0.8rem; border-radius: 999px; white-space: nowrap;
+}
+.price-card .tier-extra {
+  background: var(--honey-soft); border-radius: 14px; padding: 0.9rem 1.1rem; margin: 0 0 1.5rem;
+  text-align: left; font-size: 0.96rem; color: var(--ink-soft);
+}
+.price-card .tier-extra b { color: var(--ink); }
+
+/* =====================================================================
+   Data, consent and forms (assets/fmm-kit.js)
+   Cookie banner, footer "cookie settings" button, honeypot field,
+   privacy line and form status colours. Tokens come from :root above.
+   Contrast (WCAG, text on --cream / --paper): ok 7.8 / 8.9, warn 6.2 / 7.0,
+   error 5.9 / 6.7. Header z-index is 100, so the banner uses 1000.
+   ===================================================================== */
+
+@keyframes fmm-consent-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Cookie banner: fixed to the bottom, 16px from the edges, centred on wide
+   screens (left + right + auto margins + max-width). Stacked on phones. */
+.fmm-consent {
+  position: fixed;
+  left: 16px; right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+  max-width: 780px; margin-inline: auto;
+  max-height: calc(100vh - 32px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  animation: fmm-consent-in .3s cubic-bezier(.22,.61,.36,1) both;
+}
+.fmm-consent__body { flex: 1 1 auto; min-width: 0; }
+.fmm-consent__body > :last-child { margin-bottom: 0; }
+.fmm-consent__title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.05rem; line-height: 1.25; margin: 0 0 0.4rem;
+}
+.fmm-consent__text,
+.fmm-consent__state { font-size: 0.92rem; line-height: 1.55; margin: 0 0 0.5rem; }
+.fmm-consent__text { color: var(--ink-soft); }
+.fmm-consent__state { color: var(--muted); margin-top: 0.4rem; }
+.fmm-consent__more {
+  display: inline-block; margin-bottom: 0.3rem;
+  font-size: 0.92rem; font-weight: 600; color: var(--blue);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.fmm-consent__more:hover { color: var(--blue-dark); }
+
+/* Equal buttons on purpose: refusing must be as easy as accepting, so both
+   share one look and one width. Half the row each on phones. */
+.fmm-consent__actions { display: flex; gap: 0.6rem; width: 100%; }
+.fmm-consent__actions .btn {
+  flex: 1 1 0; min-width: 0; justify-content: center; text-align: center;
+  line-height: 1.2; white-space: normal;
+}
+.fmm-consent .btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+@media (min-width: 640px) {
+  .fmm-consent { flex-direction: row; align-items: center; gap: 1.5rem; padding: 1.2rem 1.4rem; }
+  .fmm-consent__actions { flex: 0 0 11rem; width: 11rem; flex-direction: column; }
+  .fmm-consent__actions .btn { flex: 0 0 auto; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fmm-consent { animation: none; }
+}
+
+/* Footer "cookie settings": a <button> that looks like the text beside it */
+.fmm-cookie-link {
+  background: none; border: 0; padding: 0; margin: 0;
+  -webkit-appearance: none; appearance: none;
+  font: inherit; color: inherit; text-align: inherit; cursor: pointer;
+}
+.fmm-cookie-link:hover { text-decoration: underline; }
+.fmm-cookie-link:focus-visible { outline: 2px solid var(--honey); outline-offset: 3px; border-radius: 2px; }
+
+/* Honeypot: off-screen, not display:none / visibility:hidden (bots skip those) */
+.hp-field {
+  position: absolute; left: -10000px; top: auto;
+  width: 1px; height: 1px; overflow: hidden;
+}
+
+/* Privacy line under the submit button of the contact form */
+.form-privacy { margin: 0.8rem 0 0; font-size: 0.85rem; line-height: 1.5; color: var(--ink-soft); }
+
+/* Form status colours. Same specificity order as .form-msg above, with the
+   state class added, so they always win over the base rule. */
+.form-msg.is-ok    { color: var(--blue); }
+.form-msg.is-warn  { color: #7a4f00; }   /* darkened --honey */
+.form-msg.is-error { color: #9a3f1f; }   /* darkened --terracotta */
+.form-msg a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+/* On the dark blue .band the same states switch to light tints */
+.band .form-msg.is-ok    { color: #fff; }
+.band .form-msg.is-warn  { color: var(--honey-soft); }
+.band .form-msg.is-error { color: var(--terracotta-soft); }
+
+/* ---------- Language switcher (header) ---------- */
+.lang-switch { position: relative; }
+.lang-switch > summary {
+  list-style: none; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;
+  padding: 0.45rem 0.65rem; border: 1.5px solid var(--line); border-radius: 999px;
+  color: var(--ink-soft); font-size: 0.85rem; font-weight: 600; line-height: 1; background: transparent;
+}
+.lang-switch > summary::-webkit-details-marker { display: none; }
+.lang-switch > summary:hover, .lang-switch[open] > summary { color: var(--blue); background: var(--blue-soft); }
+.lang-switch .lang-menu {
+  position: absolute; right: 0; top: calc(100% + 0.4rem); z-index: 120; min-width: 11rem;
+  list-style: none; margin: 0; padding: 0.35rem; background: var(--paper);
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+}
+.lang-switch .lang-menu a {
+  display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; border-radius: 10px;
+  color: var(--ink); font-size: 0.95rem; text-decoration: none;
+}
+.lang-switch .lang-menu a:hover { background: var(--blue-soft); color: var(--blue); }
+.lang-switch .lang-menu a.is-current { font-weight: 700; color: var(--blue); }
+.lang-switch .lang-short {
+  display: inline-block; min-width: 1.9rem; font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.04em;
+}
+
+/* ---------- Header that does not fit (longer translated menus) ----------
+   Menu items never break onto two lines. If the whole desktop menu is wider
+   than the screen, main.js adds .nav-compact and the phone menu is used
+   (the same rules as the max-width: 860px block above). */
+.nav-links a, .nav .btn { white-space: nowrap; }
+/* on phones the name may still wrap, or the menu button would leave a 320px screen */
+@media (min-width: 861px) { .brand-name { white-space: nowrap; } }
+.site-header.nav-compact .nav-toggle { display: inline-flex; }
+.site-header.nav-compact .nav-links {
+  position: fixed; inset: 0 0 auto 0; top: 60px; flex-direction: column; align-items: stretch;
+  background: var(--cream); padding: 1rem 1.25rem 1.5rem; gap: 0; border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow); transform: translateY(-130%); max-height: calc(100vh - 60px); overflow: auto;
+  visibility: hidden; transition: transform .25s ease, visibility .25s ease;
+}
+.site-header.nav-compact .nav-links.open { transform: translateY(0); visibility: visible; }
+.site-header.nav-compact .nav-links a { padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+.site-header.nav-compact .nav-links a.active::after { display: none; }
+.site-header.nav-compact .nav .btn { display: none; }
+.site-header.nav-compact .nav-teachers-link { display: block; }
