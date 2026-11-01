@@ -7,8 +7,20 @@
    * Page views, clicks and form-fill steps are recorded ONLY after the
      visitor allowed analytics in the cookie banner. Before that no
      visitor id is stored and nothing is sent.
+   * With analytics allowed, a form also carries the Google Analytics
+     client id and session id, read from the _ga cookies at the moment
+     the form is sent (null when there is no cookie).
+   * With ads allowed (a separate choice in the banner), the browser keeps
+     ad click ids, the Meta cookies _fbc/_fbp and a random ad key in
+     localStorage ("fmm_ads"). A form then also carries them, and the
+     server saves the visitor's full IP address with the submission for
+     7 days. Without ads consent none of this is stored or sent, and
+     withdrawing it deletes "fmm_ads".
+   * These ids go to our own database only. Nothing is sent to Meta or
+     Google yet, and the ids never enter the dataLayer or any event.
    * Nothing is loaded from Google until gtmId below is a real id AND
-     the visitor allowed analytics.
+     the visitor allowed analytics or ads. Google consent mode is kept
+     in step with the two choices.
    The file name is neutral on purpose: ad blockers block "tracking.js".
    ===================================================================== */
 (function () {
@@ -20,7 +32,8 @@
     supabaseKey: "sb_publishable_rOBXp5RLteSyp9pHlX7EOA_5a09VsA0", // public by design: it can only call the four functions below
     gtmId: "GTM-XXXXXXX",      // PLACEHOLDER — nothing is loaded from Google until this is a real id
     ga4Id: "G-XXXXXXXXXX",     // PLACEHOLDER — for reference; the GA4 tag itself is set up inside GTM
-    noticeVersion: "2026-10-draft",
+    noticeVersion: "2026-11-draft",
+    preselectOptional: true,   // first-time visitors see Analytics and Ads ticked in the banner settings; set false to start unticked
     privacyUrl: "",            // the privacy policy page does not exist yet; when empty, no link is shown
     telegramUrl: "https://t.me/MaryZubchenko",
     telegramHandle: "@MaryZubchenko",
@@ -117,11 +130,22 @@
 
   function push(obj) { try { window.dataLayer.push(obj); } catch (_) {} }
 
+  /* Google consent mode follows the two banner choices:
+     "analytics" -> analytics_storage
+     "ads"       -> ad_storage, ad_user_data and ad_personalization
+     Denial sets the same signals back to denied. */
+  function googleSignals(purpose, value) {
+    if (purpose === "ads") return { ad_storage: value, ad_user_data: value, ad_personalization: value };
+    return { analytics_storage: value };
+  }
+  function allowGoogle(purpose) { gtag("consent", "update", googleSignals(purpose, "granted")); }
+  function denyGoogle(purpose) { gtag("consent", "update", googleSignals(purpose, "denied")); }
+
+  /* Called after the consent updates above, so a tag never sees stale signals.
+     Loads once, and only when at least one purpose was granted. */
   var gtmLoaded = false;
-  function allowGoogle() {
-    /* Only analytics is ever granted: the site has no advertising purpose. */
-    gtag("consent", "update", { analytics_storage: "granted" });
-    if (!gtmEnabled || gtmLoaded) return;
+  function loadGtm() {
+    if (!gtmEnabled || gtmLoaded || !(hasConsent() || hasAdsConsent())) return;
     gtmLoaded = true;
     push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
     var s = document.createElement("script");
@@ -131,17 +155,26 @@
   }
 
   /* ---------------- Consent state ---------------- */
+  /* fmm_consent = {analytics, ads, v, at}. A record from another notice
+     version, or one missing a purpose, counts as "not asked yet". */
   function storedConsent() {
     var c = readJson(lsGet("fmm_consent"), null);
-    if (c && c.v === NOTICE && (c.analytics === "granted" || c.analytics === "denied")) return c.analytics;
+    var ok = function (x) { return x === "granted" || x === "denied"; };
+    if (c && typeof c === "object" && c.v === NOTICE && ok(c.analytics) && ok(c.ads)) {
+      return { analytics: c.analytics, ads: c.ads };
+    }
     return null;
   }
-  var consent = storedConsent(); // "granted" | "denied" | null (not asked yet)
+  var storedChoice = storedConsent();
+  var consent = storedChoice ? storedChoice.analytics : null;    // "granted" | "denied" | null (not asked yet)
+  var adsConsent = storedChoice ? storedChoice.ads : null;       // same values, for the ads purpose
 
   function hasConsent() { return consent === "granted"; }
-  function saveConsent(value) {
-    consent = value;
-    lsSet("fmm_consent", JSON.stringify({ analytics: value, v: NOTICE, at: new Date().toISOString() }));
+  function hasAdsConsent() { return adsConsent === "granted"; }
+  function saveConsent(analytics, ads) {
+    consent = analytics;
+    adsConsent = ads;
+    lsSet("fmm_consent", JSON.stringify({ analytics: analytics, ads: ads, v: NOTICE, at: new Date().toISOString() }));
   }
 
   function visitorKey() { return hasConsent() ? lsGet("fmm_vid") : null; }
@@ -152,6 +185,147 @@
     return s;
   }
   function firstTouch() { return hasConsent() ? readJson(lsGet("fmm_first"), {}) : {}; }
+
+  /* ---------------- Ad and Google Analytics identifiers ----------------
+     Kept so a server can later report a lead to Meta (Conversions API) and
+     to Google (GA4 Measurement Protocol). Nothing is sent from here: these
+     ids go only into the form payload, never into the dataLayer, an event
+     or the console.
+     * Ad ids need ADS consent. They live in localStorage "fmm_ads":
+       {key, gclid, gbraid, wbraid, fbclid, msclkid, ttclid, fbc, fbp, at}
+       and are removed when ads consent is withdrawn.
+     * Google Analytics ids need ANALYTICS consent. They are only read
+       from Google's own cookies at the moment a form is sent. */
+  var CLICK_IDS = ["gclid", "gbraid", "wbraid", "fbclid", "msclkid", "ttclid"];
+  var AD_ID_RE = /^[A-Za-z0-9._-]+$/;
+  var CLICK_ID_MAX_AGE = 90 * 24 * 60 * 60 * 1000;
+
+  function readCookies() {
+    var out = {};
+    try {
+      var parts = String(document.cookie || "").split(";");
+      for (var i = 0; i < parts.length; i++) {
+        var eq = parts[i].indexOf("=");
+        if (eq < 1) continue;
+        var name = parts[i].slice(0, eq).replace(/^\s+/, "");
+        if (!Object.prototype.hasOwnProperty.call(out, name)) out[name] = parts[i].slice(eq + 1).replace(/\s+$/, "");
+      }
+    } catch (_) {}
+    return out;
+  }
+
+  function randomDigits(n) {
+    var c = window.crypto || window.msCrypto, s = "", i;
+    var b = null;
+    try { if (c && c.getRandomValues) b = c.getRandomValues(new Uint8Array(n)); } catch (_) {}
+    for (i = 0; i < n; i++) s += String(b ? b[i] % 10 : Math.floor(Math.random() * 10));
+    return s;
+  }
+
+  /* The saved ad record, or {} if there is none. Click ids older than 90 days
+     are dropped here; the ad key and fbp stay. */
+  function readAds() {
+    var r = readJson(lsGet("fmm_ads"), null);
+    if (!r || typeof r !== "object" || Object.prototype.toString.call(r) === "[object Array]") return {};
+    var age = new Date().getTime() - Date.parse(r.at || "");
+    if (!(age >= 0 && age < CLICK_ID_MAX_AGE)) {
+      for (var i = 0; i < CLICK_IDS.length; i++) delete r[CLICK_IDS[i]];
+      delete r.fbc;
+      r.stale = true; // lets captureAds save the cleaned record
+    }
+    return r;
+  }
+
+  /* Stores what the ad platforms need. Does nothing without ads consent.
+     Called when a page loads with consent, and right after it is granted. */
+  function captureAds() {
+    if (!hasAdsConsent()) return {};
+    var rec = readAds();
+    var now = new Date().getTime();
+    var changed = false, newFbclid = null, i;
+    if (!rec.key) { rec.key = uuid(); changed = true; }
+    if (rec.stale) { delete rec.stale; changed = true; }
+
+    var q = null;
+    try { q = new URLSearchParams(window.location.search); } catch (_) {}
+    var clickChanged = false;
+    for (i = 0; q && i < CLICK_IDS.length; i++) {
+      var v = clip(q.get(CLICK_IDS[i]) || "", 300);
+      if (v && AD_ID_RE.test(v) && v !== rec[CLICK_IDS[i]]) {
+        rec[CLICK_IDS[i]] = v;
+        clickChanged = true;
+        if (CLICK_IDS[i] === "fbclid") newFbclid = v;
+      }
+    }
+    if (clickChanged) { rec.at = new Date(now).toISOString(); changed = true; }
+    if (!rec.at) { rec.at = new Date(now).toISOString(); changed = true; }
+
+    var cookies = readCookies();
+    /* The cookie can still hold an older click: it counts only if it matches the latest fbclid. */
+    var fbc = cookies._fbc ? clip(cookies._fbc, 300) : "";
+    var fbcFits = !rec.fbclid || fbc.slice(-rec.fbclid.length) === rec.fbclid;
+    if (fbc && AD_ID_RE.test(fbc) && fbcFits) {
+      if (rec.fbc !== fbc) { rec.fbc = fbc; changed = true; }
+    } else if (newFbclid) {
+      rec.fbc = "fb.1." + now + "." + newFbclid;
+      changed = true;
+    }
+
+    var fbp = cookies._fbp ? clip(cookies._fbp, 300) : "";
+    if (fbp && AD_ID_RE.test(fbp)) {
+      if (rec.fbp !== fbp) { rec.fbp = fbp; changed = true; }
+    } else if (!rec.fbp) {
+      rec.fbp = "fb.1." + now + "." + randomDigits(10);
+      changed = true;
+    }
+
+    if (changed) {
+      var out = { key: rec.key, at: rec.at };
+      var names = CLICK_IDS.concat(["fbc", "fbp"]);
+      for (i = 0; i < names.length; i++) out[names[i]] = rec[names[i]] || null;
+      lsSet("fmm_ads", JSON.stringify(out));
+      return out;
+    }
+    return rec;
+  }
+
+  function adKeyStored() {
+    var k = readJson(lsGet("fmm_ads"), null);
+    return k && typeof k.key === "string" && k.key ? k.key : null;
+  }
+
+  /* {gclid: "...", fbp: "..."}: only the ids that are set. {} without ads consent. */
+  function adIds() {
+    if (!hasAdsConsent()) return {};
+    var rec = captureAds(), out = {}, names = CLICK_IDS.concat(["fbc", "fbp"]);
+    for (var i = 0; i < names.length; i++) { if (rec[names[i]]) out[names[i]] = rec[names[i]]; }
+    return out;
+  }
+
+  /* GA4 client id: the _ga cookie looks like GA1.1.<number>.<number>; the
+     client id is the last two numbers. null without analytics consent. */
+  function gaClientId() {
+    if (!hasConsent()) return null;
+    var m = /^GA\d+\.\d+\.(\d+\.\d+)$/.exec(readCookies()._ga || "");
+    return m ? m[1] : null;
+  }
+
+  /* GA4 session id: cookie _ga_<measurement id without "G-">. Both formats
+     are read: GS1.1.<session>.<n>... and GS2.1.s<session>$o1$g1... If the
+     measurement id is still the placeholder, the first _ga_* cookie is used. */
+  function gaSessionId() {
+    if (!hasConsent()) return null;
+    var cookies = readCookies(), re = /^GS\d+\.\d+\.s?(\d+)/, value = null, name;
+    if (/^G-[A-Z0-9]{4,}$/.test(CONFIG.ga4Id) && CONFIG.ga4Id !== "G-XXXXXXXXXX") {
+      value = cookies["_ga_" + CONFIG.ga4Id.replace(/^G-/, "")] || null;
+    } else {
+      for (name in cookies) {
+        if (Object.prototype.hasOwnProperty.call(cookies, name) && name.indexOf("_ga_") === 0) { value = cookies[name]; break; }
+      }
+    }
+    var m = value ? re.exec(value) : null;
+    return m && m[1].length <= 20 ? m[1] : null;
+  }
 
   /* ---------------- Attribution (pure) ----------------
      Where the visitor came from, without keeping any full address:
@@ -598,6 +772,8 @@
       fields = fields || {};
       extra = extra || {};
       var granted = hasConsent();
+      var adsOn = hasAdsConsent();
+      var ads = adsOn ? captureAds() : {};
 
       var offer = "";
       try { offer = new URLSearchParams(window.location.search).get("offer") || ""; } catch (_) {}
@@ -615,6 +791,11 @@
           visitor_key: granted ? visitorKey() : null,
           session_key: granted ? sessionKey() : null,
           attempt_key: granted && extra.attempt_key ? String(extra.attempt_key) : null,
+          ga_client_id: granted ? gaClientId() : null,
+          ga_session_id: granted ? gaSessionId() : null,
+          ads_consent: adsOn,
+          ad_key: adsOn && ads.key ? ads.key : null,
+          ad_ids: adsOn ? adIds() : {},
           privacy_notice_version: CONFIG.noticeVersion,
           marketing_opt_in: false,
           hp: String(extra.hp == null ? "" : extra.hp),
@@ -662,9 +843,20 @@
   window.setTimeout(drainOutbox, 1500);
 
   /* ---------------- Cookie banner ----------------
-     Two buttons of the same size and look: refusing must be as easy as
-     allowing. Not modal: the page stays readable behind it. */
+     Two layers in one box. Not modal: the page stays readable behind it, and
+     ignoring it keeps consent unset, so nothing is tracked.
+     Layer 1: the explanation and two buttons of the same size and look,
+       "Налаштувати" and "Дозволити все". There is no refuse button here.
+     Layer 2: one row per purpose, each with a checkbox, a label and a short
+       description, and "Зберегти вибір". "Необхідні" is ticked and locked;
+       "Аналітика" and "Реклама" are separate and optional.
+     The boxes start ticked for a first-time visitor when
+     CONFIG.preselectOptional is true, unless the browser sends the Global
+     Privacy Control signal; a saved choice is always shown as it was saved.
+     The footer link (data-fmm-cookie-settings) opens layer 2 directly, which
+     is how a visitor withdraws a choice. Both layers end in applyChoice(). */
   var bannerEl = null;
+  var bannerLayer = 0;
 
   function el(tag, className, text) {
     var n = document.createElement(tag);
@@ -676,92 +868,219 @@
   function closeBanner() {
     if (bannerEl && bannerEl.parentNode) bannerEl.parentNode.removeChild(bannerEl);
     bannerEl = null;
+    bannerLayer = 0;
   }
 
-  function openBanner(reopened) {
-    if (bannerEl || !document.body) return;
+  /* What the two optional boxes show when layer 2 opens. */
+  function optionalDefaults() {
+    if (consent !== null) return { analytics: hasConsent(), ads: hasAdsConsent() };
+    if (!CONFIG.preselectOptional || window.navigator.globalPrivacyControl === true) {
+      return { analytics: false, ads: false };
+    }
+    return { analytics: true, ads: true };
+  }
 
-    var box = el("div", "fmm-consent");
-    box.setAttribute("role", "dialog");
-    box.setAttribute("aria-label", T("Налаштування cookie"));
-    box.setAttribute("data-fmm-consent", "");
+  function focusNode(node) {
+    if (!node) return;
+    try { node.focus(); } catch (_) {}
+  }
 
+  function firstLayer(box, moveFocus) {
     var body = el("div", "fmm-consent__body");
-    body.appendChild(el("h2", "fmm-consent__title", T("Трохи про cookie")));
-    body.appendChild(el("p", "fmm-consent__text", gtmEnabled
-      ? T("Я хочу розуміти, які сторінки й уроки тобі корисні. Для цього сайт зберігає у твоєму браузері анонімний номер відвідувача й записує перегляди сторінок у мою базу даних і передає їх у Google Analytics. Це відбувається тільки з твоєї згоди. Змінити рішення можна будь-коли: «Налаштування cookie» внизу сторінки.")
-      : T("Я хочу розуміти, які сторінки й уроки тобі корисні. Для цього сайт зберігає у твоєму браузері анонімний номер відвідувача й записує перегляди сторінок у мою базу даних. Це відбувається тільки з твоєї згоди. Змінити рішення можна будь-коли: «Налаштування cookie» внизу сторінки.")));
+    var title = el("h2", "fmm-consent__title", T("Трохи про cookie"));
+    title.tabIndex = -1;
+    body.appendChild(title);
+    body.appendChild(el("p", "fmm-consent__text",
+      T("Я хочу розуміти, які сторінки й уроки тобі корисні, і показувати рекламу тим, кому вона справді цікава. Для цього сайт зберігає у твоєму браузері номер відвідувача й може передавати дані про відвідування та заявки в Google і Meta. Змінити вибір можна будь-коли: «Налаштування cookie» внизу сторінки.")));
     if (CONFIG.privacyUrl) {
       var more = el("a", "fmm-consent__more", T("Докладніше"));
       more.href = CONFIG.privacyUrl;
       body.appendChild(more);
     }
-    if (reopened && consent) {
-      body.appendChild(el("p", "fmm-consent__state",
-        consent === "granted" ? T("Зараз аналітику дозволено.") : T("Зараз аналітику вимкнено.")));
-    }
 
     var actions = el("div", "fmm-consent__actions");
-    var no = el("button", "btn btn-ghost btn-sm", T("Відмовитись"));
-    no.type = "button";
-    no.setAttribute("data-fmm-consent-deny", "");
-    var yes = el("button", "btn btn-ghost btn-sm", T("Дозволити"));
-    yes.type = "button";
-    yes.setAttribute("data-fmm-consent-allow", "");
-    no.addEventListener("click", deny);
-    yes.addEventListener("click", allow);
-    actions.appendChild(no);
-    actions.appendChild(yes);
+    var settings = el("button", "btn btn-ghost btn-sm", T("Налаштувати"));
+    settings.type = "button";
+    settings.setAttribute("data-fmm-consent-settings", "");
+    var all = el("button", "btn btn-ghost btn-sm", T("Дозволити все"));
+    all.type = "button";
+    all.setAttribute("data-fmm-consent-allow", "");
+    settings.addEventListener("click", function () { showLayer(2, true); });
+    all.addEventListener("click", function () { applyChoice(true, true); });
+    actions.appendChild(settings);
+    actions.appendChild(all);
 
     box.appendChild(body);
     box.appendChild(actions);
-    document.body.appendChild(box);
-    bannerEl = box;
-    if (reopened) { try { yes.focus(); } catch (_) {} }
+    /* The first layer appears on its own, so it must not take focus from the page. */
+    if (moveFocus) focusNode(title);
   }
 
-  function consentCall(state, key, keepalive) {
-    var p = { purpose: "analytics", state: state, notice_version: NOTICE, page_path: pagePath() };
-    if (key) p.visitor_key = key;
+  function purposeRow(id, label, description, checked, locked) {
+    var row = el("div", "fmm-consent__row");
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = "fmm-consent-" + id;
+    input.checked = checked;
+    if (locked) input.disabled = true;
+    var text = el("div", "fmm-consent__rowtext");
+    var lab = el("label", "fmm-consent__label", label);
+    lab.setAttribute("for", input.id);
+    var desc = el("p", "fmm-consent__desc", description);
+    desc.id = "fmm-consent-" + id + "-desc";
+    input.setAttribute("aria-describedby", desc.id);
+    text.appendChild(lab);
+    text.appendChild(desc);
+    row.appendChild(input);
+    row.appendChild(text);
+    return { row: row, input: input };
+  }
+
+  function secondLayer(box, moveFocus) {
+    var start = optionalDefaults();
+    var body = el("div", "fmm-consent__body");
+    var title = el("h2", "fmm-consent__title", T("Налаштування cookie"));
+    title.tabIndex = -1;
+    body.appendChild(title);
+
+    var rows = el("div", "fmm-consent__rows");
+    rows.setAttribute("role", "group");
+    rows.setAttribute("aria-label", T("Налаштування cookie"));
+    var need = purposeRow("necessary", T("Необхідні"),
+      T("Запамʼятовують твій вибір щодо cookie. Завжди увімкнені."), true, true);
+    var ana = purposeRow("analytics", T("Аналітика"),
+      T("Перегляди сторінок, кліки й кроки заповнення форм у моїй базі даних і в Google Analytics."), start.analytics, false);
+    var ads = purposeRow("ads", T("Реклама"),
+      T("Рекламні мітки кліків і дані заявки, зокрема IP-адреса та зашифрований email, можуть передаватися в Meta і Google, щоб вимірювати рекламу."), start.ads, false);
+    rows.appendChild(need.row);
+    rows.appendChild(ana.row);
+    rows.appendChild(ads.row);
+    body.appendChild(rows);
+
+    var actions = el("div", "fmm-consent__actions");
+    var save = el("button", "btn btn-ghost btn-sm", T("Зберегти вибір"));
+    save.type = "button";
+    save.setAttribute("data-fmm-consent-save", "");
+    save.addEventListener("click", function () { applyChoice(ana.input.checked, ads.input.checked); });
+    actions.appendChild(save);
+
+    box.appendChild(body);
+    box.appendChild(actions);
+    /* The heading names the new layer for a screen reader; Tab then reaches the first box. */
+    if (moveFocus) focusNode(title);
+  }
+
+  /* Swaps the content of the same box. */
+  function showLayer(layer, moveFocus) {
+    if (!bannerEl) return;
+    while (bannerEl.firstChild) bannerEl.removeChild(bannerEl.firstChild);
+    bannerLayer = layer;
+    bannerEl.setAttribute("data-fmm-layer", String(layer));
+    if (layer === 2) secondLayer(bannerEl, moveFocus); else firstLayer(bannerEl, moveFocus);
+  }
+
+  /* reopened = true: the visitor asked for it (footer link), so show the
+     settings layer straight away. Otherwise the explanation layer appears. */
+  function openBanner(reopened) {
+    if (!document.body) return;
+    if (bannerEl) {
+      if (reopened && bannerLayer !== 2) showLayer(2, true);
+      return;
+    }
+    var box = el("div", "fmm-consent");
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-label", T("Налаштування cookie"));
+    box.setAttribute("data-fmm-consent", "");
+    document.body.appendChild(box);
+    bannerEl = box;
+    showLayer(reopened ? 2 : 1, !!reopened);
+  }
+
+  function consentCall(purpose, state, key, keepalive) {
+    var p = { purpose: purpose, state: state, notice_version: NOTICE, page_path: pagePath() };
+    if (key) p[purpose === "ads" ? "ad_key" : "visitor_key"] = key;
     rpc("record_consent", { p: p }, keepalive);
   }
 
-  function allow() {
-    if (consent === "granted" && lsGet("fmm_vid")) { closeBanner(); return; }
-    saveConsent("granted");
-    if (!lsGet("fmm_vid")) lsSet("fmm_vid", uuid());
-    if (!ssGet("fmm_sid")) ssSet("fmm_sid", uuid());
-    /* First touch is taken from this page: nothing was kept before consent. */
-    if (!lsGet("fmm_first")) {
-      lsSet("fmm_first", JSON.stringify(attributionFrom(window.location.href, document.referrer, window.location.hostname)));
+  /* A form still waiting in the outbox must not carry ids the visitor has
+     since withdrawn. */
+  function scrubOutbox(purpose) {
+    var box = readOutbox();
+    if (!box.length) return;
+    for (var i = 0; i < box.length; i++) {
+      var pl = box[i] && box[i].payload;
+      if (!pl) continue;
+      if (purpose === "ads") { pl.ads_consent = false; pl.ad_key = null; pl.ad_ids = {}; }
+      else { pl.ga_client_id = null; pl.ga_session_id = null; }
     }
-    consentCall("granted", lsGet("fmm_vid"), false);
-    allowGoogle();
-    closeBanner();
-    recordPage();
+    writeOutbox(box);
   }
 
-  function deny() {
-    var vid = lsGet("fmm_vid");
-    if (vid) {
-      /* Analytics was allowed before: this is a withdrawal. The server wipes
-         what it holds about this browser; the ids are removed here; the page
-         reloads so an already loaded Google tag stops. */
-      queue = [];
-      consentCall("withdrawn", vid, true);
-      lsDel("fmm_vid");
-      lsDel("fmm_first");
-      ssDel("fmm_sid");
-      saveConsent("denied");
-      gtag("consent", "update", { analytics_storage: "denied" });
-      closeBanner();
+  /* The one place a choice is applied, from either layer. analytics and ads
+     are booleans. Each purpose is logged only when its state really changes.
+     A withdrawal wipes what was stored for that purpose; the page then
+     reloads once, last, so an already loaded Google tag stops. */
+  function applyChoice(wantAnalytics, wantAds) {
+    var prevAnalytics = consent, prevAds = adsConsent;
+    var vid = lsGet("fmm_vid"), adKey = adKeyStored();
+    var reload = false, newAnalytics = false;
+
+    saveConsent(wantAnalytics ? "granted" : "denied", wantAds ? "granted" : "denied");
+
+    /* analytics */
+    if (wantAnalytics) {
+      if (!vid) { vid = uuid(); lsSet("fmm_vid", vid); }
+      if (!ssGet("fmm_sid")) ssSet("fmm_sid", uuid());
+      /* First touch is taken from this page: nothing was kept before consent. */
+      if (!lsGet("fmm_first")) {
+        lsSet("fmm_first", JSON.stringify(attributionFrom(window.location.href, document.referrer, window.location.hostname)));
+      }
+      if (prevAnalytics !== "granted") {
+        consentCall("analytics", "granted", vid, false);
+        newAnalytics = true;
+      }
+      allowGoogle("analytics");
+    } else {
+      denyGoogle("analytics");
+      if (vid) {
+        /* Analytics was allowed before: this is a withdrawal. The server wipes
+           what it holds about this browser; the ids are removed here. */
+        queue = [];
+        consentCall("analytics", "withdrawn", vid, true);
+        lsDel("fmm_vid");
+        lsDel("fmm_first");
+        ssDel("fmm_sid");
+        scrubOutbox("analytics");
+        reload = true;
+      } else if (prevAnalytics !== "denied") {
+        consentCall("analytics", "denied", null, false); /* a refusal is logged without any identifier */
+      }
+    }
+
+    /* ads */
+    if (wantAds) {
+      var rec = captureAds();
+      if (prevAds !== "granted") consentCall("ads", "granted", rec.key || null, false);
+      allowGoogle("ads");
+    } else {
+      denyGoogle("ads");
+      if (adKey) {
+        consentCall("ads", "withdrawn", adKey, true);
+        lsDel("fmm_ads");
+        scrubOutbox("ads");
+        reload = true;
+      } else if (prevAds !== "denied") {
+        consentCall("ads", "denied", null, false);
+      }
+    }
+
+    closeBanner();
+    if (reload) {
       window.setTimeout(function () { window.location.reload(); }, 200);
       return;
     }
-    if (consent === "denied") { closeBanner(); return; }
-    saveConsent("denied");
-    consentCall("denied", null, false); /* a refusal is logged without any identifier */
-    closeBanner();
+    loadGtm();
+    if (newAnalytics) recordPage();
   }
 
   /* ---------------- Purchases ----------------
@@ -809,8 +1128,14 @@
     if (!lsGet("fmm_first")) {
       lsSet("fmm_first", JSON.stringify(attributionFrom(window.location.href, document.referrer, window.location.hostname)));
     }
-    allowGoogle();
-  } else if (consent === null) {
+    allowGoogle("analytics");
+  }
+  if (adsConsent === "granted") {
+    captureAds();
+    allowGoogle("ads");
+  }
+  loadGtm();
+  if (consent === null) {
     /* A browser that sends the "do not sell or share" signal has already
        answered: stay off without asking. The footer link can still open
        the banner. */

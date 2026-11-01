@@ -117,22 +117,65 @@ The brief lists these as "still missing" — they're marked in the UI as placeho
 ```
 
 **Config.** The config block at the top of `assets/fmm-kit.js` holds the backend
-address and its public key, plus three values that still have to be filled in:
+address and its public key, plus these values:
 
 - `gtmId` — currently the `GTM-XXXXXXX` placeholder. While it is the placeholder,
   nothing is loaded from Google.
-- `ga4Id` — currently the `G-XXXXXXXXXX` placeholder.
+- `ga4Id` — currently the `G-XXXXXXXXXX` placeholder. Once it is real, the GA session
+  id is read from the cookie `_ga_<id without "G-">`.
 - `privacyUrl` — the address of the privacy page.
+- `noticeVersion` — change it when the banner or what is collected changes: every
+  visitor is then asked again.
+- `preselectOptional` — `true` means a first-time visitor sees Analytics and Ads ticked
+  on the settings layer of the banner (and unticks by hand). Set it to `false` to start
+  unticked. Whatever the value, a browser that sends Global Privacy Control starts
+  unticked, and a saved choice is always shown as saved.
 
 **Consent.** Without consent the site stores only what a visitor sends on purpose
-(the contact request). Only after the visitor allows analytics in the cookie banner
-does it store a visitor id and record page views, clicks and form-fill steps (never
-the text a visitor typed). The choice can be changed later through "Налаштування cookie"
-in the footer (a button with `data-fmm-cookie-settings`).
+(the contact request). The cookie banner has two layers. The first has two equal buttons,
+"Налаштувати" and "Дозволити все"; there is no refuse button, and ignoring the banner keeps
+consent unset, so nothing is tracked. "Налаштувати" opens the second layer: "Необхідні"
+(always on), "Аналітика" and "Реклама", two independent choices. Only after the visitor
+allows **analytics** does the site store a visitor id and record page views, clicks and
+form-fill steps (never the text a visitor typed). Only after the visitor allows **ads**
+does it keep ad click ids (below) and may the lead data, including the IP address, later
+be passed to Meta and Google to measure ads. The choice is saved in `fmm_consent` as
+`{analytics, ads, v, at}` and logged in `consent_log` (purpose `analytics` or `ads`, no
+identifier for a refusal). Both layers end in one function, `applyChoice()`. A visitor
+changes or withdraws a choice through "Налаштування cookie" in the footer (a button with
+`data-fmm-cookie-settings`), which opens the second layer directly. Withdrawing a purpose
+deletes what was stored for it, in the browser and on the server, and reloads the page.
+Google consent mode follows the choices: analytics sets `analytics_storage`, ads sets
+`ad_storage`, `ad_user_data` and `ad_personalization`.
+
+**Ad and GA identifiers.** Nothing is sent to Meta or Google yet; the ids are only
+captured and saved so a server can send them later. With **ads consent**, the browser
+keeps `fmm_ads` in localStorage: `{key, gclid, gbraid, wbraid, fbclid, msclkid, ttclid,
+fbc, fbp, at}`. `key` is a random id made when ads are allowed; click ids come from the
+page address, are capped at 300 characters and dropped after 90 days; `fbc` and `fbp`
+come from the `_fbc` / `_fbp` cookies or are built in Meta's format. The record is removed
+on withdrawal. With **analytics consent**, the GA client id (cookie `_ga`) and session id
+(cookie `_ga_<id>`) are read when a form is sent. The form payload carries `ga_client_id`,
+`ga_session_id`, `ads_consent`, `ad_key` and `ad_ids`; they are saved in
+`form_submissions` by `submit_form`, together with `client_ip`, the full IP address, which
+is stored only with ads consent and erased after 7 days by the `purge-client-ips` job.
+The ids never go into `dataLayer`, events, Telegram messages or the console. A future
+sender must respect the Measurement Protocol limit of 72 hours for backdated events and
+Meta's 7 day limit for `event_time`, and must use `lead:<submission_key>` as the event id
+so Meta can deduplicate it against the browser event. The GA ids stay empty until GTM and
+GA4 are set up. Apply `supabase/migrations/20261102090000_ad_and_ga_identifiers.sql`
+before publishing the new banner.
 
 **Contact form outcomes.** The form has three results: sent; saved on the device and
 retried automatically; or could not be sent (the visitor is told to write directly).
 `generate_lead` is pushed to `dataLayer` only after the backend has confirmed the request.
+
+**Telegram notifications.** Every non-spam submission stays in `form_submissions` and is
+also sent to a Telegram chat by the `telegram-notify` edge function. A database trigger
+runs it right after the insert, and `pg_cron` retries every 2 minutes with backoff for
+7 days. Honeypot spam is stored but not sent. Failures are visible in `notified_at`,
+`notify_attempts` and `notify_error`. The code lives in `supabase/`; the bot token and
+chat id live in Vault as `telegram_bot_token` and `telegram_chat_id`.
 
 **Preselecting an offer.** `kontakty.html?offer=<id>` preselects what the visitor is
 interested in (for example `?offer=consultation` or `?offer=teacher_collab`).
