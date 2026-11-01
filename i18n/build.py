@@ -14,6 +14,7 @@ browser from assets/i18n/<lang>.js, which this script writes too.
     python3 i18n/build.py validate <file..>  check filled-in work files (tags, {placeholders}, leftovers)
     python3 i18n/build.py merge <lang>       move validated work files into the catalog
     python3 i18n/build.py build [--strict]   write /sv /en /pl pages + assets/i18n/<lang>.js
+    node    i18n/prerender.mjs               after `build`: write the JavaScript-drawn HTML into every page
     python3 i18n/build.py check              audit the generated pages (Ukrainian left, broken links)
 
 What counts as translatable: any piece of text that contains a Cyrillic letter.
@@ -23,7 +24,15 @@ block (<p>, <li>, <h2>, <option>, ...), plus a few attributes (alt, title,
 placeholder, aria-label, data-label, meta description / og texts).
 
 Never edit the files in /sv/, /en/, /pl/ or assets/i18n/ by hand: change the
-Ukrainian page or the catalog, then run `build`.
+Ukrainian page or the catalog, then run `build`, then `node i18n/prerender.mjs`.
+
+The build is two steps. `build` (this file) writes the translated pages without
+the header, footer, cards and lists that assets/main.js draws. `prerender.mjs`
+then runs main.js in Node and writes that HTML into every page (the Ukrainian
+ones at the root too) between <!-- prerender --> markers, plus the 30 lesson
+pages (uroky/<id>.html in every language) and sitemap.xml. This file drops the
+markers' content before it reads a Ukrainian page, so prerendered text is never
+extracted, translated or doubled.
 """
 import html
 import json
@@ -31,6 +40,7 @@ import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urljoin
 
 SITE = Path(__file__).resolve().parent.parent
 I18N = SITE / "i18n"
@@ -71,6 +81,11 @@ TRANSLATABLE_ATTRS = {"alt", "title", "placeholder", "aria-label", "data-label"}
 META_TEXT = {"description", "og:title", "og:description", "twitter:title", "twitter:description"}
 ALT_START = "<!-- i18n:alternates -->"
 ALT_END = "<!-- /i18n:alternates -->"
+LD_START = "<!-- i18n:jsonld -->"
+LD_END = "<!-- /i18n:jsonld -->"
+# What i18n/prerender.mjs writes into a page's placeholders. It is removed before
+# a page is read, and written again by the next prerender.
+PRERENDER = re.compile(r"<!-- prerender -->.*?<!-- /prerender -->", re.S)
 
 
 def norm(s):
@@ -286,9 +301,15 @@ def collect_attr_units(root, src, unit_spans):
     return out
 
 
+def strip_prerender(src):
+    """The page as it was before i18n/prerender.mjs filled its placeholders."""
+    return PRERENDER.sub("", src)
+
+
 def page_pieces(rel):
-    """(src, warnings, text_units, attr_units) for one Ukrainian page."""
-    src = (SITE / rel).read_text(encoding="utf-8")
+    """(src, warnings, text_units, attr_units) for one Ukrainian page, without its
+    prerendered blocks (the offsets refer to the returned src)."""
+    src = strip_prerender((SITE / rel).read_text(encoding="utf-8"))
     root, warnings = parse(src)
     units = collect_units(root, src)
     attrs = collect_attr_units(root, src, units)
@@ -678,6 +699,85 @@ def put_alternates(src, lang, rel):
     return src.replace("</head>", "  " + block + "\n</head>", 1)
 
 
+# --------------------------------------------------------------------------
+# Structured data (JSON-LD). Built from the finished page, so every language gets
+# its own text and addresses; nothing here is written by hand into a Ukrainian page.
+# --------------------------------------------------------------------------
+ORG_ID = SITE_URL + "/#organization"
+ORG_EMAIL = "fika.med.maria@gmail.com"
+INSTAGRAM = "https://instagram.com/fika.med.maria"     # the only profile the site links to
+
+
+def meta_content(head, attr, name):
+    m = re.search(r'<meta\s[^>]*\b' + attr + r'="' + re.escape(name) + r'"[^>]*>', head)
+    c = re.search(r'\bcontent="([^"]*)"', m.group(0)) if m else None
+    return html.unescape(c.group(1)) if c else ""
+
+
+def plain_text(fragment):
+    return norm(html.unescape(re.sub(r"<[^>]+>", "", fragment)))
+
+
+def breadcrumb_list(doc, lang, rel):
+    """BreadcrumbList from the page's own visible breadcrumb ("Головна → Блог → Стаття")."""
+    m = re.search(r'<div class="breadcrumb">(.*?)</div>', doc, re.S)
+    if not m:
+        return None
+    page = alt_href(lang, rel)
+    items = []
+    for part in m.group(1).split("→"):
+        link = re.search(r'<a\s+href="([^"]*)"[^>]*>(.*?)</a>', part, re.S)
+        if link:
+            items.append((plain_text(link.group(2)), urljoin(page, link.group(1))))
+        else:
+            items.append((plain_text(part), page))
+    return {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": i + 1, "name": name, "item": item}
+        for i, (name, item) in enumerate(items)]}
+
+
+def jsonld_data(doc, lang, rel):
+    """The structured data for a page, or None for pages that carry none: an
+    Organization and a WebSite on the home page, a BlogPosting and its
+    BreadcrumbList on every blog post. No dates, ratings, prices or logo: the site
+    has no real ones to give."""
+    doc = strip_prerender(doc)
+    head = doc.split("</head>", 1)[0]
+    head = re.sub(re.escape(LD_START) + r".*?" + re.escape(LD_END), "", head, flags=re.S)
+    url = alt_href(lang, rel)
+    description = meta_content(head, "name", "description")
+    org = {"@type": "Organization", "@id": ORG_ID, "name": "Fika med Maria", "url": SITE_URL + "/"}
+    if rel == "index.html":
+        graph = [
+            dict(org, description=description, image=SOCIAL_IMAGE, email=ORG_EMAIL, sameAs=[INSTAGRAM]),
+            {"@type": "WebSite", "@id": url + "#website", "url": url, "name": "Fika med Maria",
+             "inLanguage": lang, "publisher": {"@id": ORG_ID}},
+        ]
+    elif rel.startswith("blog/"):
+        h1 = re.search(r"<h1[^>]*>(.*?)</h1>", doc, re.S)
+        graph = [
+            {"@type": "BlogPosting", "@id": url + "#article", "mainEntityOfPage": url, "url": url,
+             "headline": plain_text(h1.group(1)) if h1 else "", "description": description,
+             "image": meta_content(head, "property", "og:image"), "inLanguage": lang,
+             "author": org, "publisher": org},
+            breadcrumb_list(doc, lang, rel),
+        ]
+    else:
+        return None
+    return {"@context": "https://schema.org", "@graph": [g for g in graph if g]}
+
+
+def put_jsonld(src, lang, rel):
+    data = jsonld_data(src, lang, rel)
+    if data is None:
+        return src
+    body = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    block = "\n  ".join([LD_START, '<script type="application/ld+json">' + body + "</script>", LD_END])
+    if LD_START in src:
+        return re.sub(re.escape(LD_START) + r".*?" + re.escape(LD_END), lambda m: block, src, flags=re.S)
+    return src.replace("</head>", "  " + block + "\n</head>", 1)
+
+
 def is_page_link(path):
     return path == "" or path.endswith("/") or path.endswith(".html")
 
@@ -777,7 +877,8 @@ def build_page(rel, lang, cat, missing):
                       f'<script src="{up}assets/i18n/{lang}.js"></script>\n  '
                       f'<script src="{up}assets/i18n.js"></script>', 1)
     doc = put_alternates(doc, lang, rel)
-    marker = (f"<!-- GENERATED by i18n/build.py from {rel} — do not edit this file. "
+    doc = put_jsonld(doc, lang, rel)
+    marker =(f"<!-- GENERATED by i18n/build.py from {rel} — do not edit this file. "
               f"Change the Ukrainian page or i18n/catalogs/{lang}.json, then run the build. -->\n")
     doc = re.sub(r"(<!DOCTYPE[^>]*>\n?)", lambda m: m.group(1) + marker, doc, count=1, flags=re.I)
     dest = SITE / lang / rel
@@ -795,7 +896,7 @@ def build(strict=False):
         if 'src="assets/i18n.js"' not in src and 'src="../assets/i18n.js"' not in src:
             print(f"warning: {rel} does not load assets/i18n.js")
             problems += 1
-        new = put_alternates(src, "uk", rel)
+        new = put_jsonld(put_alternates(src, "uk", rel), "uk", rel)
         if new != src:
             p.write_text(new, encoding="utf-8")
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
@@ -819,6 +920,7 @@ def build(strict=False):
             "window.FMM_I18N = " + body + ";\n", encoding="utf-8")
         print(f"{lang}: {len(source_pages())} pages, {len(strings)} runtime strings, {len(missing)} missing")
         problems += len(missing)
+    print("next: node i18n/prerender.mjs  (writes the JavaScript-drawn HTML, the lesson pages and sitemap.xml)")
     if strict and problems:
         raise SystemExit(f"{problems} problem(s): run `status` / `todo` first")
 
@@ -833,6 +935,9 @@ def visible_cyrillic(doc):
     d = re.sub(r"""\sdata-fmm-[a-z-]+=(["']).*?\1""", "", d)
     d = re.sub(r"""\shreflang="[^"]*"\s+href="[^"]*\"""", "", d)
     d = re.sub(r'<span lang="uk">.*?</span>', "", d, flags=re.S)
+    # Ukrainian kept on purpose and marked lang="uk": a person's name in a prerendered
+    # testimonial, the language menu's "Українська"
+    d = re.sub(r'<(a|b|span)\b[^>]*\slang="uk"[^>]*>.*?</\1>', "", d, flags=re.S)
     found = []
     for m in CYR.finditer(d):
         s = max(0, m.start() - 40)
@@ -854,40 +959,107 @@ def orphan_pages(lang):
     return out
 
 
+def json_strings(node):
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for v in node.values():
+            yield from json_strings(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from json_strings(v)
+
+
+def check_jsonld(label, doc, lang, expected):
+    """Every JSON-LD block parses, names this page's language, points at this site
+    and, on a translated page, holds no Ukrainian."""
+    bad = 0
+    blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', doc, re.S)
+    if expected and not blocks:
+        print(f"{label}: no JSON-LD (run build)")
+        bad += 1
+    for raw in blocks:
+        try:
+            data = json.loads(raw)
+        except ValueError as e:
+            print(f"{label}: JSON-LD does not parse: {e}")
+            bad += 1
+            continue
+        for node in data.get("@graph", [data]):
+            if node.get("inLanguage", lang) != lang:
+                print(f"{label}: JSON-LD inLanguage {node['inLanguage']} on a {lang} page")
+                bad += 1
+        for s in json_strings(data):
+            if s.startswith("http") and not s.startswith((SITE_URL + "/", "https://schema.org", INSTAGRAM)):
+                print(f"{label}: JSON-LD address outside the site: {s}")
+                bad += 1
+            if lang != "uk" and has_cyr(s):
+                print(f"{label}: JSON-LD has Ukrainian: {s[:60]}")
+                bad += 1
+    return bad
+
+
+def audit_page(lang, rel, p):
+    """Problems in one page of one language."""
+    bad = 0
+    doc = p.read_text(encoding="utf-8")
+    if f'<html lang="{lang}"' not in doc:
+        print(f"{lang}/{rel}: wrong <html lang>")
+        bad += 1
+    if "data-include-header" in doc and "<!-- prerender -->" not in doc:
+        print(f"{lang}/{rel}: not prerendered (run node i18n/prerender.mjs after build)")
+        bad += 1
+    if lang != "uk":
+        # a Ukrainian word quoted on purpose is marked <span lang="uk"> in the text;
+        # the same word in a meta description (plain text there) is allowed too
+        text = doc
+        for quoted in set(re.findall(r'<span lang="uk">(.*?)</span>', doc, re.S)):
+            text = text.replace(quoted, "")
+        seen = set()
+        for snip in visible_cyrillic(text):
+            if snip in seen:
+                continue
+            seen.add(snip)
+            print(f"{lang}/{rel}: Ukrainian left: …{snip}…")
+            bad += 1
+    for m in re.finditer(r"""\b(?:href|src)=["']([^"'#?]+)""", doc):
+        val = m.group(1)
+        if re.match(r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|//|/)", val):
+            continue
+        target = (p.parent / val).resolve()
+        if val.endswith("/"):
+            target = target / "index.html"
+        if not target.exists():
+            print(f"{lang}/{rel}: broken link {val}")
+            bad += 1
+    expected = rel.startswith("uroky/") or jsonld_data(doc, lang, rel) is not None
+    return bad + check_jsonld(f"{lang}/{rel}", doc, lang, expected)
+
+
+def lesson_pages(lang):
+    """The lesson pages (uroky/<id>.html) that prerender.mjs wrote for a language."""
+    base = SITE / (lang if lang != "uk" else "") / "uroky"
+    return sorted("uroky/" + p.name for p in base.glob("*.html")) if base.exists() else []
+
+
 def check():
     bad = 0
     for lang in LANGS:
         for rel in orphan_pages(lang):
             print(f"{lang}/{rel}: generated page without a Ukrainian source (run build)")
             bad += 1
-        for rel in source_pages():
-            p = SITE / lang / rel
-            if not p.exists():
+    for lang in ALL_LANGS:
+        for rel in source_pages() + lesson_pages(lang):
+            p = SITE / (lang if lang != "uk" else "") / rel
+            if p.exists():
+                bad += audit_page(lang, rel, p)
+            else:
                 print(f"MISSING {lang}/{rel}")
                 bad += 1
-                continue
-            doc = p.read_text(encoding="utf-8")
-            if f'<html lang="{lang}"' not in doc:
-                print(f"{lang}/{rel}: wrong <html lang>")
+        for rel in lesson_pages("uk"):
+            if rel not in lesson_pages(lang):
+                print(f"MISSING {lang}/{rel} (run node i18n/prerender.mjs)")
                 bad += 1
-            left = visible_cyrillic(doc)
-            seen = set()
-            for snip in left:
-                if snip in seen:
-                    continue
-                seen.add(snip)
-                print(f"{lang}/{rel}: Ukrainian left: …{snip}…")
-                bad += 1
-            for m in re.finditer(r"""\b(?:href|src)=["']([^"'#?]+)""", doc):
-                val = m.group(1)
-                if re.match(r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|//|/)", val):
-                    continue
-                target = (p.parent / val).resolve()
-                if val.endswith("/"):
-                    target = target / "index.html"
-                if not target.exists():
-                    print(f"{lang}/{rel}: broken link {val}")
-                    bad += 1
     print("check: OK" if bad == 0 else f"check: {bad} problem(s)")
     return bad
 
