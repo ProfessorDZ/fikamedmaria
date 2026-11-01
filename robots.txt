@@ -1,0 +1,36 @@
+
+# All crawlers: everything is allowed (including /assets/*.js, /assets/*.css and images,
+# which Google needs to render the JavaScript-built header, footer, cards and course lists).
+User-agent: *
+Allow: /
+
+# AI search and user-triggered crawlers: explicitly allowed so the intent is on record.
+# A named group overrides "*", so each group repeats Allow.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# Training crawlers (GPTBot, ClaudeBot, CCBot, Google-Extended, Applebot-Extended) are not listed:
+# they fall under "*" and are allowed. To opt out of model training only, add
+#   User-agent: GPTBot
+#   Disallow: /
+# for each of them. Decision for the site owner.
+
+Sitemap: https://fikamedmaria.com/sitemap.xml
