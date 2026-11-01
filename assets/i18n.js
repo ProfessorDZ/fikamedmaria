@@ -160,6 +160,13 @@
   function wireSwitcher() {
     var box = document.querySelector("[data-lang-switch]");
     if (!box) return;
+    /* A header written by the build knows the page but not the visitor's ?query
+       or #hash (kontakty.html?offer=…). Put them back, so the link keeps them. */
+    if (window.location.search || window.location.hash) {
+      box.querySelectorAll("[data-lang-pick]").forEach(function (a) {
+        a.setAttribute("href", switchUrl(a.getAttribute("data-lang-pick")));
+      });
+    }
     box.addEventListener("click", function (e) {
       var a = e.target.closest ? e.target.closest("[data-lang-pick]") : null;
       if (a) remember(a.getAttribute("data-lang-pick"));

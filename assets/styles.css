@@ -115,6 +115,9 @@ img { max-width: 100%; display: block; }
 .btn-sm { padding: 0.6rem 1.1rem; font-size: 0.92rem; }
 
 /* ---------- Header ---------- */
+/* The build writes the header and footer inside these wrappers. They add no box of
+   their own, so the sticky header behaves as if it were a direct child of <body>. */
+[data-include-header], [data-include-footer] { display: contents; }
 .site-header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(241, 239, 231, 0.86);
@@ -272,6 +275,9 @@ img { max-width: 100%; display: block; }
 .lesson-facts dd { margin: 0; }
 .btn-buy { padding: 1.05rem 2.4rem; font-size: 1.05rem; }
 .buy-note { color: var(--muted); font-size: 0.88rem; margin: 0.8rem 0 0; }
+.lesson-read { margin: 1.2rem 0 0; font-size: 0.95rem; }
+.lesson-read b { display: block; color: var(--muted); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.25rem; }
+.lesson-read a { display: block; margin-top: 0.2rem; }
 .chip-list { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0.4rem 0 0; }
 .chip-list li { background: var(--blue-soft); color: var(--blue); font-size: 0.85rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 999px; }
 .plan-list { list-style: none; margin: 1.2rem 0 0; padding: 0; display: grid; gap: 0.5rem; }

@@ -349,6 +349,19 @@ window.FMM = {
       project: "У групі плануєте невеликий безпечний експеримент, що перевіряє ефект прожектора (наприклад, незвичайний капелюх): гіпотеза, метод і прогноз." }
   ],
 
+  /* Blog posts worth reading before a lesson: lesson id -> the posts' `href`s
+     below. The lesson's page links to them ("Прочитати перед уроком"); the
+     same pairs are linked the other way round from the posts themselves. */
+  lessonReading: {
+    "b1b2-juvalnog": ["blog/ju-val-nog-typ-liksom.html"],
+    "b1-fika": ["blog/shcho-take-fika-u-shvetsii.html"],
+    "a2b1-fredagsmys": ["blog/fredagsmys-lordagsgodis-sondagsangest.html"],
+    "b1b2-allemansratten": ["blog/shvedska-svoboda-i-pravyla.html"],
+    "b1b2-vifarse": ["blog/yak-shvedy-vyslovliuiut-nevdovolennia.html"],
+    "b1b2-nejformler": ["blog/shvedska-vvichlyvist-i-ukrainska-shchyrist.html"],
+    "b2c1-slanguage": ["blog/zhyva-shvedska-ne-yak-u-pidruchnyku.html", "blog/suchasna-shvedska-anhlitsyzmy-slenh.html"]
+  },
+
   /* ---------------- Blog posts ---------------- */
   /* 12 real articles, replacing the earlier placeholder set. `time` is an
      editorial estimate (not given by Maria) based on each article's length —

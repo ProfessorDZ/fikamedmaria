@@ -131,7 +131,9 @@
           '</div>' +
         '</div>' +
         '<div class="footer-bottom">' +
-          '<span>© ' + year + ' Fika med Maria. ' + T("Зроблено з теплом.") + '</span>' +
+          /* The year sits in its own span: a prerendered page keeps the year of the
+             build, and wireYear() brings it up to date in the browser. */
+          '<span>© <span data-year>' + year + '</span> Fika med Maria. ' + T("Зроблено з теплом.") + '</span>' +
           '<span>fika.med.maria@gmail.com · <a href="' + I.url("kontakty.html") + '">' + T("Контакти") + '</a></span>' +
           /* The kit listens for clicks on [data-fmm-cookie-settings] to reopen the cookie banner. */
           '<button type="button" class="fmm-cookie-link" data-fmm-cookie-settings>' + T("Налаштування cookie") + '</button>' +
@@ -211,7 +213,9 @@
     { ico: "🧩", title: T("Дошка в Miro"), text: T("Слайди для учня на онлайн-дошці — для занять онлайн.") }
   ];
 
-  function lessonUrl(r) { return I.url("urok.html?id=" + r.id); }
+  /* Every lesson has its own static page, uroky/<id>.html (written by
+     i18n/prerender.mjs); the old urok.html?id=<id> address leads to it. */
+  function lessonUrl(r) { return I.url("uroky/" + r.id + ".html"); }
 
   function lessonTopic(r) {
     var D = window.FMM || {};
@@ -315,73 +319,87 @@
     return '<details><summary>' + T(f.q) + '</summary><p>' + T(f.a) + '</p></details>';
   }
 
-  /* ---------------- Render into containers ---------------- */
-  function fill(selector, items, builder, limit, filterFn) {
-    var el = document.querySelector(selector);
-    if (!el || !items) return;
-    var list = filterFn ? items.filter(filterFn) : items.slice();
+  /* ---------------- Render into containers ----------------
+     Each filler builds the HTML of one kind of placeholder. i18n/prerender.mjs
+     calls the same functions at build time and writes the result into the page
+     between <!-- prerender --> markers, so crawlers that do not run scripts see
+     it too. renderAll() below only fills what the build left empty.
+     append: the HTML is added after what the placeholder already holds. */
+
+  // Courses: [data-courses="live"] (Курси з Марією) or [data-courses="self-study"]
+  function coursesHtml(el, D) {
+    var mode = el.getAttribute("data-courses");
+    if (mode === "live") return (D.liveLessons || []).map(liveLessonCard).join("");
+    if (mode === "self-study") return (D.selfStudyCourses || []).map(selfStudyCard).join("");
+    return null;
+  }
+
+  function resourcesHtml(el, D) {
+    var limit = parseInt(el.getAttribute("data-limit"), 10) || 0;
+    var list = (D.resources || []).slice();
     if (limit) list = list.slice(0, limit);
-    el.innerHTML = list.map(builder).join("");
+    if (!list.length) {
+      return '<p class="center" style="grid-column:1/-1;color:var(--muted)">' + T("Перші готові уроки скоро з’являться тут.") + '</p>';
+    }
+    if (el.hasAttribute("data-grouped")) {
+      /* The catalogue page: one headed block per topic, in roadmap order. */
+      return (D.resourceTopics || []).map(function (t) {
+        var items = list.filter(function (r) { return r.topic === t.id; });
+        if (!items.length) return "";
+        return '<section class="topic-block" data-topic-block>' +
+          '<div class="topic-head"><h3>' + T(t.title) + '</h3><p>' + T(t.subtitle) + '</p></div>' +
+          '<div class="grid grid-3">' + items.map(function (r) { return resourceCard(r); }).join("") + '</div>' +
+        '</section>';
+      }).join("");
+    }
+    return list.map(function (r) { return resourceCard(r); }).join("");
+  }
+
+  function topicFiltersHtml(el, D) {
+    return (D.resourceTopics || []).map(function (t) {
+      return '<label class="filter-check"><input type="checkbox" name="filter-topic" value="' + t.id + '" /> ' + T(t.title) + '</label>';
+    }).join("");
+  }
+
+  function postsHtml(el, D) {
+    var limit = parseInt(el.getAttribute("data-limit"), 10) || 0;
+    var list = (D.posts || []).slice();
+    if (limit) list = list.slice(0, limit);
+    return list.map(postCard).join("");
+  }
+
+  function faqHtml(el, D) {
+    var src = el.getAttribute("data-faq") === "course" ? D.courseFaq : D.faq;
+    return (src || []).map(faqItem).join("");
+  }
+
+  var FILLERS = [
+    { selector: "[data-courses]", html: coursesHtml },
+    { selector: "[data-resources]", html: resourcesHtml },
+    { selector: "[data-lesson-includes]", html: function () { return lessonIncludesHtml(); } },
+    { selector: "[data-topic-filters]", html: topicFiltersHtml, append: true },
+    { selector: "[data-posts]", html: postsHtml },
+    { selector: "[data-faq]", html: faqHtml },
+    { selector: "[data-testimonials]", html: function (el, D) { return (D.testimonials || []).map(testiCard).join(""); } }
+  ];
+
+  /* True when the build already wrote this placeholder's HTML. */
+  function isPrerendered(el) {
+    for (var n = el.firstChild; n; n = n.nextSibling) {
+      if (n.nodeType === 8 && n.nodeValue.trim() === "prerender") return true;
+    }
+    return false;
   }
 
   function renderAll() {
     var D = window.FMM || {};
-
-    // Courses: [data-courses="live"] (Курси з Марією) or [data-courses="self-study"]
-    document.querySelectorAll("[data-courses]").forEach(function (el) {
-      var mode = el.getAttribute("data-courses");
-      if (mode === "live") {
-        el.innerHTML = (D.liveLessons || []).map(liveLessonCard).join("");
-      } else if (mode === "self-study") {
-        el.innerHTML = (D.selfStudyCourses || []).map(selfStudyCard).join("");
-      }
-    });
-
-    document.querySelectorAll("[data-resources]").forEach(function (el) {
-      var limit = parseInt(el.getAttribute("data-limit"), 10) || 0;
-      var list = (D.resources || []).slice();
-      if (limit) list = list.slice(0, limit);
-      if (!list.length) {
-        el.innerHTML = '<p class="center" style="grid-column:1/-1;color:var(--muted)">' + T("Перші готові уроки скоро з’являться тут.") + '</p>';
-      } else if (el.hasAttribute("data-grouped")) {
-        /* The catalogue page: one headed block per topic, in roadmap order. */
-        el.innerHTML = (D.resourceTopics || []).map(function (t) {
-          var items = list.filter(function (r) { return r.topic === t.id; });
-          if (!items.length) return "";
-          return '<section class="topic-block" data-topic-block>' +
-            '<div class="topic-head"><h3>' + T(t.title) + '</h3><p>' + T(t.subtitle) + '</p></div>' +
-            '<div class="grid grid-3">' + items.map(function (r) { return resourceCard(r); }).join("") + '</div>' +
-          '</section>';
-        }).join("");
-      } else {
-        el.innerHTML = list.map(function (r) { return resourceCard(r); }).join("");
-      }
-    });
-
-    document.querySelectorAll("[data-lesson-includes]").forEach(function (el) {
-      el.innerHTML = lessonIncludesHtml();
-    });
-
-    document.querySelectorAll("[data-topic-filters]").forEach(function (el) {
-      el.innerHTML += (D.resourceTopics || []).map(function (t) {
-        return '<label class="filter-check"><input type="checkbox" name="filter-topic" value="' + t.id + '" /> ' + T(t.title) + '</label>';
-      }).join("");
-    });
-
-    document.querySelectorAll("[data-posts]").forEach(function (el) {
-      var limit = parseInt(el.getAttribute("data-limit"), 10) || 0;
-      var list = (D.posts || []).slice();
-      if (limit) list = list.slice(0, limit);
-      el.innerHTML = list.map(postCard).join("");
-    });
-
-    document.querySelectorAll("[data-faq]").forEach(function (el) {
-      var src = el.getAttribute("data-faq") === "course" ? D.courseFaq : D.faq;
-      el.innerHTML = (src || []).map(faqItem).join("");
-    });
-
-    document.querySelectorAll("[data-testimonials]").forEach(function (el) {
-      el.innerHTML = (D.testimonials || []).map(testiCard).join("");
+    FILLERS.forEach(function (f) {
+      document.querySelectorAll(f.selector).forEach(function (el) {
+        if (isPrerendered(el)) return;
+        var html = f.html(el, D);
+        if (html == null) return;
+        if (f.append) el.innerHTML += html; else el.innerHTML = html;
+      });
     });
   }
 
@@ -509,6 +527,22 @@
       (homework.length ? '<h3 class="plan-sub">' + T("Вдома") + '</h3><ol class="plan-list">' + homework.map(row).join('') + '</ol>' : '');
   }
 
+  /* "Прочитати перед уроком": the blog posts D.lessonReading (data.js) names
+     for this lesson, as links under the buy button. */
+  function lessonReading(r) {
+    var D = window.FMM || {};
+    var links = ((D.lessonReading || {})[r.id] || []).map(function (href) {
+      var post = (D.posts || []).filter(function (p) { return p.href === href; })[0];
+      return post ? '<a href="' + I.url(post.href) + '">' + T(post.title) + '</a>' : "";
+    }).join("");
+    return links ? '<p class="lesson-read"><b>' + T("Прочитати перед уроком") + '</b>' + links + '</p>' : "";
+  }
+
+  /* The lesson page's <title>, also written into the static page by the build. */
+  function lessonPageTitle(r) {
+    return T(r.title) + " — " + T("Готові уроки") + " — Fika med Maria";
+  }
+
   function lessonDetailTemplate(r, det) {
     var D = window.FMM || {};
     var topic = lessonTopic(r);
@@ -544,6 +578,7 @@
               '</dl>' +
               buyButton(r, 'btn-accent btn-buy') +
               '<p class="buy-note">' + T("Оплата й доступ — через Patreon.") + '</p>' +
+              lessonReading(r) +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -600,15 +635,22 @@
     var el = document.querySelector("[data-lesson-detail]");
     if (!el) return;
     var D = window.FMM || {};
-    var id = new URLSearchParams(window.location.search).get("id");
+    /* A static lesson page (uroky/<id>.html) names its lesson in data-lesson-id;
+       urok.html is the old address and takes the id from the query string. */
+    var staticId = el.getAttribute("data-lesson-id");
+    var id = staticId || new URLSearchParams(window.location.search).get("id");
     var lesson = (D.resources || []).filter(function (r) { return r.id === id; })[0];
     if (!lesson) { noindex(); el.innerHTML = lessonNotFoundTemplate(); return; }
+    /* Vercel redirects the old address on the server; this covers every other
+       host (and file://). An id the site does not know keeps the "not found" state above. */
+    if (!staticId) { window.location.replace(lessonUrl(lesson) + window.location.hash); return; }
     var det = (D.lessonDetails || {})[id] || {};
-    document.title = T(lesson.title) + " — " + T("Готові уроки") + " — Fika med Maria";
-    var meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", T(lesson.description));
-    el.innerHTML = lessonDetailTemplate(lesson, det);
-    I.addAlternates();
+    if (!isPrerendered(el)) {
+      document.title = lessonPageTitle(lesson);
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", T(lesson.description));
+      el.innerHTML = lessonDetailTemplate(lesson, det);
+    }
     /* Only on a real lesson, never on the "not found" state: tells the kit what this page is about. */
     document.body.setAttribute("data-fmm-item", lesson.id);
     document.body.setAttribute("data-fmm-name", lesson.title);
@@ -952,12 +994,35 @@
     });
   }
 
+  /* A prerendered footer carries the year of the build; show this year. */
+  function wireYear() {
+    var year = String(new Date().getFullYear());
+    document.querySelectorAll("[data-year]").forEach(function (el) {
+      if (el.textContent !== year) el.textContent = year;
+    });
+  }
+
+  /* The builders and fillers above are the only page templates there are.
+     i18n/prerender.mjs loads this file in Node and calls them to write the
+     same HTML into the files at build time. */
+  window.FMMRender = {
+    buildHeader: buildHeader,
+    buildFooter: buildFooter,
+    fillers: FILLERS,
+    lessonPageTitle: lessonPageTitle,
+    lessonDetailHtml: function (r) { return lessonDetailTemplate(r, ((window.FMM || {}).lessonDetails || {})[r.id] || {}); }
+  };
+
   /* ---------------- Init ---------------- */
   document.addEventListener("DOMContentLoaded", function () {
+    /* A prerendered header or footer stays where it is (its box is display:contents,
+       see styles.css); only its behaviour is wired. Otherwise it is built here. */
     var h = document.querySelector("[data-include-header]");
-    if (h) { h.outerHTML = buildHeader(); I.wireSwitcher(); }
+    if (h && isPrerendered(h)) I.wireSwitcher();
+    else if (h) { h.outerHTML = buildHeader(); I.wireSwitcher(); }
     var f = document.querySelector("[data-include-footer]");
-    if (f) f.outerHTML = buildFooter();
+    if (f && isPrerendered(f)) wireYear();
+    else if (f) f.outerHTML = buildFooter();
 
     renderAll();
     renderCourseDetail();
