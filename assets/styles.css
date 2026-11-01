@@ -861,8 +861,7 @@ summary:focus-visible,
     max-height: calc(100vh - 16px);
   }
   .fmm-consent__title { font-size: 0.95rem; line-height: 1.2; margin: 0 0 0.2rem; }
-  .fmm-consent__text,
-  .fmm-consent__state { font-size: 0.8rem; line-height: 1.38; margin: 0 0 0.3rem; }
+  .fmm-consent__text { font-size: 0.8rem; line-height: 1.38; margin: 0 0 0.3rem; }
   .fmm-consent__more { font-size: 0.8rem; margin-bottom: 0; }
   .fmm-consent__actions { gap: 0.5rem; }
   .fmm-consent__actions .btn { padding: 0.45rem 0.6rem; font-size: 0.85rem; min-height: 2.25rem; }
