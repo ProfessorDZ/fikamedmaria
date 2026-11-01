@@ -87,18 +87,27 @@
     return asset(path);
   }
 
-  /* <link rel="alternate" hreflang> for a page whose content depends on its
-     ?id= (a lesson or a course): written once the id is known. */
+  /* <link rel="canonical"> and <link rel="alternate" hreflang> for a page whose
+     content depends on its ?id= (a lesson or a course): written once the id is
+     known. They keep ?id= alone, so ad and share parameters fall away. */
   function addAlternates() {
     var head = document.head;
     if (!head || head.querySelector('link[rel="alternate"][hreflang]')) return;
-    var all = LANGS.map(function (l) { return { code: l.code, href: switchUrl(l.code) }; });
-    all.push({ code: "x-default", href: switchUrl("uk") });
+    var id = new URLSearchParams(window.location.search).get("id");
+    function pageUrl(code) {
+      return switchUrl(code).split(/[?#]/)[0] + (id ? "?id=" + encodeURIComponent(id) : "");
+    }
+    var canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    canonical.href = pageUrl(lang);
+    head.appendChild(canonical);
+    var all = LANGS.map(function (l) { return { code: l.code, href: pageUrl(l.code) }; });
+    all.push({ code: "x-default", href: pageUrl("uk") });
     all.forEach(function (a) {
       var link = document.createElement("link");
       link.rel = "alternate";
       link.hreflang = a.code;
-      link.href = a.href.split("#")[0];
+      link.href = a.href;
       head.appendChild(link);
     });
   }

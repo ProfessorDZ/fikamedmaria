@@ -42,8 +42,8 @@ RUNTIME_DIR = SITE / "assets" / "i18n"
 LANGS = ["sv", "en", "pl"]                     # generated languages; "uk" is the source
 ALL_LANGS = ["uk"] + LANGS
 OG_LOCALE = {"uk": "uk_UA", "sv": "sv_SE", "en": "en_GB", "pl": "pl_PL"}
-# Absolute address used only for <link rel="alternate" hreflang>. Change it when
-# the site gets its own domain, then run `build` again.
+# Absolute address used only for <link rel="canonical"> and <link rel="alternate"
+# hreflang>. Change it if the site moves to another domain, then run `build` again.
 SITE_URL = "https://fikamedmaria.com"
 
 # Ukrainian pages that get language copies (paths relative to the site root).
@@ -615,7 +615,7 @@ def alt_href(lang, rel):
 
 
 def alternates_block(lang, rel):
-    lines = [ALT_START]
+    lines = [ALT_START, f'<link rel="canonical" href="{alt_href(lang, rel)}" />']
     for l in ALL_LANGS:
         lines.append(f'<link rel="alternate" hreflang="{l}" href="{alt_href(l, rel)}" />')
     lines.append(f'<link rel="alternate" hreflang="x-default" href="{alt_href("uk", rel)}" />')
@@ -624,7 +624,7 @@ def alternates_block(lang, rel):
     return "\n  ".join(lines)
 
 
-QUERY_PAGES = {"urok.html", "kurs.html"}   # content depends on ?id=; main.js writes their alternates
+QUERY_PAGES = {"urok.html", "kurs.html"}   # content depends on ?id=; main.js writes their canonical and alternates
 
 
 def put_alternates(src, lang, rel):

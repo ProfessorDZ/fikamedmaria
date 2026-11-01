@@ -1,6 +1,6 @@
 {
   "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/:dir/index.html", "destination": "/:dir/", "permanent": true }
+    { "source": "/index.html", "destination": "/", "statusCode": 301 },
+    { "source": "/:dir/index.html", "destination": "/:dir/", "statusCode": 301 }
   ]
 }
