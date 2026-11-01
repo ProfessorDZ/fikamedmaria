@@ -73,9 +73,11 @@ function sourcePages() {
 
 const fileOf = (lang, rel) => (lang === "uk" ? rel : lang + "/" + rel);
 
-/* The address a page is served at, from the site root: index.html is its folder. */
+/* The address a page is served at, from the site root: index.html is its folder
+   and the other pages lose their ".html" (vercel.json cleanUrls). `rel` stays
+   the file path. */
 function servedPath(lang, rel) {
-  const tail = rel === "index.html" ? "" : rel;
+  const tail = rel === "index.html" ? "" : rel.replace(/\.html$/, "");
   return (lang === "uk" ? "" : lang + "/") + tail;
 }
 
@@ -143,7 +145,8 @@ function relativize(html, file) {
     const [, p, tail] = /^([^?#]*)(.*)$/.exec(target);
     const rel = path.posix.relative(dir, p.replace(/\/$/, ""));
     if (p === "" || p.endsWith("/")) return (rel ? rel + "/" : "./") + tail;
-    return rel + tail;
+    // a page named like its own folder (blog, seen from blog/): "" would mean the current page
+    return (rel || "../" + path.posix.basename(p)) + tail;
   });
 }
 

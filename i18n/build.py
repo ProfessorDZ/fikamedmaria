@@ -635,11 +635,14 @@ def merge(lang):
 # build
 # --------------------------------------------------------------------------
 def alt_href(lang, rel):
+    """The public address of a page: no ".html", and a folder for index.html."""
     path = rel
     if path == "index.html":
         path = ""
     elif path.endswith("/index.html"):
         path = path[: -len("index.html")]
+    elif path.endswith(".html"):
+        path = path[: -len(".html")]
     prefix = "" if lang == "uk" else lang + "/"
     return f"{SITE_URL}/{prefix}{path}"
 
@@ -779,7 +782,9 @@ def put_jsonld(src, lang, rel):
 
 
 def is_page_link(path):
-    return path == "" or path.endswith("/") or path.endswith(".html")
+    """A page of the site (kursy, blog/, an old kursy.html), as opposed to a shared
+    file such as assets/styles.css: its last segment has no extension."""
+    return path == "" or path.endswith("/") or "." not in path.rsplit("/", 1)[-1]
 
 
 def rewrite_paths(doc):
@@ -1037,12 +1042,24 @@ def audit_page(lang, rel, p):
             bad += 1
     for m in re.finditer(r"""\b(?:href|src)=["']([^"'#?]+)""", doc):
         val = m.group(1)
-        if re.match(r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|//|/)", val):
+        if re.match(r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|//)", val):
+            continue
+        if val.endswith(".html"):
+            # addresses have no ".html" (vercel.json cleanUrls); a file name here would come back
+            print(f"{lang}/{rel}: link with .html {val}")
+            bad += 1
+            continue
+        if val.startswith("/"):
             continue
         target = (p.parent / val).resolve()
         if val.endswith("/"):
-            target = target / "index.html"
-        if not target.exists():
+            ok = (target / "index.html").exists()
+        elif "." in target.name:
+            ok = target.is_file()
+        else:
+            # kursy -> kursy.html; blog is both blog.html and a folder, so a folder alone is not enough
+            ok = target.with_name(target.name + ".html").is_file() or (target / "index.html").exists()
+        if not ok:
             print(f"{lang}/{rel}: broken link {val}")
             bad += 1
     expected = rel.startswith("uroky/") or jsonld_data(doc, lang, rel) is not None

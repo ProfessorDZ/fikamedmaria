@@ -8,17 +8,28 @@ and deploys in minutes — ideal for a quick preview link.
 
 ## Pages
 
-| File | Page |
-|------|------|
-| `index.html` | Головна (Home) |
-| `kursy.html` | Курси (Courses overview) |
-| `kurs.html` | Course detail template (URL-driven by id, e.g. `kurs.html?id=<course-id>`) |
-| `gotovi-uroky.html` | Готові уроки (Ready-made lessons catalogue) |
-| `uroky/<id>.html` | One page per lesson, generated from the `urok.html` template |
-| `misyachnyk.html` | Медіатека (Media library: magazine, podcast, show) |
-| `blog.html` | Блог (Blog overview) |
-| `kontakty.html` | Контакти / запис (Contact & application) |
-| `vykladacham.html` | Викладачам (For teachers) |
+Addresses have no `.html` (`/kursy`, not `/kursy.html`); the files keep their names.
+Only the language home pages end in a slash (`/en/`). `vercel.json` redirects `/kursy/` to
+`/kursy`, because with the slash the relative paths to `assets/` stop resolving.
+
+| File | Address | Page |
+|------|---------|------|
+| `index.html` | `/` | Головна (Home) |
+| `kursy.html` | `/kursy` | Курси (Courses overview) |
+| `kurs.html` | `/kurs?id=<course-id>` | Course detail template (URL-driven by id) |
+| `gotovi-uroky.html` | `/gotovi-uroky` | Готові уроки (Ready-made lessons catalogue) |
+| `uroky/<id>.html` | `/uroky/<id>` | One page per lesson, generated from the `urok.html` template |
+| `misyachnyk.html` | `/misyachnyk` | Медіатека (Media library: magazine, podcast, show) |
+| `blog.html` | `/blog` | Блог (Blog overview) |
+| `blog/<post>.html` | `/blog/<post>` | One blog post |
+| `kontakty.html` | `/kontakty` | Контакти / запис (Contact & application) |
+| `vykladacham.html` | `/vykladacham` | Викладачам (For teachers) |
+| `kurs-vykladacham.html` | `/kurs-vykladacham` | Course sales page for teachers |
+
+In HTML, write page links without `.html` (`href="kursy"`, `href="kontakty?offer=consultation"`).
+In JavaScript, `data.js` and `main.js` keep file names such as `"kontakty.html"`; `I.url()`
+(`assets/i18n.js`) drops the `.html` when it builds the link. A `rel` in `build.py` and
+`prerender.mjs` is a file path and keeps its `.html`.
 
 ## How it's structured
 
@@ -71,7 +82,7 @@ python3 i18n/build.py check       # leftover Ukrainian, broken links, wrong lang
 `prerender`.** Skipping them leaves the static HTML behind the data. Both are safe to rerun
 and give no diff when nothing changed.
 
-A new lesson also needs its id added to the two `urok.html` redirects in `vercel.json`.
+A new lesson also needs its id added to the two `/urok` redirects in `vercel.json` (`/urok?id=<id>` and `/<lang>/urok?id=<id>` lead to `/uroky/<id>`).
 
 `SITE_URL` in `build.py` (used for `hreflang` and social previews) must be updated
 if the site moves to its own domain.
@@ -79,9 +90,13 @@ if the site moves to its own domain.
 ## Run / preview locally
 
 ```bash
-python3 -m http.server 8000
+python3 i18n/serve.py            # port 8000 by default; python3 i18n/serve.py 8743 for another
 # open http://localhost:8000
 ```
+
+`i18n/serve.py` serves the repo root with the production addresses: `/kursy` answers with
+`kursy.html`, and an unknown address gets `404.html` with status 404. Plain
+`python3 -m http.server` cannot serve `/kursy`.
 
 > Open via a server (not `file://`) so the shared header/footer and cards render.
 
@@ -94,6 +109,10 @@ files are committed.
   Project `fikamedmaria` on the marketinggrizly Vercel account. Every push to `main`
   goes live. `.vercelignore` keeps `i18n/`, `supabase/` and `.github/` out of the deploy;
   its leading slashes matter, because `assets/i18n/` has to stay in.
+- **Addresses have no `.html`.** `"cleanUrls": true` in `vercel.json` serves `/kursy` and
+  redirects `/kursy.html` to it. A redirect `source` must not end in `.html`: Vercel applies
+  the `cleanUrls` rules before the redirects, so such a rule would never match. Language home
+  pages stay `/en/` with the slash, because the relative links depend on it.
 
 ## What's placeholder (for Maria to provide)
 
@@ -177,7 +196,7 @@ runs it right after the insert, and `pg_cron` retries every 2 minutes with backo
 `notify_attempts` and `notify_error`. The code lives in `supabase/`; the bot token and
 chat id live in Vault as `telegram_bot_token` and `telegram_chat_id`.
 
-**Preselecting an offer.** `kontakty.html?offer=<id>` preselects what the visitor is
+**Preselecting an offer.** `kontakty?offer=<id>` preselects what the visitor is
 interested in (for example `?offer=consultation` or `?offer=teacher_collab`).
 
 **`data-fmm-*` attributes** (put them on links and buttons):

@@ -62,12 +62,13 @@
     return folderUrl(langRoot + path);
   }
 
-  /* ".../index.html" -> ".../": the address bar shows the folder, which the
-     server answers with the same page. Kept on file://, where a folder does
-     not open its index. */
+  /* Public addresses have no ".html": ".../index.html" -> ".../" and
+     ".../kursy.html?id=x" -> ".../kursy?id=x". The server (cleanUrls) answers
+     both with the same page. Kept as files on file://, where neither a folder
+     nor an extensionless name opens. */
   function folderUrl(href) {
     if (window.location.protocol === "file:") return href;
-    return href.replace(/\/index\.html(?=[?#]|$)/, "/");
+    return href.replace(/\/index\.html(?=[?#]|$)/, "/").replace(/\.html(?=[?#]|$)/, "");
   }
 
   /* A shared file (images, scripts): asset("assets/maria.jpg"). */
