@@ -292,6 +292,11 @@ def page_pieces(rel):
     root, warnings = parse(src)
     units = collect_units(root, src)
     attrs = collect_attr_units(root, src, units)
+    # The generated i18n:alternates block is rebuilt from the page's own title and
+    # description, so what it holds is never a piece of its own.
+    a, b = src.find(ALT_START), src.find(ALT_END)
+    if 0 <= a < b:
+        attrs = [x for x in attrs if not a <= x[0] < b]
     return src, warnings, units, attrs
 
 
@@ -618,12 +623,42 @@ def alt_href(lang, rel):
     return f"{SITE_URL}/{prefix}{path}"
 
 
-def alternates_block(lang, rel):
+SOCIAL_IMAGE = SITE_URL + "/assets/maria.jpg"   # preview image for pages that name none
+
+
+def has_meta(head, attr, name):
+    return re.search(r'<meta\s[^>]*\b' + attr + r'="' + re.escape(name) + r'"', head) is not None
+
+
+def social_lines(src, lang, rel):
+    """og:url (the canonical), the og: tags the page does not write itself, built
+    from its own title and description in the page's language, and the large
+    Twitter card wherever there is an og:image."""
+    head = re.sub(re.escape(ALT_START) + r".*?" + re.escape(ALT_END), "", src.split("</head>", 1)[0], flags=re.S)
+    lines = [f'<meta property="og:url" content="{alt_href(lang, rel)}" />']
+    title = re.search(r"<title>(.*?)</title>", head, re.S)
+    desc = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', head)
+    if title and not has_meta(head, "property", "og:title"):
+        text = re.sub(r"&(?!#?\w+;)", "&amp;", norm(title.group(1))).replace('"', "&quot;")
+        lines.append(f'<meta property="og:title" content="{text}" />')
+    if desc and not has_meta(head, "property", "og:description"):
+        lines.append(f'<meta property="og:description" content="{desc.group(1)}" />')
+    if not has_meta(head, "property", "og:type"):
+        lines.append(f'<meta property="og:type" content="{"article" if rel.startswith("blog/") else "website"}" />')
+    if not has_meta(head, "property", "og:image"):
+        lines.append(f'<meta property="og:image" content="{SOCIAL_IMAGE}" />')
+    if not has_meta(head, "name", "twitter:card"):
+        lines.append('<meta name="twitter:card" content="summary_large_image" />')
+    return lines
+
+
+def alternates_block(lang, rel, src):
     lines = [ALT_START, f'<link rel="canonical" href="{alt_href(lang, rel)}" />']
     for l in ALL_LANGS:
         lines.append(f'<link rel="alternate" hreflang="{l}" href="{alt_href(l, rel)}" />')
     lines.append(f'<link rel="alternate" hreflang="x-default" href="{alt_href("uk", rel)}" />')
     lines.append(f'<meta property="og:locale" content="{OG_LOCALE[lang]}" />')
+    lines += social_lines(src, lang, rel)
     lines.append(ALT_END)
     return "\n  ".join(lines)
 
@@ -637,7 +672,7 @@ def put_alternates(src, lang, rel):
         if ALT_START in src:
             return re.sub(re.escape(ALT_START) + r".*?" + re.escape(ALT_END), lambda m: block, src, flags=re.S)
         return src.replace("</head>", "  " + block + "\n</head>", 1)
-    block = alternates_block(lang, rel)
+    block = alternates_block(lang, rel, src)
     if ALT_START in src:
         return re.sub(re.escape(ALT_START) + r".*?" + re.escape(ALT_END), lambda m: block, src, flags=re.S)
     return src.replace("</head>", "  " + block + "\n</head>", 1)
