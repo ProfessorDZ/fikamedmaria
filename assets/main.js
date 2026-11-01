@@ -46,6 +46,16 @@
       (action ? ' data-fmm-action="' + action + '"' : "");
   }
 
+  /* Keeps the current page out of search results. It is added by script and
+     never written into kurs.html or urok.html: Google does not render a page
+     whose raw HTML says noindex, so a static tag would hide the lessons too. */
+  function noindex() {
+    var meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex";
+    document.head.appendChild(meta);
+  }
+
   /* Page load time: the fallback start for a form's "time to fill" when
      the visitor never focused a field. */
   var PAGE_LOADED_AT = Date.now();
@@ -436,7 +446,10 @@
     var D = window.FMM || {};
     var id = new URLSearchParams(window.location.search).get("id");
     var course = (D.selfStudyCourses || []).filter(function (c) { return c.id === id; })[0];
-    if (!course) { el.innerHTML = courseNotFoundTemplate(); return; }
+    if (!course) { noindex(); el.innerHTML = courseNotFoundTemplate(); return; }
+    /* Course pages show a placeholder until Maria sends a description and price;
+       remove this call when courseDetailTemplate has real content. */
+    noindex();
     document.title = T(course.title) + " — Fika med Maria";
     el.innerHTML = courseDetailTemplate(course);
     I.addAlternates();
@@ -589,7 +602,7 @@
     var D = window.FMM || {};
     var id = new URLSearchParams(window.location.search).get("id");
     var lesson = (D.resources || []).filter(function (r) { return r.id === id; })[0];
-    if (!lesson) { el.innerHTML = lessonNotFoundTemplate(); return; }
+    if (!lesson) { noindex(); el.innerHTML = lessonNotFoundTemplate(); return; }
     var det = (D.lessonDetails || {})[id] || {};
     document.title = T(lesson.title) + " — " + T("Готові уроки") + " — Fika med Maria";
     var meta = document.querySelector('meta[name="description"]');
