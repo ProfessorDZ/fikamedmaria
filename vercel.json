@@ -5,6 +5,18 @@
     { "source": "/bezkoshtovni.html", "destination": "/gotovi-uroky.html", "statusCode": 301 },
     { "source": "/:lang(sv|en|pl)/bezkoshtovni.html", "destination": "/:lang/gotovi-uroky.html", "statusCode": 301 },
     { "source": "/:path*.html/", "destination": "/:path*.html", "statusCode": 301 },
-    { "source": "/:lang(sv|en|pl)", "destination": "/:lang/", "statusCode": 301 }
+    { "source": "/:lang(sv|en|pl)", "destination": "/:lang/", "statusCode": 301 },
+    {
+      "source": "/urok.html",
+      "has": [{ "type": "query", "key": "id", "value": "(?<id>a2-skor|a2b1-detblirbra|a2b1-framlingar|a2b1-fredagsmys|a2b1-introvert|a2b1-ko|a2b1-tacktack|b1-fika|b1-ordnarsig|b1b2-allemansratten|b1b2-assatyp|b1b2-jamforelser|b1b2-juvalnog|b1b2-lagom|b1b2-lyckligare|b1b2-motivation|b1b2-nejformler|b1b2-orkapalla|b1b2-prokrastinering|b1b2-samborelationer|b1b2-systembolaget|b1b2-vanor|b1b2-vifarse|b2-bryr-oss|b2-intressant|b2-overtankande|b2c1-impostor|b2c1-jantelagen|b2c1-personlighet|b2c1-slanguage)" }],
+      "destination": "/uroky/:id.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(sv|en|pl)/urok.html",
+      "has": [{ "type": "query", "key": "id", "value": "(?<id>a2-skor|a2b1-detblirbra|a2b1-framlingar|a2b1-fredagsmys|a2b1-introvert|a2b1-ko|a2b1-tacktack|b1-fika|b1-ordnarsig|b1b2-allemansratten|b1b2-assatyp|b1b2-jamforelser|b1b2-juvalnog|b1b2-lagom|b1b2-lyckligare|b1b2-motivation|b1b2-nejformler|b1b2-orkapalla|b1b2-prokrastinering|b1b2-samborelationer|b1b2-systembolaget|b1b2-vanor|b1b2-vifarse|b2-bryr-oss|b2-intressant|b2-overtankande|b2c1-impostor|b2c1-jantelagen|b2c1-personlighet|b2c1-slanguage)" }],
+      "destination": "/:lang/uroky/:id.html",
+      "statusCode": 301
+    }
   ]
 }
