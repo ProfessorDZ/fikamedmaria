@@ -251,85 +251,6 @@
   "ctx": "p.lead"
  },
  {
-  "key": "Усі",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "blog.html"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Граматика",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "blog.html",
-   "assets/main.js",
-   "assets/lesson-details.js"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Слова та вирази",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "blog.html",
-   "assets/data.js"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Культура Швеції",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "blog.html",
-   "assets/data.js"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Життя у Швеції",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "blog.html",
-   "assets/data.js"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Як вчити",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "blog.html"
-  ],
-  "ctx": "span.btn"
- },
- {
-  "key": "Книги / серіали / подкасти",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "blog.html"
-  ],
-  "ctx": "span.btn"
- },
- {
   "key": "Блог Fika med Maria про живу шведську: слова й фрази, яких немає в підручниках, культура Швеції, повсякденне життя у Швеції та поради, як вчити мову.",
   "kinds": [
    "attr"
@@ -10848,6 +10769,17 @@
   "ctx": "js"
  },
  {
+  "key": "Граматика",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js",
+   "assets/lesson-details.js"
+  ],
+  "ctx": "js"
+ },
+ {
   "key": "Підходить студентам рівня {level}, які вчаться самостійно, і викладачам, яким потрібен готовий урок на ≈ {mins} хвилин. Слайди з відповідями допоможуть і з самоперевіркою, і на занятті.",
   "kinds": [
    "runtime"
@@ -12838,7 +12770,37 @@
   "ctx": "js"
  },
  {
+  "key": "Культура Швеції",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/data.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Життя у Швеції",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/data.js"
+  ],
+  "ctx": "js"
+ },
+ {
   "key": "7 хв",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/data.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Слова та вирази",
   "kinds": [
    "runtime"
   ],
