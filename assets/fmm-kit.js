@@ -351,8 +351,14 @@
       out.term = p("utm_term");
       return out;
     }
-    if (q && q.get("gclid")) { out.source = "google"; out.medium = "cpc"; return out; }
-    if (!ref || ref === String(siteHost || "").toLowerCase()) return out;
+    if (q && (q.get("gclid") || q.get("gbraid") || q.get("wbraid"))) { out.source = "google"; out.medium = "cpc"; return out; }
+    if (q && q.get("msclkid")) { out.source = "bing"; out.medium = "cpc"; return out; }
+    if (q && q.get("ttclid")) { out.source = "tiktok"; out.medium = "cpc"; return out; }
+    if (!ref || ref === String(siteHost || "").toLowerCase()) {
+      /* Meta adds fbclid to paid and organic links alike, so it cannot prove an ad. */
+      if (q && q.get("fbclid")) { out.source = "facebook"; out.medium = "social"; }
+      return out;
+    }
 
     function has(part) { return ref.indexOf(part) !== -1; }
     var isTelegram = ref === "t.me" || /\.t\.me$/.test(ref) || has("telegram");
