@@ -30,8 +30,8 @@
   var CONFIG = {
     supabaseUrl: "https://svgqvvctlujameejtqnm.supabase.co",
     supabaseKey: "sb_publishable_rOBXp5RLteSyp9pHlX7EOA_5a09VsA0", // public by design: it can only call the four functions below
-    gtmId: "GTM-XXXXXXX",      // PLACEHOLDER — nothing is loaded from Google until this is a real id
-    ga4Id: "G-XXXXXXXXXX",     // PLACEHOLDER — for reference; the GA4 tag itself is set up inside GTM
+    gtmId: "GTM-5LHRGJFH",     // loaded only after the visitor allows analytics or ads
+    ga4Id: "G-V4RKW91FKN",     // names the _ga_<id> cookie; the GA4 tag itself is set up inside GTM
     noticeVersion: "2026-11-draft",
     preselectOptional: true,   // first-time visitors see Analytics and Ads ticked in the banner settings; set false to start unticked
     privacyUrl: "",            // the privacy policy page does not exist yet; when empty, no link is shown

@@ -138,10 +138,11 @@ The brief lists these as "still missing" — they're marked in the UI as placeho
 **Config.** The config block at the top of `assets/fmm-kit.js` holds the backend
 address and its public key, plus these values:
 
-- `gtmId` — currently the `GTM-XXXXXXX` placeholder. While it is the placeholder,
-  nothing is loaded from Google.
-- `ga4Id` — currently the `G-XXXXXXXXXX` placeholder. Once it is real, the GA session
-  id is read from the cookie `_ga_<id without "G-">`.
+- `gtmId` — `GTM-5LHRGJFH`. Nothing is loaded from Google before the visitor allows
+  analytics or ads. Tags live in that container; platform ids are in its `CONST - …`
+  variables, so a new pixel id is set in one place.
+- `ga4Id` — `G-V4RKW91FKN`. The GA session id is read from the cookie
+  `_ga_<id without "G-">`.
 - `privacyUrl` — the address of the privacy page.
 - `noticeVersion` — change it when the banner or what is collected changes: every
   visitor is then asked again.
