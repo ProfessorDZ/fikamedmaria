@@ -13,6 +13,11 @@ from i18n/covers.json in the same place, size, weight and colours:
 
 covers.json: {"<cover>.webp": {"uk": {"black": [lines], "red": [lines]}, "sv": {...}, ...}}
 Each list is the headline's lines, top to bottom; black lines come first.
+
+Size: the 1672 px Ukrainian originals live in i18n/cover-src/ (not deployed) and
+are what this script reads and measures. The site serves downscaled files
+(OUT_WIDTH px wide, WebP quality OUT_QUALITY): assets/blog/<cover>.webp is the
+original resized the same way, and every <lang> cover is written at that size.
 """
 import json
 import os
@@ -24,7 +29,10 @@ from scipy import ndimage
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SRC = os.path.join(ROOT, "assets", "blog")
+SRC = os.path.join(ROOT, "assets", "blog")                 # where the covers are served from
+ORIG = os.path.join(HERE, "cover-src")                      # full-size Ukrainian originals (input)
+OUT_WIDTH = 1000                                            # px; the pages never show a cover wider
+OUT_QUALITY = 75
 SPEC = os.path.join(HERE, "covers.json")
 LANGS = ["sv", "en", "pl"]
 
@@ -535,7 +543,7 @@ def uk_rows(entry):
 
 
 def prepare(name):
-    a = np.asarray(Image.open(os.path.join(SRC, name)).convert("RGB")).astype(float)
+    a = np.asarray(Image.open(os.path.join(ORIG, name)).convert("RGB")).astype(float)
     info = analyse(a)
     return a, info, paint_out(a, info)
 
@@ -583,7 +591,8 @@ def main(argv):
                     problems += 1
                     continue
                 os.makedirs(os.path.dirname(target), exist_ok=True)
-                img.save(target, "WEBP", quality=86, method=6)
+                img.resize((OUT_WIDTH, round(img.height * OUT_WIDTH / img.width)), Image.LANCZOS).save(
+                    target, "WEBP", quality=OUT_QUALITY, method=6)
             print("ok", name)
         return 1 if problems else 0
     if cmd == "check":
@@ -593,7 +602,7 @@ def main(argv):
             a, info, clean = prepare(name)
             img, how = set_headline(clean, info, spec[name]["uk"], uk_rows(spec[name]), family="cyr")
             print(name, how, [(l["colour"], l["x0"], l["baseline"]) for l in info["lines"]])
-            pairs.append((Image.open(os.path.join(SRC, name)), img))
+            pairs.append((Image.open(os.path.join(ORIG, name)), img))
         sheet(pairs, out)
         print("sheet:", out)
         return 0
@@ -603,7 +612,7 @@ def main(argv):
         for n in names:
             p = os.path.join(SRC, lang, n)
             if os.path.exists(p):
-                pairs.append((Image.open(os.path.join(SRC, n)), Image.open(p)))
+                pairs.append((Image.open(os.path.join(ORIG, n)), Image.open(p)))
             else:
                 print("  no", lang, "cover:", n)
         if pairs:
