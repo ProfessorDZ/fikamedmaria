@@ -813,8 +813,8 @@ summary:focus-visible,
 }
 .fmm-consent__more:hover { color: var(--blue-dark); }
 
-/* Equal buttons on purpose: the two choices on the first layer share one look
-   and one width. Half the row each on phones. */
+/* Equal buttons on purpose: refusing must be as easy as accepting, so both share
+   one look and one width. Half the row each on phones. */
 .fmm-consent__actions { display: flex; gap: 0.6rem; width: 100%; }
 .fmm-consent__actions .btn {
   flex: 1 1 0; min-width: 0; justify-content: center; text-align: center;
@@ -864,7 +864,14 @@ summary:focus-visible,
   .fmm-consent__text { font-size: 0.8rem; line-height: 1.38; margin: 0 0 0.3rem; }
   .fmm-consent__more { font-size: 0.8rem; margin-bottom: 0; }
   .fmm-consent__actions { gap: 0.5rem; }
+  .fmm-consent__actions { flex-wrap: wrap; }
   .fmm-consent__actions .btn { padding: 0.45rem 0.6rem; font-size: 0.85rem; min-height: 2.25rem; }
+  /* "Налаштувати" takes its own short line, so the banner keeps its size. */
+  .fmm-consent__actions [data-fmm-consent-settings] {
+    flex: 1 0 100%; min-height: 0; padding: 0.1rem; border: 0; background: none;
+    box-shadow: none; font-size: 0.8rem; font-weight: 500; color: var(--ink-soft);
+    text-decoration: underline; text-underline-offset: 3px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .fmm-consent { animation: none; }

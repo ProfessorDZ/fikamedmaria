@@ -32,8 +32,8 @@
     supabaseKey: "sb_publishable_rOBXp5RLteSyp9pHlX7EOA_5a09VsA0", // public by design: it can only call the four functions below
     gtmId: "GTM-5LHRGJFH",     // loaded only after the visitor allows analytics or ads
     ga4Id: "G-V4RKW91FKN",     // names the _ga_<id> cookie; the GA4 tag itself is set up inside GTM
-    noticeVersion: "2026-11-draft",
-    preselectOptional: true,   // first-time visitors see Analytics and Ads ticked in the banner settings; set false to start unticked
+    noticeVersion: "2026-11-draft-2",
+    preselectOptional: false,  // Analytics and Ads start unticked: consent has to be an active choice
     privacyUrl: "",            // the privacy policy page does not exist yet; when empty, no link is shown
     telegramUrl: "https://t.me/MaryZubchenko",
     telegramHandle: "@MaryZubchenko",
@@ -851,8 +851,8 @@
   /* ---------------- Cookie banner ----------------
      Two layers in one box. Not modal: the page stays readable behind it, and
      ignoring it keeps consent unset, so nothing is tracked.
-     Layer 1: the explanation and two buttons of the same size and look,
-       "Налаштувати" and "Дозволити все". There is no refuse button here.
+     Layer 1: the explanation, "Відмовитись" and "Дозволити все" of the same
+       size and look (refusing must be as easy as accepting), and "Налаштувати".
      Layer 2: one row per purpose, each with a checkbox, a label and a short
        description, and "Зберегти вибір". "Необхідні" is ticked and locked;
        "Аналітика" and "Реклама" are separate and optional.
@@ -905,16 +905,21 @@
     }
 
     var actions = el("div", "fmm-consent__actions");
-    var settings = el("button", "btn btn-ghost btn-sm", T("Налаштувати"));
-    settings.type = "button";
-    settings.setAttribute("data-fmm-consent-settings", "");
+    var refuse = el("button", "btn btn-ghost btn-sm", T("Відмовитись"));
+    refuse.type = "button";
+    refuse.setAttribute("data-fmm-consent-refuse", "");
     var all = el("button", "btn btn-ghost btn-sm", T("Дозволити все"));
     all.type = "button";
     all.setAttribute("data-fmm-consent-allow", "");
-    settings.addEventListener("click", function () { showLayer(2, true); });
+    var settings = el("button", "btn btn-ghost btn-sm", T("Налаштувати"));
+    settings.type = "button";
+    settings.setAttribute("data-fmm-consent-settings", "");
+    refuse.addEventListener("click", function () { applyChoice(false, false); });
     all.addEventListener("click", function () { applyChoice(true, true); });
-    actions.appendChild(settings);
+    settings.addEventListener("click", function () { showLayer(2, true); });
+    actions.appendChild(refuse);
     actions.appendChild(all);
+    actions.appendChild(settings);
 
     box.appendChild(body);
     box.appendChild(actions);

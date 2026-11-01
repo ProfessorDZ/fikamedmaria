@@ -11167,7 +11167,7 @@
   "ctx": "js"
  },
  {
-  "key": "Налаштувати",
+  "key": "Відмовитись",
   "kinds": [
    "runtime"
   ],
@@ -11178,6 +11178,16 @@
  },
  {
   "key": "Дозволити все",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/fmm-kit.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Налаштувати",
   "kinds": [
    "runtime"
   ],

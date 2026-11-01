@@ -146,10 +146,10 @@ address and its public key, plus these values:
 - `privacyUrl` — the address of the privacy page.
 - `noticeVersion` — change it when the banner or what is collected changes: every
   visitor is then asked again.
-- `preselectOptional` — `true` means a first-time visitor sees Analytics and Ads ticked
-  on the settings layer of the banner (and unticks by hand). Set it to `false` to start
-  unticked. Whatever the value, a browser that sends Global Privacy Control starts
-  unticked, and a saved choice is always shown as saved.
+- `preselectOptional` — `false`: Analytics and Ads start unticked on the settings layer,
+  so consent is an active choice. `true` would show them ticked for a first-time visitor.
+  Whatever the value, a browser that sends Global Privacy Control starts unticked, and
+  a saved choice is always shown as saved.
 
 **Consent.** Without consent the site stores only what a visitor sends on purpose
 (the contact request). The cookie banner has two layers. The first has two equal buttons,
