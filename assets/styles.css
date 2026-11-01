@@ -781,6 +781,22 @@ summary:focus-visible,
   .fmm-consent__actions { flex: 0 0 11rem; width: 11rem; flex-direction: column; }
   .fmm-consent__actions .btn { flex: 0 0 auto; width: 100%; }
 }
+/* Phones: a compact banner, so it stays small next to the page (at 375x812 it
+   was 37% of the screen and became the largest paint). Same text and buttons,
+   smaller type and tighter spacing. */
+@media (max-width: 639px) {
+  .fmm-consent {
+    left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 0.5rem; padding: 0.65rem 0.8rem;
+    max-height: calc(100vh - 16px);
+  }
+  .fmm-consent__title { font-size: 0.95rem; line-height: 1.2; margin: 0 0 0.2rem; }
+  .fmm-consent__text,
+  .fmm-consent__state { font-size: 0.8rem; line-height: 1.38; margin: 0 0 0.3rem; }
+  .fmm-consent__more { font-size: 0.8rem; margin-bottom: 0; }
+  .fmm-consent__actions { gap: 0.5rem; }
+  .fmm-consent__actions .btn { padding: 0.45rem 0.6rem; font-size: 0.85rem; min-height: 2.25rem; }
+}
 @media (prefers-reduced-motion: reduce) {
   .fmm-consent { animation: none; }
 }
