@@ -3,6 +3,8 @@
     { "source": "/index.html", "destination": "/", "statusCode": 301 },
     { "source": "/:dir/index.html", "destination": "/:dir/", "statusCode": 301 },
     { "source": "/bezkoshtovni.html", "destination": "/gotovi-uroky.html", "statusCode": 301 },
-    { "source": "/:lang(sv|en|pl)/bezkoshtovni.html", "destination": "/:lang/gotovi-uroky.html", "statusCode": 301 }
+    { "source": "/:lang(sv|en|pl)/bezkoshtovni.html", "destination": "/:lang/gotovi-uroky.html", "statusCode": 301 },
+    { "source": "/:path*.html/", "destination": "/:path*.html", "statusCode": 301 },
+    { "source": "/:lang(sv|en|pl)", "destination": "/:lang/", "statusCode": 301 }
   ]
 }
