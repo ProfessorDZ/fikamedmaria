@@ -8,3 +8,6 @@ Thumbs.db
 
 # Translation work files (temporary; the catalogs in i18n/catalogs are the source of truth)
 i18n/work/
+
+# Local SEO audit output: never commit or deploy
+fikamedmaria.com-audit/
