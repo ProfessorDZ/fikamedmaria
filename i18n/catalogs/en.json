@@ -332,7 +332,6 @@
  "Показати відповідь": "Show answer",
  "Правильна відповідь: 2.": "Correct answer: 2.",
  "Хочете почути різницю, а не лише прочитати правило?": "Want to hear the difference, not just read the rule?",
- "У Speak Café та на індивідуальних заняттях ми тренуємо такі слова в ситуаціях, інтонаціях і живих діалогах. <a href=\"../kursy.html#sprakkafe\">Speak Café</a>.": "At Speak Café and in one-to-one lessons we practise words like these in situations, with intonation and in real dialogues. <a href=\"../kursy.html#sprakkafe\">Speak Café</a>.",
  "Чи можна просто не використовувати ці слова?": "Can I simply not use these words?",
  "Можна, але мовлення звучатиме більш прямим і книжним. Ще важливіше навчитися впізнавати їх у словах інших людей.": "You can, but your speech will sound more direct and bookish. It’s even more important to learn to recognise them in what other people say.",
  "Яке з них найскладніше?": "Which one is the hardest?",
@@ -387,7 +386,6 @@
  "Запросіть людину не абстрактно, а конкретно:": "Make your invitation specific rather than vague:",
  "А якщо не впевнені щодо часу:": "And if you’re not sure about the time:",
  "Влаштуємо fika шведською?": "Shall we have a fika in Swedish?",
- "У Speak Café ми зустрічаємося не для бездоганних відповідей, а для живої розмови, нових слів і звички говорити. <a href=\"../kursy.html#sprakkafe\">Speak Café</a>.": "At Speak Café we don’t meet for perfect answers, but for real conversation, new words and the habit of speaking. <a href=\"../kursy.html#sprakkafe\">Speak Café</a>.",
  "Чи fika обов'язково включає солодке?": "Does fika have to include something sweet?",
  "Ні. Випічка поширена, але суть не в конкретній їжі.": "No. Pastries are common, but it’s not about any particular food.",
  "Чи можна запросити на fika людину, яку мало знаєш?": "Can you invite someone you don’t know well for a fika?",
@@ -793,7 +791,6 @@
  "Я не зрозумів запитання.": "I didn’t understand the question.",
  "Правильна відповідь: 2. Остаточне значення залежить від інтонації та ситуації, але сприймати цю фразу як підтвердження не варто.": "Correct answer: 2. The exact meaning depends on intonation and the situation, but it’s best not to take this phrase as a confirmation.",
  "Хочете не просто знати, а говорити?": "Want to speak Swedish, not just know it?",
- "У Fika med Maria ми вчимо не лише будувати правильні речення, а й чути підтекст, скорочення та інтонацію живої шведської. <a href=\"../kursy.html\">обрати курс</a> або <a href=\"../kursy.html#sprakkafe\">приєднатися до Speak Café</a>.": "At Fika med Maria we teach you not only to build correct sentences, but also to hear the subtext, the contractions and the intonation of real Swedish. <a href=\"../kursy.html\">Choose a course</a> or <a href=\"../kursy.html#sprakkafe\">join Speak Café</a>.",
  "Чи потрібно початківцю одразу використовувати розмовні скорочення?": "Should a beginner use spoken contractions straight away?",
  "Спочатку важливо знати повну форму. Але слухати скорочення варто від самого початку, щоб упізнавати їх у мовленні.": "Knowing the full form comes first. But it’s worth listening for contractions from the very beginning, so you can recognise them in speech.",
  "Чи є розмовна шведська неправильною?": "Is spoken Swedish incorrect?",
@@ -1314,5 +1311,8 @@
  "Курси шведської мови онлайн, матеріали й міні-уроки для дорослих, які хочуть не просто «вчити мову», а говорити, розуміти й почуватися впевненіше у шведському середовищі.": "Online Swedish courses, materials and mini-lessons for adults who want to do more than just “study a language” – to speak, understand and feel more confident in a Swedish-speaking environment.",
  "[НЕ] називайте мене \"пані вчителько\": курс для викладачів": "[Don’t] call me “Miss”: a course for teachers",
  "Курси шведської мови онлайн: формати й ціни — Fika med Maria": "Online Swedish courses: formats and prices – Fika med Maria",
- "Курси шведської мови онлайн": "Online Swedish courses"
+ "Курси шведської мови онлайн": "Online Swedish courses",
+ "У <a href=\"../kursy.html#sprakkafe\">Språkkafe</a> та на індивідуальних заняттях ми тренуємо такі слова в ситуаціях, інтонаціях і живих діалогах.": "At <a href=\"../kursy.html#sprakkafe\">Språkkafe</a> and in one-to-one lessons we practise words like these in situations, with intonation and in real dialogues.",
+ "У <a href=\"../kursy.html#sprakkafe\">Språkkafe</a> ми зустрічаємося не для бездоганних відповідей, а для живої розмови, нових слів і звички говорити.": "At <a href=\"../kursy.html#sprakkafe\">Språkkafe</a> we don’t meet for perfect answers, but for real conversation, new words and the habit of speaking.",
+ "У Fika med Maria ми вчимо не лише будувати правильні речення, а й чути підтекст, скорочення та інтонацію живої шведської. <a href=\"../kursy.html\">обрати курс</a> або <a href=\"../kursy.html#sprakkafe\">приєднатися до Språkkafe</a>.": "At Fika med Maria we teach you not only to build correct sentences, but also to hear the subtext, the contractions and the intonation of real Swedish. <a href=\"../kursy.html\">Choose a course</a> or <a href=\"../kursy.html#sprakkafe\">join Språkkafe</a>."
 }

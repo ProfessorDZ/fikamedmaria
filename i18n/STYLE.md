@@ -39,7 +39,7 @@ fill in `"value"` for every item and never touch `"id"` or `"key"`.
   *Vad är egentligen lagom?*) are the subject being taught: copy them exactly,
   with the same italics/markup. Never translate or "correct" them.
 * The brand **Fika med Maria**, product names that are already Swedish or
-  English (Språkkafe, Speak Café, Slow Swedish Morning Show, Canva, Miro, Patreon,
+  English (Språkkafe, Slow Swedish Morning Show, Canva, Miro, Patreon,
   Instagram, Telegram, YouTube, SFI, PDF), e-mail addresses, @handles, URLs,
   emojis, numbers, levels (A1–A2, B1–B2 …), prices and currencies (390 SEK, €10,
   $149). Translate unit words around them ("390 SEK / урок" → "390 SEK / lektion").
