@@ -250,7 +250,7 @@
   function resourceCard(r) {
     return '' +
       '<article class="card resource-card" data-levels="' + levelsOf(r.level).join(",") + '" data-topic="' + (r.topic || "") + '">' +
-        '<div class="resource-media"><img src="' + I.asset("assets/lessons/" + r.id + "/cover.webp") + '" alt="" loading="lazy" /></div>' +
+        '<div class="resource-media"><img src="' + I.asset("assets/lessons/" + r.id + "/cover.webp") + '" alt="" width="1000" height="562" loading="lazy" decoding="async" /></div>' +
         '<div class="resource-body">' +
           lessonPills(r) +
           '<h3><a class="card-link" href="' + lessonUrl(r) + '"' + fmmMarks(r.id, r.title, "lesson", "ready_lessons") + '>' + T(r.title) + '</a></h3>' +
@@ -278,7 +278,7 @@
       var src = I.localizedAsset(p.image), base = I.asset(p.image);
       /* if this language has no cover of its own yet, show the Ukrainian one */
       var fallback = src !== base ? ' onerror="this.onerror=null;this.src=\'' + base + '\'"' : "";
-      cover = '<div class="post-cover post-cover-photo"><img src="' + src + '" alt="" loading="lazy"' + fallback + ' /></div>';
+      cover = '<div class="post-cover post-cover-photo"><img src="' + src + '" alt="" width="1000" height="563" loading="lazy" decoding="async"' + fallback + ' /></div>';
     } else {
       var bg = CATEGORY_COVER_BG[p.category] || "var(--paper-2)";
       cover = '<div class="post-cover" style="background:' + bg + '"><span class="post-cover-icon">' + (p.icon || "☕") + '</span></div>';
@@ -304,7 +304,7 @@
     var quote = T(t.quote);
     var translated = quote !== t.quote;
     var av;
-    if (t.photo) av = '<span class="av"><img src="' + I.asset(t.photo) + '" alt="" loading="lazy" /></span>';
+    if (t.photo) av = '<span class="av"><img src="' + I.asset(t.photo) + '" alt="" width="200" height="200" loading="lazy" decoding="async" /></span>';
     else if (t.name) av = '<span class="av"' + nameLang + '>' + t.name.charAt(0).toUpperCase() + '</span>';
     else av = '<span class="av"></span>';
     return '' +
@@ -508,7 +508,7 @@
       '<div class="gallery-thumbs">' + imgs.map(function (im, i) {
         var alt = escAttr(T(im.alt));
         return '<button type="button" class="gallery-thumb' + (i ? '' : ' active') + '" data-gallery-thumb data-src="' + base + im.file + '" data-alt="' + alt + '" aria-label="' + alt + '">' +
-          '<img src="' + base + im.file + '" alt="" loading="lazy" /></button>';
+          '<img src="' + base + im.file + '" alt="" loading="lazy" decoding="async" /></button>';
       }).join('') + '</div>' +
     '</div>';
   }
