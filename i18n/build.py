@@ -46,9 +46,13 @@ OG_LOCALE = {"uk": "uk_UA", "sv": "sv_SE", "en": "en_GB", "pl": "pl_PL"}
 # hreflang>. Change it if the site moves to another domain, then run `build` again.
 SITE_URL = "https://fikamedmaria.com"
 
+# Pages that stay Ukrainian-only: no language copies, no canonical or hreflang.
+# 404.html is served for any missing address at any depth.
+UK_ONLY = {"404.html"}
+
 # Ukrainian pages that get language copies (paths relative to the site root).
 def source_pages():
-    pages = sorted(p.name for p in SITE.glob("*.html"))
+    pages = sorted(p.name for p in SITE.glob("*.html") if p.name not in UK_ONLY)
     blog = sorted("blog/" + p.name for p in (SITE / "blog").glob("*.html"))
     return pages + blog
 

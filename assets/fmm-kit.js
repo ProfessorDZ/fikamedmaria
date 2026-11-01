@@ -202,6 +202,8 @@
 
   function pageType() {
     var p = window.location.pathname.toLowerCase();
+    /* 404.html is served at whatever address was missing, so the path says nothing. */
+    if (document.body && document.body.getAttribute("data-page") === "notfound") return "not_found";
     if (p.indexOf("/blog/") !== -1) return "blog_post";
     var f = p.split("/").pop().replace(/\.html$/, "");
     /* A language home page opened as "/sv" (no slash) is still the home page. */

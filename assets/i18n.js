@@ -114,6 +114,9 @@
 
   /* This page's address below the language folder, with ?query and #hash. */
   function currentPath() {
+    /* 404.html is served at whatever address was missing; the language links
+       must not point at that same missing address, so they go to the home pages. */
+    if (document.body && document.body.getAttribute("data-page") === "notfound") return "";
     var tail = window.location.search + window.location.hash;
     /* href, not origin + pathname: Firefox reports origin "null" for file:// pages */
     var here = window.location.href.split(/[?#]/)[0];
