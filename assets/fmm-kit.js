@@ -996,10 +996,11 @@
     showLayer(reopened ? 2 : 1, !!reopened);
   }
 
-  function consentCall(purpose, state, key, keepalive) {
+  /* keepalive: the proof of a choice must arrive even if the visitor leaves the page at once. */
+  function consentCall(purpose, state, key) {
     var p = { purpose: purpose, state: state, notice_version: NOTICE, page_path: pagePath() };
     if (key) p[purpose === "ads" ? "ad_key" : "visitor_key"] = key;
-    rpc("record_consent", { p: p }, keepalive);
+    rpc("record_consent", { p: p }, true);
   }
 
   /* A form still waiting in the outbox must not carry ids the visitor has
@@ -1036,7 +1037,7 @@
         lsSet("fmm_first", JSON.stringify(attributionFrom(window.location.href, document.referrer, window.location.hostname)));
       }
       if (prevAnalytics !== "granted") {
-        consentCall("analytics", "granted", vid, false);
+        consentCall("analytics", "granted", vid);
         newAnalytics = true;
       }
       allowGoogle("analytics");
@@ -1046,31 +1047,31 @@
         /* Analytics was allowed before: this is a withdrawal. The server wipes
            what it holds about this browser; the ids are removed here. */
         queue = [];
-        consentCall("analytics", "withdrawn", vid, true);
+        consentCall("analytics", "withdrawn", vid);
         lsDel("fmm_vid");
         lsDel("fmm_first");
         ssDel("fmm_sid");
         scrubOutbox("analytics");
         reload = true;
       } else if (prevAnalytics !== "denied") {
-        consentCall("analytics", "denied", null, false); /* a refusal is logged without any identifier */
+        consentCall("analytics", "denied", null); /* a refusal is logged without any identifier */
       }
     }
 
     /* ads */
     if (wantAds) {
       var rec = captureAds();
-      if (prevAds !== "granted") consentCall("ads", "granted", rec.key || null, false);
+      if (prevAds !== "granted") consentCall("ads", "granted", rec.key || null);
       allowGoogle("ads");
     } else {
       denyGoogle("ads");
       if (adKey) {
-        consentCall("ads", "withdrawn", adKey, true);
+        consentCall("ads", "withdrawn", adKey);
         lsDel("fmm_ads");
         scrubOutbox("ads");
         reload = true;
       } else if (prevAds !== "denied") {
-        consentCall("ads", "denied", null, false);
+        consentCall("ads", "denied", null);
       }
     }
 
