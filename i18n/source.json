@@ -4876,6 +4876,23 @@
   "ctx": "p"
  },
  {
+  "key": "Готовий урок за цією темою",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "blog/fredagsmys-lordagsgodis-sondagsangest.html",
+   "blog/ju-val-nog-typ-liksom.html",
+   "blog/shcho-take-fika-u-shvetsii.html",
+   "blog/shvedska-svoboda-i-pravyla.html",
+   "blog/shvedska-vvichlyvist-i-ukrainska-shchyrist.html",
+   "blog/suchasna-shvedska-anhlitsyzmy-slenh.html",
+   "blog/yak-shvedy-vyslovliuiut-nevdovolennia.html",
+   "blog/zhyva-shvedska-ne-yak-u-pidruchnyku.html"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
   "key": "Хочете вчити шведську через реальне життя?",
   "kinds": [
    "html"
@@ -10740,6 +10757,16 @@
  },
  {
   "key": "Вдома",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Прочитати перед уроком",
   "kinds": [
    "runtime"
   ],
