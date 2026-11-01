@@ -13,7 +13,8 @@ and deploys in minutes — ideal for a quick preview link.
 | `index.html` | Головна (Home) |
 | `kursy.html` | Курси (Courses overview) |
 | `kurs.html` | Course detail template (URL-driven by id, e.g. `kurs.html?id=<course-id>`) |
-| `bezkoshtovni.html` | Готові уроки (Free materials) |
+| `gotovi-uroky.html` | Готові уроки (Ready-made lessons catalogue) |
+| `uroky/<id>.html` | One page per lesson, generated from the `urok.html` template |
 | `misyachnyk.html` | Медіатека (Media library: magazine, podcast, show) |
 | `blog.html` | Блог (Blog overview) |
 | `kontakty.html` | Контакти / запис (Contact & application) |
@@ -26,8 +27,10 @@ and deploys in minutes — ideal for a quick preview link.
 - **`assets/data.js`** — **all editable content** in reusable arrays: `liveLessons`, `selfStudyCourses`,
   `resources`, `posts`, `faq`, `courseFaq`, `testimonials`. Edit text here and it
   updates across every page.
-- **`assets/main.js`** — injects the shared header/footer, renders card grids from
-  `data.js`, handles the mobile menu, FAQ accordions, and demo forms.
+- **`assets/main.js`** — holds the templates for the header, footer and card grids, and
+  handles the mobile menu, FAQ accordions and forms. `i18n/prerender.mjs` runs those same
+  templates at build time and writes the result into the HTML, so crawlers that do not run
+  scripts see it. In the browser `main.js` only fills a block the build left empty.
 
 Card grids are placed with simple markers, e.g.:
 `<div class="grid grid-2" data-courses="live"></div>`,
@@ -60,8 +63,15 @@ python3 i18n/build.py todo sv     # work files with the missing pieces (i18n/wor
 python3 i18n/build.py validate    # after filling the "value" fields
 python3 i18n/build.py merge sv    # into the catalog
 python3 i18n/build.py build       # regenerate sv/ en/ pl/ and assets/i18n/*.js
+node i18n/prerender.mjs           # header, footer, cards, uroky/ pages, sitemap.xml
 python3 i18n/build.py check       # leftover Ukrainian, broken links, wrong lang
 ```
+
+**After any change to `data.js`, `lesson-details.js`, `main.js` or a page, run `build` and
+`prerender`.** Skipping them leaves the static HTML behind the data. Both are safe to rerun
+and give no diff when nothing changed.
+
+A new lesson also needs its id added to the two `urok.html` redirects in `vercel.json`.
 
 `SITE_URL` in `build.py` (used for `hreflang` and social previews) must be updated
 if the site moves to its own domain.
@@ -77,19 +87,13 @@ python3 -m http.server 8000
 
 ## Deploy
 
-The site is at the repo root — a zero-config static deploy. It is live in two places:
+The site is at the repo root — a static deploy with no build command, so the generated
+files are committed.
 
 - **Vercel (production)** — https://fikamedmaria.com (www and fikamedmaria.vercel.app redirect here)
-  Project `fikamedmaria` on the marketinggrizly Vercel account. To redeploy after
-  changes, either connect this GitHub repo to the Vercel project (Vercel dashboard →
-  Project → Settings → Git) so every push to `main` auto-deploys, or run `vercel --prod`
-  from the repo root with the Vercel CLI. No framework preset and no build command —
-  deploy the 11 site files (8 HTML pages + `assets/`) as-is.
-- **GitHub Pages** — `.github/workflows/pages.yml` publishes automatically on every
-  push to `main`.
-
-Pushing to `main` is therefore the single step that updates Pages; Vercel updates
-automatically too once the repo is connected in the Vercel dashboard.
+  Project `fikamedmaria` on the marketinggrizly Vercel account. Every push to `main`
+  goes live. `.vercelignore` keeps `i18n/`, `supabase/` and `.github/` out of the deploy;
+  its leading slashes matter, because `assets/i18n/` has to stay in.
 
 ## What's placeholder (for Maria to provide)
 
@@ -107,9 +111,9 @@ The brief lists these as "still missing" — they're marked in the UI as placeho
 `main.js`. A new page must include the same three tags in that order:
 
 ```html
-<script src="assets/data.js"></script>
-<script src="assets/fmm-kit.js"></script>
-<script src="assets/main.js"></script>
+<script defer src="assets/data.js"></script>
+<script defer src="assets/fmm-kit.js"></script>
+<script defer src="assets/main.js"></script>
 ```
 
 **Config.** The config block at the top of `assets/fmm-kit.js` holds the backend
