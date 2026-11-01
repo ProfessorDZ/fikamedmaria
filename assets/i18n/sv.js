@@ -96,6 +96,7 @@ window.FMM_I18N = {
 "{n} хв": "{n} min",
 "Разом ≈ {n} хв (без завдань за бажанням)": "Totalt ≈ {n} min (utan valfria uppgifter)",
 "Вдома": "Hemma",
+"Прочитати перед уроком": "Läs före lektionen",
 "Ключові вирази": "Nyckeluttryck",
 "Вирази з тексту уроку, які ти опрацьовуєш у вправах.": "Uttryck ur lektionstexten som du övar på i uppgifterna.",
 "Граматика": "Grammatik",

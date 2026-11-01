@@ -96,6 +96,7 @@ window.FMM_I18N = {
 "{n} хв": "{n} min",
 "Разом ≈ {n} хв (без завдань за бажанням)": "Razem ≈ {n} min (bez zadań opcjonalnych)",
 "Вдома": "W domu",
+"Прочитати перед уроком": "Do przeczytania przed lekcją",
 "Ключові вирази": "Kluczowe wyrażenia",
 "Вирази з тексту уроку, які ти опрацьовуєш у вправах.": "Wyrażenia z tekstu lekcji, które ćwiczysz w zadaniach.",
 "Граматика": "Gramatyka",
