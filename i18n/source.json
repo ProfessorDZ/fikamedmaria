@@ -1,192 +1,5 @@
 [
  {
-  "key": "Готові уроки зі шведської — Fika med Maria",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "title"
- },
- {
-  "key": "<a href=\"./\">Головна</a> → Готові уроки",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "div.breadcrumb"
- },
- {
-  "key": "Для навчання й викладання",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html",
-   "index.html"
-  ],
-  "ctx": "span.eyebrow"
- },
- {
-  "key": "Готові уроки зі шведської",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html",
-   "index.html"
-  ],
-  "ctx": "h1"
- },
- {
-  "key": "Повні уроки на теми, про які справді говорять у Швеції: текст, нова лексика, вправи й розмовні завдання. Для самостійного навчання — і для викладачів, яким потрібен готовий матеріал до заняття.",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "p.lead"
- },
- {
-  "key": "Що входить в урок",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "h2.section-title"
- },
- {
-  "key": "Кожен урок — це чотири файли PDF, а також онлайн-версії для занять у Canva та Miro:",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "p.section-intro"
- },
- {
-  "key": "Уроки",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "span.eyebrow"
- },
- {
-  "key": "Обери тему й рівень",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "h2.section-title"
- },
- {
-  "key": "Рівень",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "bezkoshtovni.html",
-   "assets/main.js"
-  ],
-  "ctx": "span.filter-group-label"
- },
- {
-  "key": "Тема",
-  "kinds": [
-   "html",
-   "runtime"
-  ],
-  "files": [
-   "bezkoshtovni.html",
-   "assets/main.js"
-  ],
-  "ctx": "span.filter-group-label"
- },
- {
-  "key": "Уроків із такими фільтрами поки немає — спробуй прибрати одну з позначок.",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "p.center"
- },
- {
-  "key": "Нові уроки додаються регулярно.",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "p.center"
- },
- {
-  "key": "Готова до більшого?",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "h2.section-title"
- },
- {
-  "key": "Коли захочеш системного прогресу — на тебе чекають курси.",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "p.lead"
- },
- {
-  "key": "Переглянути курси",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "a.btn"
- },
- {
-  "key": "Перейти до Медіатеки",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "bezkoshtovni.html",
-   "index.html"
-  ],
-  "ctx": "a.btn"
- },
- {
-  "key": "Готові уроки зі шведської для самостійного навчання й для викладачів: жива тема, лексика, граматика й розмовні завдання. Рівні A2–C1.",
-  "kinds": [
-   "attr"
-  ],
-  "files": [
-   "bezkoshtovni.html"
-  ],
-  "ctx": "attribute"
- },
- {
   "key": "Блог про шведську — Fika med Maria",
   "kinds": [
    "html"
@@ -257,6 +70,193 @@
   ],
   "files": [
    "blog.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
+  "key": "Готові уроки зі шведської — Fika med Maria",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "title"
+ },
+ {
+  "key": "<a href=\"./\">Головна</a> → Готові уроки",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "div.breadcrumb"
+ },
+ {
+  "key": "Для навчання й викладання",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html",
+   "index.html"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
+  "key": "Готові уроки зі шведської",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html",
+   "index.html"
+  ],
+  "ctx": "h1"
+ },
+ {
+  "key": "Повні уроки на теми, про які справді говорять у Швеції: текст, нова лексика, вправи й розмовні завдання. Для самостійного навчання — і для викладачів, яким потрібен готовий матеріал до заняття.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "p.lead"
+ },
+ {
+  "key": "Що входить в урок",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "h2.section-title"
+ },
+ {
+  "key": "Кожен урок — це чотири файли PDF, а також онлайн-версії для занять у Canva та Miro:",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "p.section-intro"
+ },
+ {
+  "key": "Уроки",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
+  "key": "Обери тему й рівень",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "h2.section-title"
+ },
+ {
+  "key": "Рівень",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "gotovi-uroky.html",
+   "assets/main.js"
+  ],
+  "ctx": "span.filter-group-label"
+ },
+ {
+  "key": "Тема",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "gotovi-uroky.html",
+   "assets/main.js"
+  ],
+  "ctx": "span.filter-group-label"
+ },
+ {
+  "key": "Уроків із такими фільтрами поки немає — спробуй прибрати одну з позначок.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "p.center"
+ },
+ {
+  "key": "Нові уроки додаються регулярно.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "p.center"
+ },
+ {
+  "key": "Готова до більшого?",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "h2.section-title"
+ },
+ {
+  "key": "Коли захочеш системного прогресу — на тебе чекають курси.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "p.lead"
+ },
+ {
+  "key": "Переглянути курси",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html"
+  ],
+  "ctx": "a.btn"
+ },
+ {
+  "key": "Перейти до Медіатеки",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "gotovi-uroky.html",
+   "index.html"
+  ],
+  "ctx": "a.btn"
+ },
+ {
+  "key": "Готові уроки зі шведської для самостійного навчання й для викладачів: жива тема, лексика, граматика й розмовні завдання. Рівні A2–C1.",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "gotovi-uroky.html"
   ],
   "ctx": "attribute"
  },

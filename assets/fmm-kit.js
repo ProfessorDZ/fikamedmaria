@@ -209,7 +209,7 @@
     for (var i = 0; i < langs.length; i++) { if (f === langs[i].code) f = ""; }
     var map = {
       "": "home", "index": "home", "kursy": "courses", "kurs": "course",
-      "bezkoshtovni": "lessons", "urok": "lesson", "misyachnyk": "media",
+      "gotovi-uroky": "lessons", "urok": "lesson", "misyachnyk": "media",
       "blog": "blog", "kontakty": "contact", "vykladacham": "teachers",
       "kurs-vykladacham": "teacher_course"
     };

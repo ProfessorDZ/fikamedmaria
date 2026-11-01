@@ -2,9 +2,9 @@
 window.FMM_I18N = {
 "lang": "pl",
 "strings": {
+"Блог": "Blog",
 "Рівень": "Poziom",
 "Тема": "Temat",
-"Блог": "Blog",
 "Обрати курс": "Wybierz kurs",
 "Готові уроки": "Gotowe lekcje",
 "Усі готові уроки": "Wszystkie gotowe lekcje",

@@ -63,7 +63,7 @@
   var NAV = [
     { id: "home", label: T("Головна"), href: "index.html" },
     { id: "courses", label: T("Курси"), href: "kursy.html" },
-    { id: "free", label: T("Готові уроки"), href: "bezkoshtovni.html" },
+    { id: "free", label: T("Готові уроки"), href: "gotovi-uroky.html" },
     { id: "magazine", label: T("Медіатека"), href: "misyachnyk.html" },
     { id: "blog", label: T("Блог"), href: "blog.html" }
   ];
@@ -124,7 +124,7 @@
           '<div>' +
             '<h4>' + T("Матеріали") + '</h4>' +
             '<div class="f-links">' +
-              '<a href="' + I.url("bezkoshtovni.html") + '">' + T("Готові уроки") + '</a>' +
+              '<a href="' + I.url("gotovi-uroky.html") + '">' + T("Готові уроки") + '</a>' +
               '<a href="' + I.url("misyachnyk.html") + '">' + T("Медіатека") + '</a>' +
               '<a href="' + I.url("kursy.html") + '">' + T("Усі курси") + '</a>' +
             '</div>' +
@@ -471,7 +471,7 @@
           '<h1>' + T("Такого уроку тут немає") + '</h1>' +
           '<p class="lead">' + T("Можливо, посилання застаріло або урок ще не додано. Усі готові уроки — нижче.") + '</p>' +
           '<div class="hero-actions" style="justify-content:center">' +
-            '<a class="btn btn-primary" href="' + I.url("bezkoshtovni.html") + '">' + T("Усі готові уроки") + '</a>' +
+            '<a class="btn btn-primary" href="' + I.url("gotovi-uroky.html") + '">' + T("Усі готові уроки") + '</a>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -528,7 +528,7 @@
     return '' +
       '<section class="section" style="padding-top:1.5rem;padding-bottom:2rem">' +
         '<div class="wrap">' +
-          '<div class="breadcrumb"><a href="' + I.url("index.html") + '">' + T("Головна") + '</a> → <a href="' + I.url("bezkoshtovni.html") + '">' + T("Готові уроки") + '</a> → ' + T(r.title) + '</div>' +
+          '<div class="breadcrumb"><a href="' + I.url("index.html") + '">' + T("Головна") + '</a> → <a href="' + I.url("gotovi-uroky.html") + '">' + T("Готові уроки") + '</a> → ' + T(r.title) + '</div>' +
           '<div class="lesson-top">' +
             lessonGallery(r, det) +
             '<div class="lesson-info">' +
@@ -580,7 +580,7 @@
       '<section class="section final-cta" style="padding-top:0"><div class="wrap"><div class="band">' +
         '<h2 class="section-title" style="color:#fff">' + T("Цей урок для тебе чи для твого заняття?") + '</h2>' +
         '<p class="lead" style="color:rgba(255,255,255,.9);max-width:52ch;margin-inline:auto">' + T("Отримай слайди, аркуші, Canva й Miro — і проведи урок уже завтра.") + '</p>' +
-        '<div class="hero-actions">' + buyButton(r, 'btn-accent') + '<a class="btn btn-light" href="' + I.url("bezkoshtovni.html") + '">' + T("Усі готові уроки") + '</a></div>' +
+        '<div class="hero-actions">' + buyButton(r, 'btn-accent') + '<a class="btn btn-light" href="' + I.url("gotovi-uroky.html") + '">' + T("Усі готові уроки") + '</a></div>' +
       '</div></div></section>' +
 
       (related.length ? '<section class="section section-soft"><div class="wrap">' +
@@ -716,7 +716,7 @@
     });
   }
 
-  /* ---------------- Resource filters (bezkoshtovni.html) ----------------
+  /* ---------------- Resource filters (gotovi-uroky.html) ----------------
      Checkboxes styled as circles. Level and topic are multi-select — a card
      matches if it has ANY checked level and belongs to ANY checked topic.
      No filter checked in a group = that group doesn't narrow. Topic blocks
