@@ -91,7 +91,7 @@ window.FMM = {
       title: "Лексика C1",
       level: "C1",
       status: "growing",
-      description: "Курс ще не завершений, але вже можна почати — Марія додає нові уроки щодня."
+      description: "Курс ще не завершений — Марія додає нові уроки щодня. Напиши мені, щоб дізнатися про доступ."
     },
     {
       id: "103-diyeslova",
@@ -181,7 +181,7 @@ window.FMM = {
      The catalogue, its "Тема" filter and the lesson's page pick them up on their own. */
   /* TODO: Patreon link for the lessons — Maria will send it. One shared link;
      give a lesson its own `href` if she wants per-lesson links. While it is "#"
-     every "Купити" button stays inert. */
+     every "Купити" button opens the contact form ("Запитати про урок") instead. */
   patreonUrl: "#",
 
   resourceTopics: [

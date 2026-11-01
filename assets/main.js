@@ -208,13 +208,18 @@
     return (D.resourceTopics || []).filter(function (t) { return t.id === r.topic; })[0];
   }
 
-  /* The "Купити" button. It goes to Patreon; until Maria sends the link
-     (patreonUrl in data.js) it stays "#" and opens nothing. */
+  /* The "Купити" button. It goes to Patreon. Until Maria sends the link
+     (patreonUrl in data.js, or the lesson's own href) there is nothing to buy
+     from, so the button opens the contact form with the lesson preselected.
+     That link carries no buy_click marks: nothing is being bought. Setting
+     patreonUrl is all it takes to bring the real button back. */
   function buyButton(r, cls) {
     var D = window.FMM || {};
-    var url = r.href || D.patreonUrl || "#";
-    var external = url === "#" ? "" : ' target="_blank" rel="noopener"';
-    return '<a class="btn ' + cls + '" href="' + url + '"' + external + fmmMarks(r.id, r.title, "lesson", "ready_lessons", "buy_click") + '>' + (r.cta ? T(r.cta) : T("Купити")) + '</a>';
+    var url = r.href || D.patreonUrl;
+    if (!url || url === "#") {
+      return '<a class="btn ' + cls + '" href="' + I.url("kontakty.html?offer=" + encodeURIComponent(r.id)) + '">' + T("Запитати про урок") + '</a>';
+    }
+    return '<a class="btn ' + cls + '" href="' + url + '" target="_blank" rel="noopener"' + fmmMarks(r.id, r.title, "lesson", "ready_lessons", "buy_click") + '>' + (r.cta ? T(r.cta) : T("Купити")) + '</a>';
   }
 
   function lessonPills(r) {
@@ -376,7 +381,7 @@
      don't have detail pages — only self-study courses do. */
   function courseStatusNote(c) {
     if (c.status === "in-development") return T("Цей курс ще в розробці. Ми повідомимо, коли він стане доступний.");
-    if (c.status === "growing") return T("Курс уже можна придбати. Він ще доповнюється — Марія додає нові уроки щодня.");
+    if (c.status === "growing") return T("Напиши мені, щоб дізнатися про доступ. Курс ще доповнюється — Марія додає нові уроки щодня.");
     return "";
   }
 
@@ -758,9 +763,18 @@
     for (var i = 0; i < goal.options.length; i++) {
       if (goal.options[i].value === offer) { goal.selectedIndex = i; return; }
     }
-    /* 2. The teachers' page link. */
-    if (offer === "teacher_collab") {
-      addGoalOption(goal, offer, T("Співпраця для викладачів"));
+    /* 2. Offers with no option of their own: the teachers' page and the
+       teacher course, the magazine and the podcast. */
+    var labels = {
+      teacher_collab: T("Співпраця для викладачів"),
+      "teacher-course": T("Курс для викладачів"),
+      "teacher-course-vip": T("Курс для викладачів з особистим розбором"),
+      magazine: T("Журнал: перший випуск"),
+      "magazine-subscription": T("Підписка на журнал"),
+      podcast: T("Подкаст")
+    };
+    if (Object.prototype.hasOwnProperty.call(labels, offer)) {
+      addGoalOption(goal, offer, labels[offer]);
       return;
     }
     /* 3. A self-study course or a ready lesson, looked up by id in data.js. */
