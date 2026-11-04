@@ -59,6 +59,26 @@
   ];
 
   /* ---------------- Header ---------------- */
+  /* «Увійти» or, once signed in, «Кабінет». supabase-js keeps the session in
+     localStorage under sb-<project>-auth-token, so this needs no network. */
+  function signedIn() {
+    try {
+      for (var i = 0; i < window.localStorage.length; i++) {
+        var k = window.localStorage.key(i) || "";
+        if (k.indexOf("sb-svgqvvctlujameejtqnm-auth-token") === 0) return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function accountLink() {
+    var inside = signedIn();
+    var label = inside ? T("Кабінет") : T("Увійти");
+    return '<a class="nav-account" href="' + I.url(inside ? "kabinet.html" : "vkhid.html") + '" aria-label="' + escAttr(label) + '">' +
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>' +
+      '<span class="nav-account-label">' + label + '</span></a>';
+  }
+
   function buildHeader() {
     var links = NAV.map(function (n) {
       return '<a href="' + I.url(n.href) + '"' + (n.id === PAGE ? ' class="active"' : "") + ">" + n.label + "</a>";
@@ -74,6 +94,7 @@
           '<div class="nav-links" id="navLinks">' + links + '<a href="' + I.url("vykladacham.html") + '" class="nav-teachers-link">' + T("Викладачам") + '</a></div>' +
           '<a class="btn btn-ghost btn-sm nav-teachers-btn" href="' + I.url("vykladacham.html") + '">' + T("Викладачам") + '</a>' +
           '<a class="btn btn-primary btn-sm" href="' + I.url("kursy.html") + '">' + T("Обрати курс") + '</a>' +
+          accountLink() +
           I.switcherHtml() +
           '<button class="nav-toggle" id="navToggle" aria-label="' + escAttr(T("Меню")) + '" aria-expanded="false">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>' +
@@ -210,8 +231,15 @@
 
   /* The "Купити" button. It goes to Patreon; until Maria sends the link
      (patreonUrl in data.js) it stays "#" and opens nothing. */
+  function checkoutOn() {
+    return !!(window.FMM_PLATFORM && window.FMM_PLATFORM.checkoutEnabled);
+  }
+
   function buyButton(r, cls) {
     var D = window.FMM || {};
+    if (checkoutOn()) {
+      return '<button type="button" class="btn ' + cls + '" data-buy="' + escAttr(r.id) + '"' + fmmMarks(r.id, r.title, "lesson", "ready_lessons", "buy_click") + '>' + (r.cta ? T(r.cta) : T("Купити")) + '</button>';
+    }
     var url = r.href || D.patreonUrl || "#";
     var external = url === "#" ? "" : ' target="_blank" rel="noopener"';
     return '<a class="btn ' + cls + '" href="' + url + '"' + external + fmmMarks(r.id, r.title, "lesson", "ready_lessons", "buy_click") + '>' + (r.cta ? T(r.cta) : T("Купити")) + '</a>';
@@ -417,6 +445,7 @@
           '</div>' +
           '<div class="center" style="margin-top:2rem">' +
             '<div class="hero-actions" style="justify-content:center">' +
+              (c.buy && checkoutOn() ? '<button type="button" class="btn btn-accent" data-buy="' + escAttr(c.id) + '">' + T("Купити курс") + '</button>' : '') +
               '<a class="btn btn-primary" href="' + I.url("kontakty.html?offer=" + encodeURIComponent(c.id)) + '">' + T("Написати Марії") + '</a>' +
               '<a class="btn btn-ghost" href="' + I.url("kursy.html") + '">' + T("Усі курси") + '</a>' +
             '</div>' +
@@ -603,6 +632,55 @@
         main.alt = btn.getAttribute("data-alt");
         el.querySelectorAll("[data-gallery-thumb]").forEach(function (b) { b.classList.toggle("active", b === btn); });
       });
+    });
+  }
+
+  /* ---------------- Buy → Stripe ----------------
+     Buttons with data-buy="<product slug>" exist only when checkout is on
+     (platform-config.js). The account script is loaded on the first click. */
+  function loadAccount() {
+    if (window.FMMAccount) return Promise.resolve(window.FMMAccount);
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = I.asset("assets/account.js");
+      s.onload = function () { window.FMMAccount ? resolve(window.FMMAccount) : reject(new Error("account")); };
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  function wireBuyButtons() {
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest ? e.target.closest("[data-buy]") : null;
+      if (!btn || btn.disabled) return;
+      e.preventDefault();
+      var label = btn.textContent;
+      var old = btn.parentNode && btn.parentNode.querySelector(".buy-error");
+      if (old) old.parentNode.removeChild(old);
+      btn.disabled = true;
+      btn.textContent = T("Відкриваю оплату…");
+      var fail = function (code) {
+        btn.disabled = false;
+        btn.textContent = label;
+        var p = document.createElement("p");
+        p.className = "buy-error";
+        p.setAttribute("role", "alert");
+        if (code === "already_owned") {
+          p.appendChild(document.createTextNode(T("Цей матеріал уже є у твоєму кабінеті") + ". "));
+          var a = document.createElement("a");
+          a.href = I.url("kabinet.html");
+          a.textContent = T("Відкрити кабінет");
+          p.appendChild(a);
+        } else {
+          p.textContent = T("Не вдалося відкрити оплату. Спробуй ще раз за хвилину або напиши мені.");
+        }
+        btn.insertAdjacentElement("afterend", p);
+      };
+      loadAccount().then(function (acc) {
+        return acc.buy(btn.getAttribute("data-buy"), { returnPath: location.pathname });
+      }).then(function (r) {
+        if (!r || !r.ok) fail(r && r.code); // on success the page is already leaving for Stripe
+      }, function () { fail(); });
     });
   }
 
@@ -936,6 +1014,7 @@
     renderCourseDetail();
     renderLessonDetail();
     wireNav();
+    wireBuyButtons();
     applyOfferHint(); // before wireForms, so the kit watches the form in its final state
     wireForms();
     wireCopyButtons();

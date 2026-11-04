@@ -1,0 +1,216 @@
+/* =====================================================================
+   Fika med Maria — student cabinet (kabinet.html) and the course page
+   (kurs-kabinet.html). Builds on styles.css and platform.css; every class
+   starts with "kb-" (cabinet) or "kc-" (course page). Works from 320 px.
+   ===================================================================== */
+
+/* ---------- Cabinet: header ---------- */
+.kb-page { padding-top: clamp(1.6rem, 4vw, 3rem); }
+.kb-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.4rem;
+}
+.kb-head h1 { font-size: clamp(1.9rem, 5.5vw, 2.8rem); overflow-wrap: anywhere; }
+.kb-sub { color: var(--ink-soft); margin: 0.5rem 0 0; max-width: 46ch; }
+.kb-admin { flex: none; }
+.kb-loading { color: var(--muted); margin: 1.2rem 0; }
+
+/* focus ring for the tab panels (they take focus when a tab is chosen with the keyboard) */
+.kb-page [role="tabpanel"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 6px; border-radius: 12px; }
+.kb-tabs .pf-tab { font-size: 1rem; }
+
+/* ---------- Cabinet: cards ---------- */
+.kb-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.kb-group { font-size: 1.35rem; margin: 2rem 0 1rem; }
+.kb-group:first-child { margin-top: 0; }
+.kb-card.pf-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.kb-cover {
+  aspect-ratio: 16 / 9; width: 100%; overflow: hidden; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--honey-soft), var(--blue-soft));
+}
+.kb-cover img { width: 100%; height: 100%; object-fit: cover; }
+.kb-cover-ph { font-size: 3rem; opacity: 0.75; }
+.kb-card-body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; flex: 1; gap: 0.1rem; }
+
+.kb-card-body .pf-badge { align-self: flex-start; }
+.kb-card-title { font-size: 1.3rem; margin: 0.55rem 0 0.35rem; overflow-wrap: anywhere; }
+.kb-card-desc { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 0.8rem; }
+.kb-progress { margin: 0.2rem 0 0.4rem; }
+.kb-access { font-size: 0.85rem; color: var(--muted); margin: 0.2rem 0 1rem; }
+.kb-open { margin-top: auto; align-self: flex-start; }
+.kb-empty-actions { justify-content: center; }
+
+/* ---------- Cabinet: purchases ---------- */
+.kb-table-card { padding: 0.4rem clamp(0.6rem, 2vw, 1.4rem); }
+.kb-table { width: 100%; border-collapse: collapse; }
+.kb-table th {
+  text-align: left; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; padding: 0.9rem 0.7rem; border-bottom: 1px solid var(--line);
+}
+.kb-table td { padding: 0.95rem 0.7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.kb-table tbody tr:last-child td { border-bottom: 0; }
+.kb-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+.kb-amount { font-weight: 700; white-space: nowrap; }
+@media (max-width: 640px) {
+  .kb-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .kb-table, .kb-table tbody, .kb-table tr, .kb-table td { display: block; width: 100%; }
+  .kb-table tr { padding: 0.9rem 0.3rem; border-bottom: 1px solid var(--line); }
+  .kb-table tbody tr:last-child { border-bottom: 0; }
+  .kb-table td { border: 0; padding: 0.25rem 0.4rem; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; }
+  .kb-table td > .pf-badge { justify-self: start; }
+  .kb-table td::before { content: attr(data-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+}
+
+/* ---------- Cabinet: profile ---------- */
+.kb-profile-grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.kb-box h2 { font-size: 1.35rem; margin-bottom: 1rem; }
+.kb-box .field select { width: 100%; min-height: 48px; }
+.kb-box .field input[readonly] { background: var(--paper-2); color: var(--muted); }
+.kb-box-out .btn { min-height: 48px; }
+
+/* =====================================================================
+   Course page
+   ===================================================================== */
+.kc-page { padding-top: clamp(1.2rem, 3vw, 2.4rem); }
+.kc-back-row { margin: 0 0 1.2rem; }
+.kc-back { font-weight: 600; font-size: 0.95rem; display: inline-block; padding: 0.4rem 0; }
+.kc-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.kc-back:focus-visible, .kc-lesson-link:focus-visible, .kc-outline-toggle:focus-visible,
+.kc-lesson-title:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+
+.kc-head { margin-bottom: 1.6rem; max-width: 52rem; }
+.kc-title { font-size: clamp(1.8rem, 5vw, 2.7rem); margin: 0.5rem 0 0.5rem; overflow-wrap: anywhere; }
+.kc-short { color: var(--ink-soft); font-size: 1.05rem; margin: 0 0 0.9rem; }
+.kc-progress { max-width: 26rem; }
+
+.kc-unavailable { margin-top: 1rem; }
+.kc-unavailable h1 { font-size: clamp(1.5rem, 4.5vw, 2.1rem); margin-bottom: 0.6rem; }
+
+/* ---------- Layout: outline + lesson ---------- */
+.kc-layout { display: grid; grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); gap: clamp(1.4rem, 3vw, 2.4rem); align-items: start; }
+.kc-outline { position: sticky; top: 5.5rem; max-height: calc(100vh - 6.5rem); overflow: auto; }
+.kc-outline-toggle { display: none; }
+.kc-nav {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0.5rem 0.5rem 0.7rem; box-shadow: var(--shadow-sm);
+}
+.kc-modules, .kc-lessons { list-style: none; margin: 0; padding: 0; }
+.kc-mod-title {
+  font-family: "Inter", system-ui, sans-serif; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--terracotta); font-weight: 700; padding: 0.9rem 0.7rem 0.3rem; line-height: 1.35;
+}
+.kc-lesson-link {
+  display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: 0.6rem; align-items: start;
+  padding: 0.55rem 0.7rem; border-radius: 12px; color: var(--ink); font-size: 0.96rem; line-height: 1.4;
+  min-height: 44px;
+}
+.kc-lesson-link:hover { background: var(--blue-soft); }
+.kc-lesson-link.is-current { background: var(--honey-soft); font-weight: 600; }
+.kc-tick {
+  width: 1.4rem; height: 1.4rem; border-radius: 50%; border: 1.5px solid var(--line);
+  display: grid; place-items: center; font-size: 0.8rem; color: transparent; margin-top: 0.1rem; background: var(--paper);
+}
+.kc-lesson-link.is-done .kc-tick { background: var(--sage); border-color: var(--sage); color: #fff; }
+.kc-lesson-link.is-current .kc-tick { border-color: var(--honey); }
+.kc-lesson-link.is-current.is-done .kc-tick { border-color: var(--sage); }
+.kc-tick.is-extra { color: var(--honey); border-color: var(--honey); }
+.kc-lesson-link.is-done .kc-tick.is-extra { color: #fff; }
+
+/* ---------- Lesson view ---------- */
+.kc-main, .kc-single { min-width: 0; }
+.kc-single { max-width: 52rem; }
+.kc-lesson-view {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: clamp(1.2rem, 3.5vw, 2.2rem); box-shadow: var(--shadow-sm);
+}
+.kc-crumb { font-size: 0.88rem; letter-spacing: 0.02em; color: var(--terracotta); font-weight: 700; margin-bottom: 0.4rem; }
+.kc-lesson-title { font-size: clamp(1.5rem, 4vw, 2.1rem); margin-bottom: 0.6rem; overflow-wrap: anywhere; }
+.kc-summary { color: var(--ink-soft); font-size: 1.05rem; margin-bottom: 1.4rem; }
+.kc-wait { color: var(--muted); margin: 0.4rem 0; }
+
+.kc-content { display: grid; gap: 1.2rem; margin-top: 1rem; }
+.kc-single .kc-content { margin-top: 1.4rem; }
+.kc-single .kc-intro { margin-bottom: 0.4rem; }
+
+/* materials */
+.kc-mat { border-top: 1px solid var(--line); padding-top: 1.2rem; }
+.kc-content > .kc-mat:first-child { border-top: 0; padding-top: 0; }
+.kc-mat-title {
+  font-family: "Inter", system-ui, sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.7rem;
+  display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.35; overflow-wrap: anywhere;
+}
+.kc-mat-ico { font-size: 1.15rem; line-height: 1.3; }
+.kc-mat-file { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
+.kc-mat-file .kc-mat-title { margin-bottom: 0; flex: 1 1 14rem; }
+.kc-file-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.kc-file-msg { font-size: 0.9rem; color: var(--muted); }
+.kc-file-msg.is-error, .kc-save-msg.is-error, .kc-done-msg.is-error { color: #8a3516; font-weight: 600; }
+.kc-media audio, .kc-media video { width: 100%; max-width: 34rem; display: block; }
+.kc-media video { max-width: 100%; border-radius: 14px; }
+.kc-video { position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #0d1b2a; }
+.kc-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* text (tiny markdown) */
+.kc-text { font-size: 1.05rem; line-height: 1.75; overflow-wrap: anywhere; }
+.kc-text > :last-child { margin-bottom: 0; }
+.kc-text h3 { font-size: 1.45rem; margin: 1.6rem 0 0.6rem; }
+.kc-text h4 { font-size: 1.15rem; margin: 1.3rem 0 0.5rem; font-family: "Inter", system-ui, sans-serif; font-weight: 700; }
+.kc-text > h3:first-child, .kc-text > h4:first-child { margin-top: 0; }
+.kc-text ul { padding-left: 1.3rem; margin: 0 0 1rem; display: grid; gap: 0.25rem; }
+.kc-text blockquote {
+  margin: 1.2rem 0; padding: 0.9rem 1.1rem; border-left: 4px solid var(--honey); background: var(--honey-soft);
+  border-radius: 0 14px 14px 0; color: var(--ink);
+}
+.kc-text blockquote p { margin: 0; }
+.kc-text a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+
+/* exercises */
+.kc-exercises { display: grid; gap: 2rem; border-top: 1px solid var(--line); padding-top: 1.6rem; margin-top: 0.4rem; }
+.kc-content > .kc-exercises:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.kc-ex .fmx { max-width: none; }
+.kc-best {
+  display: inline-block; margin: 0 0 0.9rem; padding: 0.4rem 0.9rem; border-radius: 999px;
+  background: var(--blue-soft); color: var(--blue-dark); font-weight: 600; font-size: 0.9rem;
+}
+.kc-best[hidden] { display: none; }
+.kc-best.is-perfect { background: var(--sage-soft); color: #2f4a33; }
+.kc-save-msg { margin: 0.6rem 0 0; font-size: 0.92rem; }
+.kc-save-msg:empty { display: none; }
+
+/* done + pager */
+.kc-done-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 1.8rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.kc-done-bar .btn { min-height: 48px; text-align: left; line-height: 1.25; }
+.kc-done-bar .btn[disabled] { opacity: 0.6; cursor: progress; }
+.kc-is-done { color: #2f4a33; border-color: rgba(47, 74, 51, 0.3); background: var(--sage-soft); }
+.kc-is-done:hover { background: #dbe6d8; }
+.kc-done-msg { font-size: 0.92rem; color: var(--muted); }
+.kc-pager { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 1.4rem; flex-wrap: wrap; }
+.kc-pager .btn { min-height: 48px; justify-content: center; }
+
+/* ---------- Phones and tablets: collapsible outline ---------- */
+@media (max-width: 860px) {
+  .kc-layout { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+  .kc-outline { position: static; max-height: none; overflow: visible; }
+  .kc-outline-toggle {
+    display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem;
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius);
+    padding: 0.8rem 1.1rem; min-height: 48px; font: inherit; font-weight: 700; color: var(--blue); cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .kc-chev {
+    width: 0.6rem; height: 0.6rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px); transition: transform .2s ease;
+  }
+  .kc-outline-toggle[aria-expanded="true"] .kc-chev { transform: rotate(-135deg) translateY(-2px); }
+  .kc-nav { display: none; margin-top: 0.6rem; max-height: 60vh; overflow: auto; }
+  .kc-nav.is-open { display: block; }
+}
+@media (max-width: 480px) {
+  .kc-pager { flex-direction: column-reverse; }
+  .kc-pager .btn { width: 100%; }
+  .kc-pager > span { display: none; }
+  .kc-done-bar .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kc-chev { transition: none; }
+}

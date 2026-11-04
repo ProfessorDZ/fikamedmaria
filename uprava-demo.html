@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Інтерактивні вправи: демо — Fika med Maria</title>
+  <meta name="description" content="Тестова сторінка інтерактивних вправ." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/exercises.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body data-page="demo">
+  <div data-include-header></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Тестова сторінка</span>
+        <h1>Інтерактивні вправи</h1>
+        <p class="lead">Приклад набору вправ: усі шість типів. Нижче під вправами видно, що отримає кабінет після «Перевірити».</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <p id="demo-status" style="color:var(--muted);font-size:.92rem"></p>
+        <div id="demo"></div>
+
+        <div class="card" style="margin-top:2rem;max-width:46rem;margin-inline:auto">
+          <h3>Що вийшло (onResult)</h3>
+          <pre id="demo-out" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;color:var(--ink-soft)">Ще не перевіряли.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
+  <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
+  <script src="assets/main.js"></script>
+  <script src="assets/exercises.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var status = document.getElementById("demo-status");
+      var out = document.getElementById("demo-out");
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "assets/exercises-demo.json");
+      xhr.onload = function () {
+        var content;
+        try { content = JSON.parse(xhr.responseText); }
+        catch (e) { status.textContent = "Не вдалося прочитати exercises-demo.json: " + e.message; return; }
+        var v = FMMExercises.validate(content);
+        status.textContent = v.ok
+          ? "Перевірка формату: усе гаразд (" + content.items.length + " завдань)."
+          : "Помилки формату: " + v.errors.join(" | ");
+        FMMExercises.render(document.getElementById("demo"), content, {
+          title: "Fika: перевір себе",
+          instructions: "Відповідай на всі завдання й натисни «Перевірити». Можна залишити щось порожнім — це буде помилка.",
+          onResult: function (result) { out.textContent = JSON.stringify(result, null, 2); }
+        });
+      };
+      xhr.onerror = function () { status.textContent = "Не вдалося завантажити exercises-demo.json (відкрий сторінку через сервер)."; };
+      xhr.send();
+    })();
+  </script>
+</body>
+</html>

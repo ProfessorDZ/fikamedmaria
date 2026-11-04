@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Вхід у кабінет — Fika med Maria</title>
+  <meta name="description" content="Вхід у твій особистий кабінет: курси, уроки, вправи й матеріали, які ти купила." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/platform.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+  <!-- i18n:alternates -->
+  <link rel="alternate" hreflang="uk" href="https://fikamedmaria.vercel.app/vkhid.html" />
+  <link rel="alternate" hreflang="sv" href="https://fikamedmaria.vercel.app/sv/vkhid.html" />
+  <link rel="alternate" hreflang="en" href="https://fikamedmaria.vercel.app/en/vkhid.html" />
+  <link rel="alternate" hreflang="pl" href="https://fikamedmaria.vercel.app/pl/vkhid.html" />
+  <link rel="alternate" hreflang="x-default" href="https://fikamedmaria.vercel.app/vkhid.html" />
+  <meta property="og:locale" content="uk_UA" />
+  <!-- /i18n:alternates -->
+</head>
+<body data-page="account">
+  <div data-include-header></div>
+
+  <main>
+    <section class="pf-section">
+      <div class="wrap">
+        <div class="pf-narrow pf-card" id="pf-card">
+
+          <!-- Mode 1: sign in -->
+          <div data-mode="login">
+            <span class="eyebrow">Мій кабінет</span>
+            <h1>Вхід у кабінет</h1>
+            <p class="pf-lead">Тут живуть твої курси, уроки й вправи. Увійди з тим email, на який ти купувала.</p>
+            <p class="pf-msg" data-msg role="status" aria-live="polite"></p>
+            <form class="pf-form" data-form="login" novalidate>
+              <div class="field">
+                <label for="pf-login-email">Email</label>
+                <input id="pf-login-email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="твоя@пошта.com" required />
+              </div>
+              <div class="field">
+                <label for="pf-login-pw">Пароль</label>
+                <span class="pf-pw">
+                  <input id="pf-login-pw" name="password" type="password" autocomplete="current-password" required />
+                  <button class="pf-pw-toggle" type="button" data-toggle-pw aria-pressed="false" aria-controls="pf-login-pw">Показати</button>
+                </span>
+              </div>
+              <button class="btn btn-primary" type="submit">Увійти</button>
+            </form>
+            <div class="pf-links">
+              <a href="vkhid.html?mode=reset" data-go="reset">Забула пароль?</a>
+              <a href="kursy.html">Ще немає доступу? Подивись курси</a>
+            </div>
+            <p class="pf-hint" data-demo-link hidden style="margin-top:1rem"><a href="kabinet.html">Це демо: відкрити приклад кабінету →</a></p>
+          </div>
+
+          <!-- Mode 2: ask for a reset link -->
+          <div data-mode="reset" hidden>
+            <span class="eyebrow">Новий пароль</span>
+            <h1>Забула пароль?</h1>
+            <p class="pf-lead">Нічого страшного. Напиши свій email, і я надішлю посилання, за яким можна створити новий пароль.</p>
+            <p class="pf-msg" data-msg role="status" aria-live="polite"></p>
+            <form class="pf-form" data-form="reset" novalidate>
+              <div class="field">
+                <label for="pf-reset-email">Email</label>
+                <input id="pf-reset-email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="твоя@пошта.com" required />
+              </div>
+              <button class="btn btn-primary" type="submit">Надіслати посилання</button>
+            </form>
+            <div class="pf-links">
+              <a href="vkhid.html" data-go="login">← Повернутися до входу</a>
+            </div>
+          </div>
+
+          <!-- Mode 3: choose a password (arrived from the e-mail link) -->
+          <div data-mode="set" hidden>
+            <span class="eyebrow">Майже готово</span>
+            <h1>Створи пароль для свого кабінету</h1>
+            <p class="pf-lead">Придумай пароль, який легко запамʼятати, але важко вгадати. Щонайменше 8 символів.</p>
+            <p class="pf-msg" data-msg role="status" aria-live="polite"></p>
+            <form class="pf-form" data-form="set" novalidate>
+              <input type="text" id="pf-set-username" name="username" class="sr-only" autocomplete="username" tabindex="-1" aria-hidden="true" readonly />
+              <div class="field">
+                <label for="pf-set-pw">Новий пароль</label>
+                <span class="pf-pw">
+                  <input id="pf-set-pw" name="password" type="password" autocomplete="new-password" minlength="8" aria-describedby="pf-set-hint" required />
+                  <button class="pf-pw-toggle" type="button" data-toggle-pw aria-pressed="false" aria-controls="pf-set-pw pf-set-pw2">Показати</button>
+                </span>
+                <p class="pf-hint" id="pf-set-hint">Щонайменше 8 символів.</p>
+              </div>
+              <div class="field">
+                <label for="pf-set-pw2">Повтори пароль</label>
+                <input id="pf-set-pw2" name="password2" type="password" autocomplete="new-password" minlength="8" required />
+              </div>
+              <button class="btn btn-primary" type="submit">Зберегти пароль</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
+  <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
+  <script src="assets/main.js"></script>
+  <script src="assets/platform-config.js"></script>
+  <script src="assets/platform-demo.js"></script>
+  <script src="assets/account.js"></script>
+  <script src="assets/vkhid.js"></script>
+</body>
+</html>

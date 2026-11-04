@@ -47,13 +47,19 @@ OG_LOCALE = {"uk": "uk_UA", "sv": "sv_SE", "en": "en_GB", "pl": "pl_PL"}
 SITE_URL = "https://fikamedmaria.vercel.app"
 
 # Ukrainian pages that get language copies (paths relative to the site root).
+# Pages that stay Ukrainian only: Maria's admin area and the exercise test page.
+UK_ONLY_PAGES = {"admin.html", "uprava-demo.html"}
+
+
 def source_pages():
-    pages = sorted(p.name for p in SITE.glob("*.html"))
+    pages = sorted(p.name for p in SITE.glob("*.html") if p.name not in UK_ONLY_PAGES)
     blog = sorted("blog/" + p.name for p in (SITE / "blog").glob("*.html"))
     return pages + blog
 
 # Files whose JavaScript strings are drawn at runtime.
-RUNTIME_T_FILES = ["assets/i18n.js", "assets/main.js", "assets/fmm-kit.js"]      # T("...") calls
+RUNTIME_T_FILES = ["assets/i18n.js", "assets/main.js", "assets/fmm-kit.js",     # T("...") calls
+                   "assets/exercises.js", "assets/account.js", "assets/vkhid.js",
+                   "assets/dyakuyu.js", "assets/kabinet.js", "assets/kurs-kabinet.js"]
 RUNTIME_DATA_FILES = ["assets/data.js", "assets/lesson-details.js"]            # every Cyrillic literal
 
 CYR = re.compile(r"[Ѐ-ӿ]")
@@ -640,6 +646,10 @@ def put_alternates(src, lang, rel):
 
 
 def is_page_link(path):
+    """A link to a page that has a copy in every language (Ukrainian-only
+    pages like admin.html stay at the root, so they are treated as files)."""
+    if path.split("/")[-1] in UK_ONLY_PAGES and "/" not in path:
+        return False
     return path == "" or path.endswith("/") or path.endswith(".html")
 
 

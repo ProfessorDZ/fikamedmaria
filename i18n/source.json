@@ -340,6 +340,198 @@
   "ctx": "attribute"
  },
  {
+  "key": "Дякую за покупку — Fika med Maria",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "title"
+ },
+ {
+  "key": "Оплату отримано",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
+  "key": "Дякую за покупку!",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "h1"
+ },
+ {
+  "key": "Лист із доступом уже летить на твою пошту. Відкрий його й натисни кнопку, щоб створити пароль, і твій кабінет відкриється.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "p.pf-lead"
+ },
+ {
+  "key": "Відкрий лист від мене",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "b"
+ },
+ {
+  "key": "Тема листа про доступ до кабінету. Зазвичай він приходить за хвилину.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "span"
+ },
+ {
+  "key": "Створи пароль",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "dyakuyu.html",
+   "assets/vkhid.js"
+  ],
+  "ctx": "b"
+ },
+ {
+  "key": "Натисни кнопку в листі та придумай пароль. Це робиться один раз.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "span"
+ },
+ {
+  "key": "Починай навчання",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "b"
+ },
+ {
+  "key": "У кабінеті вже чекає твоя покупка: уроки, файли й вправи з прогресом.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "span"
+ },
+ {
+  "key": "Увійти в кабінет",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "a.btn"
+ },
+ {
+  "key": "На головну",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "a.btn"
+ },
+ {
+  "key": "Лист не прийшов?",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "h2"
+ },
+ {
+  "key": "Зачекай до 10 хвилин, а тоді:",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "p"
+ },
+ {
+  "key": "Зазирни в папки «Спам» і «Промоакції».",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "li"
+ },
+ {
+  "key": "Переконайся, що в оплаті був саме той email, який ти зараз перевіряєш.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "li"
+ },
+ {
+  "key": "Натисни <a href=\"vkhid.html?mode=reset\">«Забула пароль»</a> і впиши той самий email. Я надішлю посилання ще раз.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "li"
+ },
+ {
+  "key": "Якщо все одно нічого немає, напиши мені: <a href=\"mailto:fika.med.maria@gmail.com\">fika.med.maria@gmail.com</a> або в <a href=\"https://t.me/MaryZubchenko\" target=\"_blank\" rel=\"noopener\">Telegram</a>. Я швидко все владнаю.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "li"
+ },
+ {
+  "key": "Дякую за покупку! Лист із доступом до твого кабінету вже летить на пошту.",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "dyakuyu.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
   "key": "Fika med Maria — сучасна шведська для українців",
   "kinds": [
    "attr",
@@ -1070,6 +1262,288 @@
   "ctx": "attribute"
  },
  {
+  "key": "Мій кабінет — Fika med Maria",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "title"
+ },
+ {
+  "key": "Мій кабінет",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "vkhid.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
+  "key": "Привіт!",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "h1"
+ },
+ {
+  "key": "Тут усе, що ти купила: курси, уроки, підручники й вправи.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "p.kb-sub"
+ },
+ {
+  "key": "Адмінка",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "a.btn"
+ },
+ {
+  "key": "Мої матеріали",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "button.pf-tab"
+ },
+ {
+  "key": "Покупки",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "button.pf-tab"
+ },
+ {
+  "key": "Профіль",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "button.pf-tab"
+ },
+ {
+  "key": "Завантажую твої матеріали…",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "p.kb-loading"
+ },
+ {
+  "key": "Завантажую покупки…",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "assets/kabinet.js"
+  ],
+  "ctx": "p.kb-loading"
+ },
+ {
+  "key": "Мої дані",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "h2"
+ },
+ {
+  "key": "Імʼя",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html",
+   "kontakty.html"
+  ],
+  "ctx": "label"
+ },
+ {
+  "key": "Email змінити не можна. Якщо потрібно, напиши мені.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "p.pf-hint"
+ },
+ {
+  "key": "Мова",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "label"
+ },
+ {
+  "key": "Цією мовою я пишу тобі листи. Мову сторінок можна змінити в меню вгорі.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "p.pf-hint"
+ },
+ {
+  "key": "Зберегти",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "button.btn"
+ },
+ {
+  "key": "Новий пароль",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html",
+   "vkhid.html"
+  ],
+  "ctx": "h2"
+ },
+ {
+  "key": "Показати",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kabinet.html",
+   "vkhid.html",
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "button.pf-pw-toggle"
+ },
+ {
+  "key": "Щонайменше 8 символів.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html",
+   "vkhid.html"
+  ],
+  "ctx": "p.pf-hint"
+ },
+ {
+  "key": "Повтори пароль",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html",
+   "vkhid.html"
+  ],
+  "ctx": "label"
+ },
+ {
+  "key": "Змінити пароль",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "button.btn"
+ },
+ {
+  "key": "Вийти",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "h2"
+ },
+ {
+  "key": "Вийди, якщо користуєшся чужим компʼютером.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "p.pf-lead"
+ },
+ {
+  "key": "Твій особистий кабінет: мої курси, уроки, вправи, покупки й профіль.",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
+  "key": "Розділи кабінету",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "kabinet.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
+  "key": "Як до тебе звертатися?",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "kabinet.html",
+   "kontakty.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
   "key": "Контакти й запис — Fika med Maria",
   "kinds": [
    "html"
@@ -1140,16 +1614,6 @@
    "kontakty.html"
   ],
   "ctx": "p"
- },
- {
-  "key": "Імʼя",
-  "kinds": [
-   "html"
-  ],
-  "files": [
-   "kontakty.html"
-  ],
-  "ctx": "label"
  },
  {
   "key": "Рівень шведської",
@@ -1463,22 +1927,13 @@
   "ctx": "attribute"
  },
  {
-  "key": "Як до тебе звертатися?",
-  "kinds": [
-   "attr"
-  ],
-  "files": [
-   "kontakty.html"
-  ],
-  "ctx": "attribute"
- },
- {
   "key": "твоя@пошта.com",
   "kinds": [
    "attr"
   ],
   "files": [
-   "kontakty.html"
+   "kontakty.html",
+   "vkhid.html"
   ],
   "ctx": "attribute"
  },
@@ -1489,6 +1944,48 @@
   ],
   "files": [
    "kontakty.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
+  "key": "Мій курс — Fika med Maria",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kurs-kabinet.html"
+  ],
+  "ctx": "title"
+ },
+ {
+  "key": "← Мій кабінет",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "kurs-kabinet.html"
+  ],
+  "ctx": "a.kc-back"
+ },
+ {
+  "key": "Завантажую…",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "kurs-kabinet.html",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "p.kb-loading"
+ },
+ {
+  "key": "Твій курс, урок або підручник у особистому кабінеті: матеріали, вправи й прогрес.",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "kurs-kabinet.html"
   ],
   "ctx": "attribute"
  },
@@ -3021,10 +3518,13 @@
  {
   "key": "Курс",
   "kinds": [
-   "html"
+   "html",
+   "runtime"
   ],
   "files": [
-   "kurs-vykladacham.html"
+   "kurs-vykladacham.html",
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
   ],
   "ctx": "h3"
  },
@@ -3081,10 +3581,12 @@
  {
   "key": "Купити курс",
   "kinds": [
-   "html"
+   "html",
+   "runtime"
   ],
   "files": [
-   "kurs-vykladacham.html"
+   "kurs-vykladacham.html",
+   "assets/main.js"
   ],
   "ctx": "a.btn"
  },
@@ -3942,6 +4444,172 @@
   ],
   "files": [
    "urok.html"
+  ],
+  "ctx": "attribute"
+ },
+ {
+  "key": "Вхід у кабінет — Fika med Maria",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "title"
+ },
+ {
+  "key": "Вхід у кабінет",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "vkhid.html",
+   "assets/vkhid.js"
+  ],
+  "ctx": "h1"
+ },
+ {
+  "key": "Тут живуть твої курси, уроки й вправи. Увійди з тим email, на який ти купувала.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "p.pf-lead"
+ },
+ {
+  "key": "Пароль",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "label"
+ },
+ {
+  "key": "Увійти",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "vkhid.html",
+   "assets/main.js"
+  ],
+  "ctx": "button.btn"
+ },
+ {
+  "key": "Забула пароль?",
+  "kinds": [
+   "html",
+   "runtime"
+  ],
+  "files": [
+   "vkhid.html",
+   "assets/vkhid.js"
+  ],
+  "ctx": "a"
+ },
+ {
+  "key": "Ще немає доступу? Подивись курси",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "a"
+ },
+ {
+  "key": "Це демо: відкрити приклад кабінету →",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "a"
+ },
+ {
+  "key": "Нічого страшного. Напиши свій email, і я надішлю посилання, за яким можна створити новий пароль.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "p.pf-lead"
+ },
+ {
+  "key": "Надіслати посилання",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "button.btn"
+ },
+ {
+  "key": "← Повернутися до входу",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "a"
+ },
+ {
+  "key": "Майже готово",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "span.eyebrow"
+ },
+ {
+  "key": "Створи пароль для свого кабінету",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "h1"
+ },
+ {
+  "key": "Придумай пароль, який легко запамʼятати, але важко вгадати. Щонайменше 8 символів.",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "p.pf-lead"
+ },
+ {
+  "key": "Зберегти пароль",
+  "kinds": [
+   "html"
+  ],
+  "files": [
+   "vkhid.html"
+  ],
+  "ctx": "button.btn"
+ },
+ {
+  "key": "Вхід у твій особистий кабінет: курси, уроки, вправи й матеріали, які ти купила.",
+  "kinds": [
+   "attr"
+  ],
+  "files": [
+   "vkhid.html"
   ],
   "ctx": "attribute"
  },
@@ -10341,6 +11009,16 @@
   "ctx": "js"
  },
  {
+  "key": "Кабінет",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js"
+  ],
+  "ctx": "js"
+ },
+ {
   "key": "Fika med Maria — головна",
   "kinds": [
    "runtime"
@@ -10426,7 +11104,8 @@
    "runtime"
   ],
   "files": [
-   "assets/main.js"
+   "assets/main.js",
+   "assets/kabinet.js"
   ],
   "ctx": "js"
  },
@@ -10758,7 +11437,8 @@
    "runtime"
   ],
   "files": [
-   "assets/main.js"
+   "assets/main.js",
+   "assets/kurs-kabinet.js"
   ],
   "ctx": "js"
  },
@@ -11063,6 +11743,47 @@
   "ctx": "js"
  },
  {
+  "key": "Відкриваю оплату…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей матеріал уже є у твоєму кабінеті",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відкрити кабінет",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js",
+   "assets/dyakuyu.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося відкрити оплату. Спробуй ще раз за хвилину або напиши мені.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/main.js"
+  ],
+  "ctx": "js"
+ },
+ {
   "key": "Скопійовано ✓",
   "kinds": [
    "runtime"
@@ -11229,6 +11950,1208 @@
   ],
   "files": [
    "assets/fmm-kit.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правда",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправда",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильна відповідь:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна обрати кілька відповідей.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильні відповіді:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пропуск {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Твоя відповідь",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Слова",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Очистити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни на слова нижче, щоб скласти речення",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{word} — натисни, щоб прибрати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни слово ліворуч, потім його пару праворуч. Натисни на пару ще раз, щоб скасувати.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни, щоб скасувати пару",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильні пари:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цю вправу не вдалося показати. Напиши Марії, будь ласка.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перевірити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Спробувати ще раз",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js",
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Аудіо до завдання {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Підказка:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильно!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Майже! Перевір å / ä / ö",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Без відповіді",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправильно",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пояснення:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Результат: {score} з {max}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Чудово, усе правильно!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Подивись правильні відповіді у завданнях вище й спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Демо-режим: це приклад, справжні дані не показуються",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/account.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Невірний email або пароль. Спробуй ще раз або натисни «Забула пароль?».",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей email ще не підтверджено. Знайди мій лист і натисни кнопку в ньому.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Забагато спроб поспіль. Зачекай хвилинку й спробуй знову.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Немає звʼязку із сервером. Перевір інтернет і спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Щось пішло не так. Спробуй ще раз за хвилину.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перевір email: здається, у ньому є помилка.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей пароль надто простий. Додай більше символів, літери й цифри.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Такий пароль у тебе вже був. Придумай новий.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Це посилання вже не діє.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Сховати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Напиши пароль.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Вітаю! Відкриваю твій кабінет…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Готово! Якщо цей email є в моїй базі, лист із посиланням уже в дорозі. Перевір і папку «Спам».",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Це посилання вже не діє (воно працює лише один раз і недовго). Напиши email, і я надішлю нове.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пароль має бути щонайменше з 8 символів.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Паролі не збігаються. Перевір, будь ласка.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js",
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пароль збережено! Відкриваю твій кабінет…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перевіряю посилання…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/vkhid.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Курс для викладачів",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Урок",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Підручник",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Журнал",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Матеріал",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "оплачено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "повернено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "частково повернено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "очікує",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "спір із банком",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "не вдалося",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "скасовано",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Сесія закінчилась. Увійди ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Привіт, {name}!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Уроків пройдено {done} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Вправ виконано {done} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Доступ: назавжди",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Доступ: до {date}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відкрити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Тут зʼявляться твої курси й уроки після покупки",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "А поки що подивись безкоштовні матеріали або каталог курсів.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Безкоштовні матеріали",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося завантажити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Дата",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Що куплено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Сума",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Статус",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Покупок поки немає",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Коли щось купиш, тут зʼявиться список із датами й сумами.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Мої покупки",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Збережено.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пароль змінено.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Матеріал недоступний",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей матеріал поки недоступний у твоєму кабінеті",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можливо, ти увійшла з іншим email, або доступ ще не відкрито. Подивись каталог чи напиши мені, і ми швидко розберемось.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Каталог курсів",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Додатково",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "пройдено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Зміст курсу",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Файл PDF",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Аудіо",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відео",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Посилання",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Текст",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Файл",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантажую аудіо…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Дивитися відео",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантажую відео…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відео поки недоступне.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Посилання поки недоступне.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відкрити посилання",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Файл поки недоступний.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантажити PDF",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантажити файл",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Готую файл…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося відкрити файл. Спробуй ще раз або напиши мені.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося завантажити. Онови сторінку або напиши мені.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Найкращий результат: {best} з {max} · спроб: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Результат не вдалося зберегти.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Зберегти ще раз",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Матеріали для цього уроку скоро зʼявляться.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перехід між уроками",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Попередній",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Наступний урок",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "До мого кабінету",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Урок {n} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Підсумок і додаткові матеріали",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Урок пройдено. Зняти позначку",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Позначити урок пройденим",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Чудово! Урок позначено пройденим.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Позначку знято.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося зберегти. Спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
   ],
   "ctx": "js"
  },
