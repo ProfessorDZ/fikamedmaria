@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Блоки уроку: демо — Fika med Maria</title>
+  <meta name="description" content="Тестова сторінка блоків уроку." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/blocks.css" />
+  <link rel="stylesheet" href="assets/blocks-exercises.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body data-page="demo">
+  <div data-include-header></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Тестова сторінка</span>
+        <h1>Блоки уроку</h1>
+        <p class="lead">Приклад кожного блоку: спочатку так, як бачить учениця, потім — режим перегляду з нотаткою вчителя.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap" style="max-width:46rem">
+        <h2 class="section-title" style="font-size:1.6rem;margin-bottom:1.2rem">Режим учня</h2>
+        <div id="student"></div>
+
+        <h2 class="section-title" style="font-size:1.6rem;margin:3rem 0 1.2rem">Режим перегляду (адмінка)</h2>
+        <div id="preview"></div>
+
+        <div class="card" style="margin-top:2rem">
+          <h3>Що відправила форма (onSubmitWork / onResult)</h3>
+          <pre id="demo-out" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;color:var(--ink-soft)">Ще нічого не надсилали.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
+  <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
+  <script src="assets/main.js"></script>
+  <script src="assets/blocks.js"></script>
+  <script src="assets/blocks-exercises.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var out = document.getElementById("demo-out");
+      var log = [];
+      function note(line) { log.push(line); out.textContent = log.join("\n"); }
+
+      /* demo "storage": a short tone and a small text file made in the browser */
+      var blobs = {};
+      function wavUrl() {
+        var rate = 8000, secs = 2, n = rate * secs, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), i;
+        function w(o, s) { for (var k = 0; k < s.length; k++) v.setUint8(o + k, s.charCodeAt(k)); }
+        w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt ");
+        v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+        v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+        w(36, "data"); v.setUint32(40, n * 2, true);
+        for (i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.sin(i / rate * 2 * Math.PI * 440) * 3000 * (1 - i / n), true);
+        return URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+      }
+      function signedUrl(src) {
+        if (/^https:\/\//.test(src) || /^assets\//.test(src)) return Promise.resolve(src);
+        if (!blobs[src]) {
+          blobs[src] = /\.wav$/.test(src)
+            ? wavUrl()
+            : URL.createObjectURL(new Blob(["Ordlista: fika, kaffe, kanelbulle\n"], { type: "text/plain" }));
+        }
+        return Promise.resolve(blobs[src]);
+      }
+      function onSubmitWork(blockId, payload) {
+        var files = (payload.files || []).map(function (f) { return f.name + " (" + f.size + " B)"; });
+        note("onSubmitWork(" + blockId + "): kind=" + payload.kind + (payload.text ? ", text=" + JSON.stringify(payload.text.slice(0, 60)) : "") + (files.length ? ", files=" + files.join("; ") : ""));
+        return new Promise(function (resolve) { setTimeout(resolve, 500); });
+      }
+
+      var IMG = "assets/lessons/a2b1-ko/";
+      var blocks = [
+        { id: 1, type: "text", position: 1, content: { title: "Text: заголовок і текст", heading: "Fika — це пауза",
+          body: "## Що таке fika?\n\n**Fika** — шведська кава-пауза: *кава*, булочка і розмова. Читай більше на [сайті](https://www.visitsweden.com/).\n\n- kaffe — кава\n- kanelbulle — булочка з корицею\n\n> Ska vi ta en fika?" } },
+        { id: 2, type: "hidden_text", position: 2, content: { instructions: "Спершу спробуй відповісти сама.", label: "Показати відповідь", body: "**Fika** = пауза + кава + розмова." } },
+        { id: 3, type: "table", position: 3, content: { title: "Table: таблиця", caption: "Present і preteritum", header: ["Infinitiv", "Presens", "Preteritum", "Переклад"],
+          rows: [["dricka", "dricker", "drack", "пити"], ["äta", "äter", "åt", "їсти"], ["fika", "fikar", "fikade", "робити фіку"]] } },
+        { id: 4, type: "vocabulary", position: 4, content: { title: "Vocabulary: словник", words: [
+          { word: "en kanelbulle", translation: "булочка з корицею", example: "Jag tar en kanelbulle till kaffet.", src: IMG + "cover.webp", audio_src: "demo/ton.wav" },
+          { word: "kaffe", translation: "кава", example: "Vill du ha kaffe?" },
+          { word: "en fika", translation: "кава-пауза", audio_src: "demo/ton.wav" } ] } },
+        { id: 5, type: "audio", position: 5, content: { title: "Audio: аудіо", src: "demo/ton.wav", caption: "Тестовий звук (демо).", transcript: "**Maria:** Hej! Ska vi ta en fika?" } },
+        { id: 6, type: "video", position: 6, content: { title: "Video: відео (Vimeo)", src: "https://vimeo.com/76979871" } },
+        { id: 7, type: "youtube", position: 7, content: { title: "YouTube", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw" } },
+        { id: 8, type: "image", position: 8, content: { title: "Image: картинка", src: IMG + "cover.webp", alt: "Обкладинка уроку про чергу", caption: "Натисни на картинку, щоб збільшити." } },
+        { id: 9, type: "carousel", position: 9, content: { title: "Carousel: карусель", images: [
+          { src: IMG + "slide-a.webp", alt: "Слайд A", caption: "Слайд A" },
+          { src: IMG + "slide-b.webp", alt: "Слайд B", caption: "Слайд B" },
+          { src: IMG + "worksheet.webp", alt: "Робочий аркуш", caption: "Робочий аркуш" } ] } },
+        { id: 10, type: "collage", position: 10, content: { title: "Collage: колаж", images: [
+          { src: IMG + "cover.webp", alt: "Обкладинка", caption: "Обкладинка" },
+          { src: IMG + "slide-a.webp", alt: "Слайд A" },
+          { src: IMG + "slide-b.webp", alt: "Слайд B", caption: "Слайд B" },
+          { src: IMG + "worksheet.webp", alt: "Аркуш" } ] } },
+        { id: 11, type: "file", position: 11, content: { title: "File: файл", src: "demo/ordlista.txt", name: "Ordlista.txt", note: "Словничок до уроку, 1 КБ." } },
+        { id: 12, type: "link_button", position: 12, content: { title: "Link: кнопка", url: "https://www.sprakochfolkminnen.se/", label: "Відкрити словник" } },
+        { id: 13, type: "embed", position: 13, content: { title: "Embed: WordWall", provider: "wordwall", url: "https://wordwall.net/embed/38a853ecb2fc4cb98c801b5cef3978c7?themeId=1", height: 420 } },
+        { id: 14, type: "embed", position: 14, content: { title: "Embed: сервіс не з дозволеного списку", provider: "iframe", url: "https://example.com/some-game" } },
+        { id: 15, type: "open_answer", position: 15, content: { title: "Open answer: відкрита відповідь", instructions: "Напиши 2–3 речення.", question: "Beskriv din **perfekta fika**. Vad dricker och äter du?", min_words: 5 } },
+        { id: 16, type: "student_file", position: 16, content: { title: "Student file: файл учня", task: "Запиши **голосове** (30 секунд): представ себе шведською.", accept: "audio", allow_recording: true } },
+        { id: 17, type: "open_answer", position: 17, content: { title: "Open answer: уже перевірено", question: "Vad heter du?" } },
+        { id: 18, type: "student_file", position: 18, content: { title: "Student file: уже надіслано", task: "Надішли фото свого конспекту.", accept: "image", allow_recording: false } }
+      ];
+      var withNote = blocks.concat([{ id: 19, type: "teacher_note", position: 20, content: { title: "Teacher note", body: "**Тільки для мене:** на цьому місці розказати про *kanelbullens dag* (4 жовтня)." } }]);
+
+      var work = {
+        17: { status: "reviewed", text: "Jag heter Olena.", files: [], feedback: "Super, **Olena**! Lägg till *och jag bor i Krakow*.", score: 5, reviewed_at: "2026-11-05T10:00:00Z" },
+        18: { status: "submitted", text: "", files: [{ path: "", name: "konspekt.jpg" }], feedback: "", score: null, reviewed_at: null }
+      };
+      function ctxFor(mode) {
+        return { mode: mode, lang: "uk", signedUrl: signedUrl, work: JSON.parse(JSON.stringify(work)), results: {},
+          onSubmitWork: onSubmitWork,
+          onResult: function (id, r) { note("onResult(" + id + "): " + JSON.stringify(r)); } };
+      }
+      FMMBlocks.renderAll(document.getElementById("student"), blocks, ctxFor("student"));
+      FMMBlocks.renderAll(document.getElementById("preview"), withNote, ctxFor("preview"));
+
+      var bad = blocks.concat(withNote).filter(function (b) { return b.id !== 14 && !FMMBlocks.validate(b).ok; });
+      if (bad.length) note("Помилки формату: " + bad.map(function (b) { return b.type + " — " + FMMBlocks.validate(b).errors.join(" / "); }).join(" | "));
+    })();
+  </script>
+</body>
+</html>

@@ -4,11 +4,12 @@
    * A course (modules -> lessons): outline on the left, the open lesson on
      the right; the lesson is chosen by the address hash  #l=<lessonId>.
    * A product without modules (ready lesson, book, issue): one page with
-     its materials and exercises.
+     its blocks.
+   Every lesson is a list of blocks drawn by FMMBlocks.renderAll
+   (assets/blocks.js + blocks-exercises.js): text, media, exercises that
+   are checked on the spot, and work for Maria (open answer, voice, file).
    No session -> vkhid.html?next=... ; no access -> a friendly message.
-   Needs assets/account.js, assets/exercises.js. All data is escaped before
-   it goes into HTML; text materials go through the tiny markdown below
-   (it escapes first); iframes only for allow-listed video hosts.
+   Needs assets/account.js, assets/blocks.js, assets/blocks-exercises.js.
    ===================================================================== */
 (function () {
   "use strict";
@@ -18,6 +19,7 @@
   var T = window.T || function (s, v) {
     return String(s).replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, function (m, k) { return v && v[k] != null ? v[k] : m; });
   };
+  if (!A) return;
 
   /* ---------------- Small helpers ---------------- */
   function $(sel, root) { return (root || document).querySelector(sel); }
@@ -29,90 +31,13 @@
   }
   function url(p) { return I.url ? I.url(p) : p; }
   function withDemo(href) {
-    if (!A || !A.isDemo()) return href;
+    if (!A.isDemo()) return href;
     var parts = href.split("#");
     parts[0] += (parts[0].indexOf("?") > -1 ? "&" : "?") + "demo=1";
     return parts.join("#");
   }
   function page(p) { return withDemo(url(p)); }
 
-  /* ---------------- Tiny markdown (escape first) ---------------- */
-  /* ## / ### headings, blank-line paragraphs, "- " lists, **bold**, *italic*,
-     [text](https://...) links, "> " quotes, single line breaks. */
-  function inline(escaped) {
-    var stash = [];
-    var s = escaped.replace(/[\u0001\u0002]/g, "").replace(/\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)/g, function (m, text, href) {
-      stash.push('<a href="' + href + '" target="_blank" rel="noopener noreferrer">' + emphasis(text) + "</a>");
-      return "\u0001" + (stash.length - 1) + "\u0002";
-    });
-    s = emphasis(s);
-    return s.replace(/\u0001(\d+)\u0002/g, function (m, i) { return stash[Number(i)]; });
-  }
-  function emphasis(s) {
-    s = s.replace(/\*\*(\S(?:[^*\n]*?\S)?)\*\*/g, "<strong>$1</strong>");
-    s = s.replace(/\*(\S(?:[^*\n]*?\S)?)\*/g, "<em>$1</em>");
-    return s;
-  }
-  function md(src) {
-    var lines = String(src == null ? "" : src).replace(/\r\n?/g, "\n").split("\n");
-    var out = [], para = [], list = [], quote = [], i, line, m;
-    function flush() {
-      if (para.length) { out.push("<p>" + para.map(function (l) { return inline(esc(l)); }).join("<br>") + "</p>"); para = []; }
-      if (list.length) { out.push("<ul>" + list.map(function (l) { return "<li>" + inline(esc(l)) + "</li>"; }).join("") + "</ul>"); list = []; }
-      if (quote.length) { out.push("<blockquote><p>" + quote.map(function (l) { return inline(esc(l)); }).join("<br>") + "</p></blockquote>"); quote = []; }
-    }
-    for (i = 0; i < lines.length; i++) {
-      line = lines[i];
-      if (/^\s*$/.test(line)) { flush(); continue; }
-      if ((m = /^###\s+(.*)$/.exec(line))) { flush(); out.push("<h4>" + inline(esc(m[1])) + "</h4>"); continue; }
-      if ((m = /^##\s+(.*)$/.exec(line))) { flush(); out.push("<h3>" + inline(esc(m[1])) + "</h3>"); continue; }
-      if ((m = /^-\s+(.*)$/.exec(line))) {
-        if (para.length || quote.length) flush();
-        list.push(m[1]); continue;
-      }
-      if ((m = /^>\s?(.*)$/.exec(line))) {
-        if (para.length || list.length) flush();
-        quote.push(m[1]); continue;
-      }
-      if (list.length || quote.length) flush();
-      para.push(line);
-    }
-    flush();
-    return out.join("\n");
-  }
-
-  /* ---------------- Video links ---------------- */
-  var VIDEO_HOSTS = ["player.vimeo.com", "iframe.mediadelivery.net", "www.youtube-nocookie.com", "www.youtube.com"];
-
-  function parseUrl(s) {
-    try { return new URL(String(s)); } catch (_) { return null; }
-  }
-  /* -> { embed: "https://..." } for an allow-listed player, { link: "https://..." }
-     for any other https address, or null. Ordinary YouTube / Vimeo page links
-     are turned into their player address (ids are checked). */
-  function videoRef(ref) {
-    var u = parseUrl(ref);
-    if (!u || u.protocol !== "https:") return null;
-    var host = u.hostname.toLowerCase(), path = u.pathname, id;
-    if (host === "youtu.be" && (id = /^\/([A-Za-z0-9_-]{6,15})$/.exec(path))) {
-      return { embed: "https://www.youtube-nocookie.com/embed/" + id[1] };
-    }
-    if ((host === "www.youtube.com" || host === "youtube.com" || host === "m.youtube.com") && path === "/watch") {
-      id = /(?:^|[?&])v=([A-Za-z0-9_-]{6,15})(?:&|$)/.exec(u.search);
-      if (id) return { embed: "https://www.youtube-nocookie.com/embed/" + id[1] };
-    }
-    if (host === "vimeo.com" && (id = /^\/(\d{5,12})$/.exec(path))) {
-      return { embed: "https://player.vimeo.com/video/" + id[1] };
-    }
-    if (VIDEO_HOSTS.indexOf(host) > -1) {
-      if (host === "www.youtube.com" && path.indexOf("/embed/") !== 0) return { link: u.href };
-      return { embed: u.href };
-    }
-    return { link: u.href };
-  }
-
-  window.FMMKursKabinet = { md: md, videoRef: videoRef };
-  if (!A) return;
 
   /* ---------------- Query / hash ---------------- */
   function param(name) {
@@ -134,7 +59,6 @@
     course: T("Курс"), teacher_course: T("Курс для викладачів"), lesson: T("Урок"),
     book: T("Підручник"), magazine_issue: T("Журнал"), magazine_subscription: T("Журнал")
   };
-  var MAT_ICONS = { pdf: "📄", other: "📎", audio: "🎧", video: "🎬", link: "🔗", text: "📝" };
 
   var errTexts = {
     network: T("Немає звʼязку із сервером. Перевір інтернет і спробуй ще раз."),
@@ -191,7 +115,7 @@
       m.lessons.forEach(function (l) { seq.push({ id: String(l.id), lesson: l, module: m, extra: false }); });
     });
     hasLessons = seq.length > 0;
-    if (hasLessons && (data.materials.length || data.exercises.length)) {
+    if (hasLessons && data.blocks.length) {
       seq.push({ id: "extra", lesson: null, module: null, extra: true });
     }
   }
@@ -304,188 +228,93 @@
     $("#kc-nav").classList.remove("is-open");
   }
 
-  /* ---------------- Materials ---------------- */
-  function matTitle(m) {
-    if (m.title) return m.title;
-    var names = { pdf: T("Файл PDF"), audio: T("Аудіо"), video: T("Відео"), link: T("Посилання"), text: T("Текст"), other: T("Файл") };
-    return names[m.kind] || T("Матеріал");
+  /* ---------------- Blocks of one place (lesson / product level) ---------------- */
+  var handles = [];      /* what FMMBlocks.renderAll returned for the open page */
+  var saveFail = null;   /* the last result that could not be saved */
+
+  function stopBlocks() {
+    handles.forEach(function (h) { try { if (h && h.destroy) h.destroy(); } catch (_) {} });
+    handles = [];
   }
 
-  function materialHtml(m, idx) {
-    var t = esc(matTitle(m));
-    var ico = '<span class="kc-mat-ico" aria-hidden="true">' + (MAT_ICONS[m.kind] || MAT_ICONS.other) + "</span>";
-    var ext = m.external_ref && /^https:\/\//i.test(m.external_ref) ? m.external_ref : "";
-    var vr;
-
-    if (m.kind === "text") {
-      return '<section class="kc-mat kc-mat-text"><h3 class="kc-mat-title">' + ico + t + '</h3><div class="kc-text">' + md(m.body) + "</div></section>";
-    }
-    if (m.kind === "audio") {
-      return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><div class="kc-media" data-audio="' + idx + '">' +
-        '<p class="kc-wait">' + esc(T("Завантажую аудіо…")) + "</p></div></section>";
-    }
-    if (m.kind === "video") {
-      vr = ext ? videoRef(ext) : null;
-      if (vr && vr.embed) {
-        return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><div class="kc-video">' +
-          '<iframe src="' + esc(vr.embed) + '" title="' + esc(matTitle(m)) + '" loading="lazy" allowfullscreen ' +
-          'allow="fullscreen; picture-in-picture; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe></div></section>';
-      }
-      if (vr && vr.link) {
-        return '<section class="kc-mat kc-mat-file"><h3 class="kc-mat-title">' + ico + t + '</h3>' +
-          '<a class="btn btn-ghost btn-sm" href="' + esc(vr.link) + '" target="_blank" rel="noopener noreferrer">' + esc(T("Дивитися відео")) + "</a></section>";
-      }
-      if (m.storage_path) {
-        return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><div class="kc-media" data-video="' + idx + '">' +
-          '<p class="kc-wait">' + esc(T("Завантажую відео…")) + "</p></div></section>";
-      }
-      return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><p class="kc-wait">' + esc(T("Відео поки недоступне.")) + "</p></section>";
-    }
-    if (m.kind === "link") {
-      if (!ext) {
-        return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><p class="kc-wait">' + esc(T("Посилання поки недоступне.")) + "</p></section>";
-      }
-      return '<section class="kc-mat kc-mat-file"><h3 class="kc-mat-title">' + ico + t + '</h3>' +
-        '<a class="btn btn-ghost btn-sm" href="' + esc(ext) + '" target="_blank" rel="noopener noreferrer">' + esc(T("Відкрити посилання")) + "</a></section>";
-    }
-    /* pdf, other */
-    if (!m.storage_path && ext) {
-      return '<section class="kc-mat kc-mat-file"><h3 class="kc-mat-title">' + ico + t + '</h3>' +
-        '<a class="btn btn-ghost btn-sm" href="' + esc(ext) + '" target="_blank" rel="noopener noreferrer">' + esc(T("Відкрити")) + "</a></section>";
-    }
-    if (!m.storage_path) {
-      return '<section class="kc-mat"><h3 class="kc-mat-title">' + ico + t + '</h3><p class="kc-wait">' + esc(T("Файл поки недоступний.")) + "</p></section>";
-    }
-    return '<section class="kc-mat kc-mat-file"><h3 class="kc-mat-title">' + ico + t + "</h3>" +
-      '<div class="kc-file-actions"><button class="btn btn-ghost btn-sm" type="button" data-dl="' + idx + '">' +
-      esc(m.kind === "pdf" ? T("Завантажити PDF") : T("Завантажити файл")) + "</button>" +
-      '<span class="kc-file-msg" role="status" aria-live="polite"></span></div></section>';
-  }
-
-  function wireMaterials(box, mats) {
-    all("[data-dl]", box).forEach(function (btn) {
-      var m = mats[Number(btn.getAttribute("data-dl"))];
-      var msg = $(".kc-file-msg", btn.parentNode);
-      btn.addEventListener("click", function () {
-        /* open the tab at once (a click is needed for that), fill it when the link is ready */
-        var w = null;
-        try { w = window.open("", "_blank"); } catch (_) { w = null; }
-        btn.disabled = true;
-        msg.className = "kc-file-msg";
-        msg.textContent = T("Готую файл…");
-        A.signedUrl(m.storage_path).then(function (u) {
-          btn.disabled = false;
-          msg.textContent = "";
-          if (w) { try { w.opener = null; } catch (_) {} w.location.href = u; }
-          else window.location.href = u;
+  /* The things the blocks call back into. results and work are the live maps
+     of the product, so a page that is opened again shows the newest state. */
+  function makeCtx() {
+    return {
+      mode: "student",
+      lang: I.lang || document.documentElement.getAttribute("lang") || "uk",
+      signedUrl: function (src) { return A.signedUrl(src); },
+      workFileUrl: function (path) { return A.workFileUrl(path); },
+      results: data.results,
+      work: data.work,
+      onResult: function (blockId, res) {
+        return saveResult(blockId, res);
+      },
+      /* A send was refused because Maria has just reviewed the work: fetch the
+         product again and take the fresh work of that block into the live map. */
+      reloadWork: function (blockId) {
+        return A.product(SLUG).then(function (fresh) {
+          var w = fresh && fresh.work ? fresh.work : {};
+          var key = String(blockId);
+          if (w[key]) data.work[key] = w[key];
+          return data.work[key] || null;
+        }, function () { return null; });
+      },
+      onSubmitWork: function (blockId, payload) {
+        return A.submitWork(blockId, { text: payload.text, files: payload.files }).then(function (row) {
+          data.work[String(blockId)] = row;
+          return row;
         }, function (err) {
-          btn.disabled = false;
-          if (w) { try { w.close(); } catch (_) {} }
-          msg.className = "kc-file-msg is-error";
-          msg.textContent = err && err.code === "network"
-            ? T("Немає звʼязку із сервером. Перевір інтернет і спробуй ще раз.")
-            : T("Не вдалося відкрити файл. Спробуй ще раз або напиши мені.");
+          if (err && err.code === "session_missing") goLogin();
+          throw err;
         });
-      });
-    });
-    ["audio", "video"].forEach(function (kind) {
-      all("[data-" + kind + "]", box).forEach(function (holder) {
-        var m = mats[Number(holder.getAttribute("data-" + kind))];
-        A.signedUrl(m.storage_path).then(function (u) {
-          var el = document.createElement(kind);
-          el.controls = true;
-          el.preload = "none";
-          el.setAttribute("controls", "");
-          el.setAttribute("aria-label", matTitle(m));
-          el.src = u;
-          holder.innerHTML = "";
-          holder.appendChild(el);
-        }, function () {
-          holder.innerHTML = '<p class="kc-file-msg is-error">' + esc(T("Не вдалося завантажити. Онови сторінку або напиши мені.")) + "</p>";
-        });
-      });
-    });
-  }
-
-  /* ---------------- Exercises ---------------- */
-  function bestText(r) {
-    return T("Найкращий результат: {best} з {max} · спроб: {n}", { best: r.best_score, max: r.max_score, n: r.attempts });
-  }
-
-  function mountExercise(holder, ex) {
-    var best = $(".kc-best", holder);
-    var target = $(".kc-ex-target", holder);
-    var msg = $(".kc-save-msg", holder);
-
-    function showBest() {
-      if (ex.result && ex.result.attempts > 0 && ex.result.max_score > 0) {
-        best.textContent = bestText(ex.result);
-        best.hidden = false;
-        best.classList.toggle("is-perfect", ex.result.best_score >= ex.result.max_score);
-      } else {
-        best.hidden = true;
       }
-    }
-    showBest();
+    };
+  }
 
-    if (!window.FMMExercises) {
-      target.innerHTML = '<p class="kc-file-msg is-error">' + esc(T("Цю вправу не вдалося показати. Напиши Марії, будь ласка.")) + "</p>";
-      return;
-    }
+  function saveMsg() { return $("#kc-save-msg"); }
 
-    function save(res) {
-      msg.className = "kc-save-msg";
-      msg.textContent = "";
-      A.saveResult(ex.id, res).then(function (saved) {
-        ex.result = {
-          best_score: saved.best_score, last_score: saved.last_score, max_score: saved.max_score,
-          attempts: saved.attempts, completed: !!saved.completed
-        };
-        showBest();
-      }, function (err) {
-        if (err && err.code === "session_missing") { goLogin(); return; }
-        msg.className = "kc-save-msg is-error";
-        msg.innerHTML = "";
-        msg.appendChild(document.createTextNode(T("Результат не вдалося зберегти.") + " "));
+  function saveResult(blockId, res) {
+    var msg = saveMsg();
+    if (msg) { msg.className = "kc-save-msg"; msg.textContent = ""; }
+    saveFail = null;
+    return A.saveBlockResult(blockId, res).then(function (saved) {
+      data.results[String(blockId)] = saved;
+      return saved;
+    }, function (err) {
+      if (err && err.code === "session_missing") { goLogin(); return null; }
+      saveFail = { blockId: blockId, res: res };
+      var m = saveMsg();
+      if (m) {
+        m.className = "kc-save-msg is-error";
+        m.innerHTML = "";
+        m.appendChild(document.createTextNode(T("Результат не вдалося зберегти.") + " "));
         var retry = document.createElement("button");
         retry.type = "button";
         retry.className = "pf-link";
         retry.textContent = T("Зберегти ще раз");
-        retry.addEventListener("click", function () { save(res); });
-        msg.appendChild(retry);
-      });
-    }
-
-    FMMExercises.render(target, ex.content, {
-      title: ex.title || undefined,
-      instructions: ex.instructions || undefined,
-      onResult: function (result) {
-        save({ score: result.score, max: result.max, answers: result.answers });
+        retry.addEventListener("click", function () {
+          var f = saveFail;
+          if (f) saveResult(f.blockId, f.res);
+        });
+        m.appendChild(retry);
       }
+      return null;
     });
   }
 
-  function exercisesHtml(list) {
-    return list.map(function (ex, i) {
-      return '<div class="kc-ex" data-ex="' + i + '"><p class="kc-best" role="status" hidden></p><div class="kc-ex-target"></div>' +
-        '<p class="kc-save-msg" role="alert"></p></div>';
-    }).join("");
-  }
-
-  /* ---------------- Content of one place (lesson / product level) ---------------- */
-  function fillContent(box, mats, exs) {
-    var html = "";
-    mats.forEach(function (m, i) { html += materialHtml(m, i); });
-    if (exs.length) {
-      html += '<div class="kc-exercises">' + exercisesHtml(exs) + "</div>";
-    }
-    if (!mats.length && !exs.length) {
-      html = '<p class="kc-wait">' + esc(T("Матеріали для цього уроку скоро зʼявляться.")) + "</p>";
-    }
+  function fillBlocks(box, blocks) {
+    stopBlocks();
     var holder = $(".kc-content", box);
-    holder.innerHTML = html;
-    wireMaterials(holder, mats);
-    all("[data-ex]", holder).forEach(function (h) { mountExercise(h, exs[Number(h.getAttribute("data-ex"))]); });
+    if (!blocks.length) {
+      holder.innerHTML = '<p class="kc-wait">' + esc(T("Матеріали для цього уроку скоро зʼявляться.")) + "</p>";
+      return;
+    }
+    if (!window.FMMBlocks) {
+      holder.innerHTML = '<p class="kc-wait is-error">' + esc(T("Цей урок не вдалося показати. Напиши Марії, будь ласка.")) + "</p>";
+      return;
+    }
+    handles = FMMBlocks.renderAll(holder, blocks, makeCtx()) || [];
   }
 
   /* ---------------- Showing one step ---------------- */
@@ -516,22 +345,22 @@
     var crumb = s.lesson
       ? esc(s.module.title) + " · " + esc(T("Урок {n} з {total}", { n: lessonNo, total: total }))
       : esc(T("Підсумок і додаткові матеріали"));
-    var mats = s.lesson ? s.lesson.materials : data.materials;
-    var exs = s.lesson ? s.lesson.exercises : data.exercises;
+    var blocks = s.lesson ? s.lesson.blocks : data.blocks;
 
     var html = '<article class="kc-lesson-view" aria-labelledby="kc-lesson-title">' +
       '<p class="kc-crumb">' + crumb + "</p>" +
       '<h2 class="kc-lesson-title" id="kc-lesson-title" tabindex="-1">' + esc(title) + "</h2>" +
       (s.lesson && s.lesson.summary ? '<p class="kc-summary">' + esc(s.lesson.summary) + "</p>" : "") +
-      '<div class="kc-content"></div>';
+      '<div class="kc-content"></div><p class="kc-save-msg" id="kc-save-msg" role="alert"></p>';
     if (s.lesson) {
       html += '<div class="kc-done-bar"><button class="btn" type="button" id="kc-done"></button>' +
         '<span class="kc-done-msg" id="kc-done-msg" role="status" aria-live="polite"></span></div>';
     }
     html += pagerHtml(i) + "</article>";
+    stopBlocks();
     main.innerHTML = html;
 
-    fillContent(main, mats, exs);
+    fillBlocks(main, blocks);
     if (s.lesson) wireDone(s.lesson);
     updateOutline();
     setTitle([title, data.product.title]);
@@ -588,12 +417,13 @@
       route(false);
       window.addEventListener("hashchange", function () { route(true); });
     } else {
-      /* one page: product-level materials and exercises */
+      /* one page: the blocks of the product itself */
       currentId = "single";
       var main = $("#kc-main");
       var p = data.product;
-      main.innerHTML = (p.description ? '<div class="kc-text kc-intro">' + md(p.description) + "</div>" : "") + '<div class="kc-content"></div>';
-      fillContent(main, data.materials, data.exercises);
+      var intro = p.description && window.FMMBlocks ? '<div class="kc-text kc-intro">' + FMMBlocks.md(p.description) + "</div>" : "";
+      main.innerHTML = intro + '<div class="kc-content"></div><p class="kc-save-msg" id="kc-save-msg" role="alert"></p>';
+      fillBlocks(main, data.blocks);
       setTitle([p.title]);
     }
   }
@@ -603,11 +433,12 @@
       if (!d || !d.product) { showUnavailable(); return; }
       data = d;
       data.modules = data.modules || [];
-      data.materials = data.materials || [];
-      data.exercises = data.exercises || [];
+      data.blocks = data.blocks || [];
+      data.results = data.results || {};
+      data.work = data.work || {};
       data.modules.forEach(function (m) {
         m.lessons = m.lessons || [];
-        m.lessons.forEach(function (l) { l.materials = l.materials || []; l.exercises = l.exercises || []; });
+        m.lessons.forEach(function (l) { l.blocks = l.blocks || []; });
       });
       render();
     }, function (err) {

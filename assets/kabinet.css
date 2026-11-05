@@ -36,6 +36,7 @@
 .kb-card-title { font-size: 1.3rem; margin: 0.55rem 0 0.35rem; overflow-wrap: anywhere; }
 .kb-card-desc { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 0.8rem; }
 .kb-progress { margin: 0.2rem 0 0.4rem; }
+.kb-work { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.2rem 0 0.4rem; }
 .kb-access { font-size: 0.85rem; color: var(--muted); margin: 0.2rem 0 1rem; }
 .kb-open { margin-top: auto; align-self: flex-start; }
 .kb-empty-actions { justify-content: center; }
@@ -128,27 +129,9 @@
 .kc-summary { color: var(--ink-soft); font-size: 1.05rem; margin-bottom: 1.4rem; }
 .kc-wait { color: var(--muted); margin: 0.4rem 0; }
 
-.kc-content { display: grid; gap: 1.2rem; margin-top: 1rem; }
+.kc-content { margin-top: 1rem; }
 .kc-single .kc-content { margin-top: 1.4rem; }
 .kc-single .kc-intro { margin-bottom: 0.4rem; }
-
-/* materials */
-.kc-mat { border-top: 1px solid var(--line); padding-top: 1.2rem; }
-.kc-content > .kc-mat:first-child { border-top: 0; padding-top: 0; }
-.kc-mat-title {
-  font-family: "Inter", system-ui, sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.7rem;
-  display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.35; overflow-wrap: anywhere;
-}
-.kc-mat-ico { font-size: 1.15rem; line-height: 1.3; }
-.kc-mat-file { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
-.kc-mat-file .kc-mat-title { margin-bottom: 0; flex: 1 1 14rem; }
-.kc-file-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
-.kc-file-msg { font-size: 0.9rem; color: var(--muted); }
-.kc-file-msg.is-error, .kc-save-msg.is-error, .kc-done-msg.is-error { color: #8a3516; font-weight: 600; }
-.kc-media audio, .kc-media video { width: 100%; max-width: 34rem; display: block; }
-.kc-media video { max-width: 100%; border-radius: 14px; }
-.kc-video { position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #0d1b2a; }
-.kc-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* text (tiny markdown) */
 .kc-text { font-size: 1.05rem; line-height: 1.75; overflow-wrap: anywhere; }
@@ -164,18 +147,10 @@
 .kc-text blockquote p { margin: 0; }
 .kc-text a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
 
-/* exercises */
-.kc-exercises { display: grid; gap: 2rem; border-top: 1px solid var(--line); padding-top: 1.6rem; margin-top: 0.4rem; }
-.kc-content > .kc-exercises:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
-.kc-ex .fmx { max-width: none; }
-.kc-best {
-  display: inline-block; margin: 0 0 0.9rem; padding: 0.4rem 0.9rem; border-radius: 999px;
-  background: var(--blue-soft); color: var(--blue-dark); font-weight: 600; font-size: 0.9rem;
-}
-.kc-best[hidden] { display: none; }
-.kc-best.is-perfect { background: var(--sage-soft); color: #2f4a33; }
-.kc-save-msg { margin: 0.6rem 0 0; font-size: 0.92rem; }
+/* message under the blocks (a result that could not be saved) */
+.kc-save-msg { margin: 0.8rem 0 0; font-size: 0.92rem; }
 .kc-save-msg:empty { display: none; }
+.kc-save-msg.is-error, .kc-done-msg.is-error, .kc-wait.is-error { color: #8a3516; font-weight: 600; }
 
 /* done + pager */
 .kc-done-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 1.8rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }

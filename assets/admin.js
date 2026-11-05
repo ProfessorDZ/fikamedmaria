@@ -1,6 +1,8 @@
 /* =====================================================================
    Fika med Maria — admin area (admin.html). Ukrainian only.
-   Sections (hash routes): #produkty  #vmist[/<id>]  #uchni  #zamovlennia
+   Sections (hash routes): #produkty  #vmist[/<id>]  #uchni  #zamovlennia  #roboty
+   Lesson content is a list of blocks (table lesson_blocks), drawn by
+   assets/admin-blocks.js; this file does the database work for it.
    * Real mode: reads and writes through the supabase-js client of
      FMMAccount.client() (the database rules let only an admin do this) and
      calls the Edge Function admin-grant-access with the admin's token.
@@ -31,9 +33,6 @@
   var KIND_LABEL = {};
   KINDS.forEach(function (k) { KIND_LABEL[k[0]] = k[1]; });
 
-  var MATERIAL_KIND_LABEL = {
-    pdf: "PDF", audio: "Аудіо", video: "Відео", link: "Посилання", other: "Файл", text: "Текст"
-  };
   var ORDER_STATUS = {
     pending: ["Очікує оплати", "is-muted"],
     paid: ["Оплачено", "is-ok"],
@@ -284,7 +283,53 @@
     return out.join("\n");
   }
 
+  /* ---- helpers for the data layer (pure, tested) ---- */
+  var IN_CHUNK = 50;   /* longest list sent to one ".in(...)" lookup */
+  function chunkList(arr, n) {
+    var out = [], i;
+    for (i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+    return out;
+  }
+  function uniqIds(list) {
+    var seen = {}, out = [];
+    (list || []).forEach(function (x) {
+      if (x == null) return;
+      var k = typeof x + ":" + x;
+      if (!seen[k]) { seen[k] = true; out.push(x); }
+    });
+    return out;
+  }
+  /* Rows of `table` whose `key` is one of `ids`, asked for in chunks of 50 so the
+     address of a request never gets too long. */
+  function lookupIn(client, table, columns, ids, key) {
+    ids = uniqIds(ids);
+    if (!ids.length) return Promise.resolve([]);
+    return Promise.all(chunkList(ids, IN_CHUNK).map(function (part) {
+      return client.from(table).select(columns).in(key || "id", part).then(function (r) {
+        if (r && r.error) {
+          var e = new Error(r.error.message || "error");
+          e.code = r.error.code || "";
+          e.status = r.error.status;
+          throw e;
+        }
+        return (r && r.data) || [];
+      });
+    })).then(function (parts) {
+      return parts.reduce(function (all, p) { return all.concat(p); }, []);
+    });
+  }
+  /* true when an error does not prove that a write was refused: the request may
+     have reached the database (no answer, timeout, gateway error) */
+  function writeUncertain(e) {
+    var code = String((e && e.code) || ""), st = Number(e && e.status) || 0, low = String((e && e.message) || "").toLowerCase();
+    if (/failed to fetch|networkerror|load failed|network request failed|timeout|timed out|abort/.test(low)) return true;
+    if (code === "network" || code === "timeout") return true;
+    if (st === 408 || st === 502 || st === 503 || st === 504) return true;
+    return !code && !st;
+  }
+
   var H = {
+    chunkList: chunkList, uniqIds: uniqIds, lookupIn: lookupIn, writeUncertain: writeUncertain,
     KINDS: KINDS, KIND_LABEL: KIND_LABEL, billingFor: billingFor, checkSlug: checkSlug,
     parsePrice: parsePrice, formatMoney: formatMoney, centsToInput: centsToInput,
     slugify: slugify, safeFilename: safeFilename, titleFromFilename: titleFromFilename,
@@ -452,6 +497,7 @@
     method_not_allowed: "Сервер не прийняв запит. Напиши розробнику.",
     server_error: "Помилка на сервері. Спробуй ще раз за хвилину.",
     network: "Немає зв'язку з сервером. Перевір інтернет і спробуй ще раз.",
+    work_changed: "Учень щойно надіслав нову версію — відкрий її ще раз.",
     not_deployed: "Ця функція на сервері ще не підключена. Її запустять перед відкриттям магазину."
   };
 
@@ -497,6 +543,7 @@
   }
 
   var CFG = window.FMM_PLATFORM || {};
+  var WORK_PAGE = 50;   /* works shown per page in «Роботи учнів» */
 
   /* ---------- 4.1 Real: supabase-js ---------- */
   function makeRealData(client) {
@@ -527,8 +574,7 @@
     D.loadContent = function (productId) {
       return Promise.all([
         client.from("course_modules").select("*, course_lessons(*)").eq("product_id", productId).order("position").order("id"),
-        client.from("materials").select("*").eq("product_id", productId).order("position").order("id"),
-        client.from("exercises").select("*").eq("product_id", productId).order("position").order("id")
+        client.from("lesson_blocks").select("*").eq("product_id", productId).order("position").order("id")
       ]).then(function (rs) {
         var mods = must(rs[0]) || [], lessons = [];
         var modules = mods.map(function (m) {
@@ -536,7 +582,7 @@
           var c = {}; for (var k in m) { if (k !== "course_lessons") c[k] = m[k]; }
           return c;
         });
-        return { modules: modules, lessons: lessons, materials: must(rs[1]) || [], exercises: must(rs[2]) || [] };
+        return { modules: modules, lessons: lessons, blocks: must(rs[1]) || [] };
       });
     };
     D.upload = function (productId, file) {
@@ -592,6 +638,83 @@
         throw mkError("network", "Failed to fetch");
       });
     };
+    /* Students' answers and files. block_work points at auth users, so names, blocks,
+       lessons and products are fetched in separate small queries (50 ids at a time)
+       and joined here. */
+    function byId(rows) { var m = {}; (rows || []).forEach(function (r) { m[String(r.id)] = r; }); return m; }
+    function describeWork(rows) {
+      rows = rows || [];
+      if (!rows.length) return Promise.resolve([]);
+      return Promise.all([
+        lookupIn(client, "profiles", "id,email,full_name", rows.map(function (r) { return r.user_id; })),
+        lookupIn(client, "lesson_blocks", "id,type,content,product_id,lesson_id", rows.map(function (r) { return r.block_id; }))
+      ]).then(function (rs) {
+        var profs = byId(rs[0]), blks = byId(rs[1]);
+        var bl = Object.keys(blks).map(function (k) { return blks[k]; });
+        return Promise.all([
+          lookupIn(client, "course_lessons", "id,title", bl.map(function (b) { return b.lesson_id; })),
+          lookupIn(client, "products", "id,title", bl.map(function (b) { return b.product_id; }))
+        ]).then(function (qs) {
+          var lessons = byId(qs[0]), prods = byId(qs[1]);
+          return rows.map(function (r) {
+            var pr = profs[String(r.user_id)] || {}, b = blks[String(r.block_id)] || null;
+            var files = r.files;
+            if (typeof files === "string") { try { files = JSON.parse(files); } catch (_) { files = []; } }
+            return {
+              user_id: r.user_id, block_id: r.block_id, status: r.status, text: r.text, files: Array.isArray(files) ? files : [],
+              /* submitted_at stays the exact text the database sent: review_block_work compares it to the microsecond */
+              submitted_at: r.submitted_at, feedback: r.feedback, score: r.score, reviewed_at: r.reviewed_at,
+              student: { name: pr.full_name || "", email: pr.email || "" },
+              block: b ? { id: b.id, type: b.type, content: b.content || {} } : null,
+              lesson_title: b && b.lesson_id != null && lessons[String(b.lesson_id)] ? lessons[String(b.lesson_id)].title : "",
+              product_title: b && prods[String(b.product_id)] ? prods[String(b.product_id)].title : ""
+            };
+          });
+        });
+      });
+    }
+    /* One page of works: { status: "submitted" (oldest first) | "reviewed" (newest first), from, limit }.
+       Answers { rows, more }. */
+    D.listWork = function (opts) {
+      opts = opts || {};
+      var status = opts.status === "reviewed" ? "reviewed" : "submitted";
+      var from = Math.max(0, Number(opts.from) || 0), limit = Math.max(1, Number(opts.limit) || WORK_PAGE);
+      var q = client.from("block_work").select("*").eq("status", status);
+      if (status === "submitted") q = q.order("submitted_at", { ascending: true });
+      else q = q.order("reviewed_at", { ascending: false, nullsFirst: false }).order("submitted_at", { ascending: false });
+      q = q.order("user_id", { ascending: true }).order("block_id", { ascending: true });
+      return q.range(from, from + limit).then(must).then(function (rows) {   /* one row more than the page, to know if there is a next page */
+        rows = rows || [];
+        var more = rows.length > limit;
+        return describeWork(rows.slice(0, limit)).then(function (list) { return { rows: list, more: more }; });
+      });
+    };
+    D.countWork = function (status) {
+      return client.from("block_work").select("*", { count: "exact", head: true }).eq("status", status === "reviewed" ? "reviewed" : "submitted")
+        .then(function (r) {
+          if (r && r.error) throw mkError(r.error.code || "", r.error.message);
+          return (r && r.count) || 0;
+        });
+    };
+    D.getWork = function (userId, blockId) {
+      return client.from("block_work").select("*").eq("user_id", userId).eq("block_id", blockId).maybeSingle().then(must).then(function (row) {
+        return row ? describeWork([row]).then(function (l) { return l[0] || null; }) : null;
+      });
+    };
+    D.workFileUrl = function (path) {
+      return client.storage.from("student-work").createSignedUrl(path, 3600).then(must).then(function (d) {
+        if (!d || !d.signedUrl) throw mkError("unknown", "no url");
+        return d.signedUrl;
+      });
+    };
+    /* submittedAt: the submitted_at text of the version Maria opened, passed back untouched */
+    D.reviewWork = function (userId, blockId, feedback, score, submittedAt) {
+      return client.rpc("review_block_work", { p_user_id: userId, p_block_id: blockId, p_feedback: feedback, p_score: score, p_submitted_at: submittedAt })
+        .then(must).then(null, function (e) {
+          if (/work_changed/.test(String((e && e.message) || ""))) e.code = "work_changed";
+          throw e;
+        });
+    };
     D.listOrders = function () {
       return client.from("orders")
         .select("id,created_at,paid_at,status,email,amount_total_cents,currency,source,order_items(quantity,unit_amount_cents,products(title))")
@@ -610,10 +733,79 @@
   }
 
   /* ---------- 4.2 Demo: everything in memory ---------- */
+  /* Example blocks for the demo (used when the demo data has none of its own). */
+  function demoBlockSeeds() {
+    var md1 = [
+      "## Привіт! Hej!",
+      "",
+      "Сьогодні ти вивчиш **перші слова** шведською. Не поспішай: *повільно — значить добре*.",
+      "",
+      "- Hej — привіт",
+      "- Hej då — до побачення",
+      "- Tack — дякую",
+      "",
+      "> Порада: у Швеції на «du» звертаються майже до всіх."
+    ].join("\n");
+    return {
+      l111: [
+        { id: 8001, type: "text", content: { heading: "Hej! Привіт і знайомство", body: md1 } },
+        { id: 8002, type: "image", content: { src: "assets/lessons/a2-skor/slide-a.webp", alt: "Слайд зі словами привітання", caption: "Перші слова" } },
+        { id: 8003, type: "hidden_text", content: { label: "Показати переклад", body: "- **Jag heter Olena.** — Мене звати Олена.\n- **Trevligt att träffas!** — Приємно познайомитись!" } },
+        { id: 8004, type: "open_answer", content: { title: "Розкажи про себе", instructions: "Напиши 2–3 речення шведською.", question: "Представся: як тебе звати і звідки ти? Використай *Jag heter…* і *Jag kommer från…*", min_words: 8 } },
+        { id: 8005, type: "teacher_note", content: { body: "На занятті запитай кожного: **Hur mår du?** Правильна відповідь на «Jag heter…» — просто ім'я." } }
+      ],
+      l112: [
+        { id: 8011, type: "table", content: { header: ["Число", "Svenska"], rows: [["1", "ett"], ["2", "två"], ["3", "tre"], ["4", "fyra"]], caption: "Рахуємо до чотирьох" } },
+        { id: 8012, type: "embed", content: { provider: "wordwall", url: "https://wordwall.net/embed/38a853ecb2fc4cb98c801b5cef3978c7?themeId=1", height: 480 } },
+        { id: 8013, type: "student_file", content: { title: "Запиши голос", task: "Запиши аудіо, у якому ти рахуєш від **1 до 10** шведською.", accept: "audio", allow_recording: true } }
+      ],
+      l121: [
+        { id: 8021, type: "youtube", content: { url: "https://www.youtube.com/watch?v=M7lc1UVf-VE" } },
+        { id: 8022, type: "vocabulary", content: { words: [
+          { word: "en kaffe", translation: "кава", example: "Jag vill ha en kaffe, tack." },
+          { word: "en kanelbulle", translation: "булочка з корицею", example: "Kanelbullar är goda!" }
+        ] } }
+      ],
+      l122: [
+        { id: 8031, type: "carousel", content: { images: [
+          { src: "assets/lessons/a2-skor/slide-a.webp", alt: "Слайд 1 про магазин", caption: "" },
+          { src: "assets/lessons/a2-skor/slide-b.webp", alt: "Слайд 2 про магазин", caption: "" }
+        ] } }
+      ],
+      p2: [
+        { id: 8041, type: "text", content: { heading: "Vad är lagom?", body: "Слово **lagom** не має точного перекладу. Приблизно: «в міру, як треба»." } },
+        { id: 8042, type: "collage", content: { images: [
+          { src: "assets/lessons/b1b2-lagom/slide-a.webp", alt: "Слайд про слово lagom", caption: "" },
+          { src: "assets/lessons/b1b2-lagom/slide-b.webp", alt: "Приклади вживання lagom", caption: "" }
+        ] } },
+        { id: 8043, type: "link_button", content: { label: "Прочитати статтю про lagom", url: "https://sv.wikipedia.org/wiki/Lagom" } },
+        { id: 8044, type: "file", content: { src: "2/lagom-worksheet.pdf", name: "Робочий аркуш (PDF)", note: "Роздрукуй або заповни на екрані." } }
+      ],
+      p3: [
+        { id: 8051, type: "text", content: { heading: "Svenska passiv", body: "Пасив у шведській утворюється двома способами: **-s** та **bli + participium**." } },
+        { id: 8052, type: "file", content: { src: "3/svenska-passiv.pdf", name: "Svenska passiv (PDF)" } }
+      ]
+    };
+  }
+
+  /* A second of silence, so the demo can show an audio player for a student's recording. */
+  function silentWavUrl() {
+    var n = 8000, bytes = [], i;
+    function w32(v) { bytes.push(v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >> 24) & 255); }
+    function w16(v) { bytes.push(v & 255, (v >> 8) & 255); }
+    function tag(t) { for (var k = 0; k < t.length; k++) bytes.push(t.charCodeAt(k)); }
+    tag("RIFF"); w32(36 + n); tag("WAVE"); tag("fmt "); w32(16); w16(1); w16(1); w32(8000); w32(8000); w16(1); w16(8);
+    tag("data"); w32(n);
+    for (i = 0; i < n; i++) bytes.push(128);
+    var bin = "";
+    for (i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return "data:audio/wav;base64," + btoa(bin);
+  }
+
   function makeDemoData() {
     var src = window.FMM_DEMO || {};
     var seq = 9000;
-    var db = { products: [], course_modules: [], course_lessons: [], materials: [], exercises: [], profiles: [], entitlements: [], orders: [] };
+    var db = { products: [], course_modules: [], course_lessons: [], lesson_blocks: [], block_work: [], profiles: [], entitlements: [], orders: [] };
     function clone(x) { return x == null ? x : JSON.parse(JSON.stringify(x)); }
     function later(v) { return new Promise(function (resolve) { setTimeout(function () { resolve(clone(v)); }, 30); }); }
     function nextId() { seq += 1; return seq; }
@@ -623,6 +815,12 @@
       "b1b2-lagom": { price_cents: 900, is_published: true, sort_order: 20 },
       "svenska-passiv": { price_cents: null, is_published: false, sort_order: 30 }
     };
+    var seeds = demoBlockSeeds();
+    function addBlocks(pid, lid, list) {
+      (list || []).forEach(function (x, i) {
+        db.lesson_blocks.push({ id: x.id != null ? x.id : nextId(), product_id: pid, lesson_id: lid, type: x.type, content: clone(x.content) || {}, position: x.position || i + 1 });
+      });
+    }
     Object.keys(src.products || {}).forEach(function (slug) {
       var pk = src.products[slug], p = pk.product, ex = extra[slug] || {};
       db.products.push({
@@ -636,20 +834,11 @@
         db.course_modules.push({ id: m.id, product_id: p.id, title: m.title, position: m.position });
         (m.lessons || []).forEach(function (l) {
           db.course_lessons.push({ id: l.id, module_id: m.id, title: l.title, summary: l.summary || "", position: l.position });
-          (l.materials || []).forEach(function (x) { db.materials.push(mat(p.id, l.id, x)); });
-          (l.exercises || []).forEach(function (x) { db.exercises.push(exo(p.id, l.id, x)); });
+          addBlocks(p.id, l.id, l.blocks || seeds["l" + l.id]);
         });
       });
-      (pk.materials || []).forEach(function (x) { db.materials.push(mat(p.id, null, x)); });
-      (pk.exercises || []).forEach(function (x) { db.exercises.push(exo(p.id, null, x)); });
+      addBlocks(p.id, null, pk.blocks || seeds["p" + p.id]);
     });
-    function mat(pid, lid, x) {
-      return { id: x.id, product_id: pid, lesson_id: lid, kind: x.kind, title: x.title, storage_path: x.storage_path || null,
-        external_ref: x.external_ref || null, body: x.body == null ? null : x.body, position: x.position || 0 };
-    }
-    function exo(pid, lid, x) {
-      return { id: x.id, product_id: pid, lesson_id: lid, title: x.title, instructions: x.instructions || "", content: clone(x.content), position: x.position || 0 };
-    }
 
     [
       { id: 4, slug: "svenska-varje-manad", kind: "magazine_subscription", title: "Svenska varje månad — журнал",
@@ -709,10 +898,33 @@
         db.course_lessons.filter(function (x) { return same(x.module_id, id); }).forEach(function (x) { cascade("course_lessons", x.id); });
         db.course_lessons = db.course_lessons.filter(function (x) { return !same(x.module_id, id); });
       } else if (name === "course_lessons") {
-        db.materials = db.materials.filter(function (x) { return !same(x.lesson_id, id); });
-        db.exercises = db.exercises.filter(function (x) { return !same(x.lesson_id, id); });
+        var gone = db.lesson_blocks.filter(function (x) { return same(x.lesson_id, id); }).map(function (x) { return String(x.id); });
+        db.lesson_blocks = db.lesson_blocks.filter(function (x) { return !same(x.lesson_id, id); });
+        db.block_work = db.block_work.filter(function (w) { return gone.indexOf(String(w.block_id)) < 0; });
+      } else if (name === "lesson_blocks") {
+        db.block_work = db.block_work.filter(function (w) { return !same(w.block_id, id); });
       }
     }
+
+    /* Students' work (open answers and files) for the review section */
+    function seedWork() {
+      function first(type) { return db.lesson_blocks.filter(function (b) { return b.type === type; })[0]; }
+      var oa = first("open_answer"), sf = first("student_file");
+      if (!oa) { oa = { id: nextId(), product_id: 1, lesson_id: null, type: "open_answer", content: { question: "Розкажи про свій ранок.", min_words: 8 }, position: 99 }; db.lesson_blocks.push(oa); }
+      if (!sf) { sf = { id: nextId(), product_id: 1, lesson_id: null, type: "student_file", content: { task: "Запиши голос.", accept: "audio", allow_recording: true }, position: 98 }; db.lesson_blocks.push(sf); }
+      db.block_work.push(
+        { user_id: "demo-u-2", block_id: oa.id, status: "submitted", submitted_at: "2026-11-04T18:20:00Z", feedback: null, score: null, reviewed_at: null, files: [],
+          text: "Jag heter Taras. Jag kommer från Lviv, men jag bor i Krakow nu. På morgonen dricker jag kaffe och äter en smörgås. Jag gillar fika!" },
+        { user_id: "demo-u-3", block_id: sf.id, status: "submitted", submitted_at: "2026-11-04T09:05:00Z", feedback: null, score: null, reviewed_at: null, text: "",
+          files: [{ path: "demo-u-3/" + sf.id + "/1730700000000-moj-golos.webm", name: "мій голос.webm", size: 48210, type: "audio/webm" }] },
+        { user_id: "demo-u-4", block_id: sf.id, status: "submitted", submitted_at: "2026-11-03T21:40:00Z", feedback: null, score: null, reviewed_at: null, text: "Ось мій малюнок з булочкою.",
+          files: [{ path: "demo-u-4/" + sf.id + "/1730650000000-bulochka.jpg", name: "булочка.jpg", size: 215430, type: "image/jpeg" }] },
+        { user_id: "demo-u-1", block_id: oa.id, status: "reviewed", submitted_at: "2026-10-30T12:00:00Z", reviewed_at: "2026-10-31T08:30:00Z", score: 8,
+          feedback: "Дуже добре! **Jag heter Olena** — без помилок.\n\n- Не забудь про *från*: «Jag kommer från Kyiv».\n- Ще раз перевір порядок слів.",
+          text: "Jag heter Olena. Jag kommer fran Kyiv. Jag bor i Warszawa.", files: [] }
+      );
+    }
+    seedWork();
 
     var D = {};
     D.listProducts = function () {
@@ -750,12 +962,12 @@
       return later({
         modules: modules,
         lessons: db.course_lessons.filter(function (l) { return ids.indexOf(String(l.module_id)) > -1; }),
-        materials: db.materials.filter(function (m) { return same(m.product_id, productId); }),
-        exercises: db.exercises.filter(function (m) { return same(m.product_id, productId); })
+        blocks: db.lesson_blocks.filter(function (b) { return same(b.product_id, productId); })
       });
     };
     D.upload = function (productId, file) {
       var path = productId + "/" + Date.now() + "-" + safeFilename(file.name);
+      try { demoBlobs[path] = URL.createObjectURL(file); } catch (_) {}
       return later(path);
     };
     D.removeFiles = function () { return later(null); };
@@ -796,6 +1008,57 @@
       else addEnt(prof.id, prod.id, "admin_grant", new Date().toISOString());
       return later({ ok: true, user_id: prof.id, created: created, email: sendEmail ? "sent" : "not_requested" });
     };
+    function describeDemoWork(w) {
+      var pr = db.profiles.filter(function (x) { return same(x.id, w.user_id); })[0] || {};
+      var b = db.lesson_blocks.filter(function (x) { return same(x.id, w.block_id); })[0] || null;
+      var les = b && b.lesson_id != null ? db.course_lessons.filter(function (x) { return same(x.id, b.lesson_id); })[0] : null;
+      var prod = b ? db.products.filter(function (x) { return same(x.id, b.product_id); })[0] : null;
+      var c = clone(w);
+      c.student = { name: pr.full_name || "", email: pr.email || "" };
+      c.block = b ? { id: b.id, type: b.type, content: clone(b.content) } : null;
+      c.lesson_title = les ? les.title : "";
+      c.product_title = prod ? prod.title : "";
+      return c;
+    }
+    D.listWork = function (opts) {
+      opts = opts || {};
+      var status = opts.status === "reviewed" ? "reviewed" : "submitted";
+      var from = Math.max(0, Number(opts.from) || 0), limit = Math.max(1, Number(opts.limit) || WORK_PAGE);
+      var rows = db.block_work.filter(function (w) { return (w.status === "reviewed" ? "reviewed" : "submitted") === status; }).sort(function (a, b) {
+        if (status === "submitted") return a.submitted_at < b.submitted_at ? -1 : (a.submitted_at > b.submitted_at ? 1 : 0);
+        var x = String(a.reviewed_at || ""), y = String(b.reviewed_at || "");
+        return x < y ? 1 : (x > y ? -1 : 0);
+      });
+      return later({ rows: rows.slice(from, from + limit).map(describeDemoWork), more: rows.length > from + limit });
+    };
+    D.countWork = function (status) {
+      var st = status === "reviewed" ? "reviewed" : "submitted";
+      return later(db.block_work.filter(function (w) { return (w.status === "reviewed" ? "reviewed" : "submitted") === st; }).length);
+    };
+    D.getWork = function (userId, blockId) {
+      var w = db.block_work.filter(function (x) { return same(x.user_id, userId) && same(x.block_id, blockId); })[0];
+      return later(w ? describeDemoWork(w) : null);
+    };
+    /* demo only (for checking by hand): the student sends the work again */
+    D.demoResend = function (userId, blockId, text) {
+      var w = db.block_work.filter(function (x) { return same(x.user_id, userId) && same(x.block_id, blockId); })[0];
+      if (!w) return later(null);
+      w.text = text; w.status = "submitted"; w.feedback = null; w.score = null; w.reviewed_at = null;
+      w.submitted_at = new Date().toISOString().replace("Z", "123Z");
+      return later(describeDemoWork(w));
+    };
+    D.workFileUrl = function (path) {
+      var t = String(path || "").toLowerCase();
+      if (/\.(webm|mp3|m4a|wav|ogg)$/.test(t)) return later(silentWavUrl()).then(function (u) { return u; });
+      return Promise.resolve("assets/lessons/a2-skor/slide-a.webp");
+    };
+    D.reviewWork = function (userId, blockId, feedback, score, submittedAt) {
+      var w = db.block_work.filter(function (x) { return same(x.user_id, userId) && same(x.block_id, blockId); })[0];
+      if (!w) return Promise.reject(mkError("PGRST116", "Row not found"));
+      if (submittedAt !== undefined && String(w.submitted_at) !== String(submittedAt)) return Promise.reject(mkError("work_changed", "work_changed"));
+      w.feedback = feedback; w.score = score; w.status = "reviewed"; w.reviewed_at = new Date().toISOString();
+      return later(w);
+    };
     D.listOrders = function () {
       var rows = db.orders.slice().sort(function (a, b) { return a.created_at < b.created_at ? 1 : -1; }).slice(0, 100);
       return later(rows);
@@ -813,7 +1076,8 @@
     products: null,
     list: { kind: "", q: "" },
     vmist: { productId: null, content: null, open: {} },
-    people: { q: "", results: null, selected: null, ents: null }
+    people: { q: "", results: null, selected: null, ents: null },
+    work: { filter: "pending", pending: { rows: null, more: false }, reviewed: { rows: null, more: false }, pendingCount: null }
   };
   var main = null;
   var renderToken = 0;
@@ -849,7 +1113,6 @@
     return many;
   }
 
-  function chip(text, cls) { return h("span", { class: "ad-chip" + (cls ? " " + cls : "") }, text); }
   function badge(text, cls) { return h("span", { class: "pf-badge " + (cls || "") }, text); }
 
   function emptyBox(title, text, action) {
@@ -1192,14 +1455,9 @@
     }, function (e) { toast(friendly(e), "error"); });
   }
 
-  function materialsOf(lessonId) {
-    return sorted(S.vmist.content.materials.filter(function (m) {
-      return lessonId == null ? m.lesson_id == null : same(m.lesson_id, lessonId);
-    }));
-  }
-  function exercisesOf(lessonId) {
-    return sorted(S.vmist.content.exercises.filter(function (m) {
-      return lessonId == null ? m.lesson_id == null : same(m.lesson_id, lessonId);
+  function blocksOf(lessonId) {
+    return sorted(S.vmist.content.blocks.filter(function (b) {
+      return lessonId == null ? b.lesson_id == null : same(b.lesson_id, lessonId);
     }));
   }
   function lessonsOf(moduleId) {
@@ -1217,14 +1475,6 @@
     return ups.reduce(function (p, u) {
       return p.then(function () { return D.updateRow(table, u[0], { position: u[1] }); });
     }, Promise.resolve());
-  }
-
-  function ownFolderPath(path, productId) {
-    return typeof path === "string" && path.indexOf(String(productId) + "/") === 0;
-  }
-  function pathsOfMaterials(list) {
-    var pid = S.vmist.productId;
-    return list.filter(function (m) { return ownFolderPath(m.storage_path, pid); }).map(function (m) { return m.storage_path; });
   }
 
   function moveButtons(table, siblings, idx, what) {
@@ -1261,9 +1511,9 @@
     var rootBox = h("section", { class: "pf-card ad-card ad-root" }, [
       h("h3", {}, "Без уроку — для всього продукту"),
       h("p", { class: "pf-hint" }, p.kind === "course" || p.kind === "teacher_course"
-        ? "Сюди додавай те, що належить усьому курсові (наприклад, загальний PDF). Уроки з файлами й вправами — нижче."
-        : "Для готового уроку, підручника чи журналу достатньо додати файли, текст і вправи прямо сюди."),
-      containerPanel(null)
+        ? "Сюди додавай те, що належить усьому курсові (наприклад, вступ чи загальний PDF). Окремі уроки — нижче."
+        : "Для готового уроку, підручника чи журналу достатньо скласти урок із блоків прямо тут: текст, картинки, вправи, файли…"),
+      blocksPanel(null)
     ]);
     main.appendChild(rootBox);
 
@@ -1334,16 +1584,14 @@
 
   function deleteModule(btn, m, lessons) {
     var C = S.vmist.content, ids = lessons.map(function (l) { return String(l.id); });
-    var mats = C.materials.filter(function (x) { return x.lesson_id != null && ids.indexOf(String(x.lesson_id)) > -1; });
-    var exs = C.exercises.filter(function (x) { return x.lesson_id != null && ids.indexOf(String(x.lesson_id)) > -1; });
+    var blocks = C.blocks.filter(function (x) { return x.lesson_id != null && ids.indexOf(String(x.lesson_id)) > -1; });
     var text = "Модуль «" + m.title + "» зникне разом з усім, що в ньому: "
       + lessons.length + " " + plural(lessons.length, "урок", "уроки", "уроків") + ", "
-      + mats.length + " " + plural(mats.length, "матеріал", "матеріали", "матеріалів") + ", "
-      + exs.length + " " + plural(exs.length, "набір вправ", "набори вправ", "наборів вправ")
-      + ". Файли теж видаляться зі сховища. Результати учнів у цих вправах пропадуть. Це не можна скасувати.";
+      + blocks.length + " " + plural(blocks.length, "блок", "блоки", "блоків")
+      + ". Файли теж видаляться зі сховища. Результати й роботи учнів у цих блоках пропадуть. Це не можна скасувати.";
     confirmBox({ title: "Видалити модуль?", text: text, okLabel: "Так, видалити", danger: true }).then(function (yes) {
       if (!yes) return;
-      var paths = pathsOfMaterials(mats);
+      var paths = orphanPaths(blocks);
       act(btn, function () {
         return D.deleteRow("course_modules", m.id).then(function () { return D.removeFiles(paths).catch(function () {}); });
       }, "Модуль видалено.");
@@ -1352,15 +1600,13 @@
 
   function deleteLesson(btn, l) {
     var C = S.vmist.content;
-    var mats = C.materials.filter(function (x) { return same(x.lesson_id, l.id); });
-    var exs = C.exercises.filter(function (x) { return same(x.lesson_id, l.id); });
+    var blocks = C.blocks.filter(function (x) { return same(x.lesson_id, l.id); });
     var text = "Урок «" + l.title + "» зникне разом з усім, що в ньому: "
-      + mats.length + " " + plural(mats.length, "матеріал", "матеріали", "матеріалів") + ", "
-      + exs.length + " " + plural(exs.length, "набір вправ", "набори вправ", "наборів вправ")
-      + ". Файли теж видаляться зі сховища. Результати учнів у цих вправах пропадуть. Це не можна скасувати.";
+      + blocks.length + " " + plural(blocks.length, "блок", "блоки", "блоків")
+      + ". Файли теж видаляться зі сховища. Результати й роботи учнів у цих блоках пропадуть. Це не можна скасувати.";
     confirmBox({ title: "Видалити урок?", text: text, okLabel: "Так, видалити", danger: true }).then(function (yes) {
       if (!yes) return;
-      var paths = pathsOfMaterials(mats);
+      var paths = orphanPaths(blocks);
       act(btn, function () {
         return D.deleteRow("course_lessons", l.id).then(function () { return D.removeFiles(paths).catch(function () {}); });
       }, "Урок видалено.");
@@ -1370,8 +1616,7 @@
   function lessonItem(l, idx, lessons) {
     var key = String(l.id);
     var open = !!S.vmist.open[key];
-    var nm = S.vmist.content.materials.filter(function (x) { return same(x.lesson_id, l.id); }).length;
-    var ne = S.vmist.content.exercises.filter(function (x) { return same(x.lesson_id, l.id); }).length;
+    var nb = S.vmist.content.blocks.filter(function (x) { return same(x.lesson_id, l.id); }).length;
 
     var toggle = h("button", {
       class: "ad-toggle", type: "button", "aria-expanded": open ? "true" : "false",
@@ -1385,7 +1630,7 @@
         label: "Назва уроку",
         onSave: function (v) { return act(null, function () { return D.updateRow("course_lessons", l.id, { title: v }); }, "Назву збережено."); }
       }),
-      h("small", { class: "ad-muted ad-lesson-count" }, nm + " " + plural(nm, "матеріал", "матеріали", "матеріалів") + " · " + ne + " " + plural(ne, "набір вправ", "набори вправ", "наборів вправ")),
+      h("small", { class: "ad-muted ad-lesson-count" }, nb + " " + plural(nb, "блок", "блоки", "блоків")),
       h("span", { class: "ad-row-actions" }, moveButtons("course_lessons", lessons, idx, "Урок «" + l.title + "»").concat([
         h("button", { class: "ad-link-danger", type: "button", onclick: function (e) { deleteLesson(e.currentTarget, l); } }, "Видалити")
       ]))
@@ -1401,490 +1646,104 @@
       });
       li.appendChild(h("div", { class: "ad-lesson-body" }, [
         h("div", { class: "ad-summary" }, [h("label", { class: "ad-label" }, "Короткий опис уроку"), sum, sumBtn]),
-        containerPanel(l.id)
+        h("h4", { class: "ad-h4" }, "Блоки уроку"),
+        blocksPanel(l.id)
       ]));
     }
     return li;
   }
 
-  /* Materials + exercises of one place (a lesson, or the whole product when lessonId is null) */
-  function containerPanel(lessonId) {
-    var mats = materialsOf(lessonId), exs = exercisesOf(lessonId);
-    var wrap = h("div", { class: "ad-container" });
+  /* ---------- the block builder of one lesson (assets/admin-blocks.js draws it) ---------- */
+  var demoBlobs = {};   // demo mode: uploaded file path -> address of the file in this browser tab
 
-    wrap.appendChild(h("h4", { class: "ad-h4" }, "Матеріали"));
-    if (!mats.length) wrap.appendChild(h("p", { class: "pf-hint" }, "Матеріалів ще немає."));
-    else {
-      var ul = h("ul", { class: "ad-rows" });
-      mats.forEach(function (m, i) { ul.appendChild(materialRow(m, i, mats)); });
-      wrap.appendChild(ul);
-    }
-    var fileInput = h("input", { type: "file", multiple: true, class: "sr-only", tabindex: "-1", "aria-hidden": "true" });
-    fileInput.addEventListener("change", function () {
-      var files = Array.prototype.slice.call(fileInput.files || []);
-      fileInput.value = "";
-      if (files.length) uploadFiles(files, lessonId);
-    });
-    wrap.appendChild(h("div", { class: "ad-adds" }, [
-      fileInput,
-      h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: function () { fileInput.click(); } }, "Додати файл"),
-      h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: function () { openTextEditor(null, lessonId); } }, "Додати текст"),
-      h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: function () { openVideoEditor(null, lessonId); } }, "Додати відео"),
-      h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: function () { openLinkEditor(null, lessonId); } }, "Додати посилання")
-    ]));
-
-    wrap.appendChild(h("h4", { class: "ad-h4" }, "Вправи"));
-    if (!exs.length) wrap.appendChild(h("p", { class: "pf-hint" }, "Вправ ще немає."));
-    else {
-      var ul2 = h("ul", { class: "ad-rows" });
-      exs.forEach(function (x, i) { ul2.appendChild(exerciseRow(x, i, exs)); });
-      wrap.appendChild(ul2);
-    }
-    wrap.appendChild(h("div", { class: "ad-adds" }, [
-      h("button", { class: "btn btn-ghost btn-sm", type: "button", onclick: function () { openExerciseEditor(null, lessonId); } }, "Додати вправи")
-    ]));
-    return wrap;
+  function signedUrlFor(src) {
+    src = String(src == null ? "" : src);
+    if (demoBlobs[src]) return Promise.resolve(demoBlobs[src]);
+    if (IS_DEMO && /^assets\//.test(src)) return Promise.resolve(src);   // a picture of the site itself
+    if (window.FMMAccount && typeof window.FMMAccount.signedUrl === "function") return window.FMMAccount.signedUrl(src);
+    return Promise.resolve(src);
   }
 
-  function fileNameOf(path) {
-    var s = String(path || "").replace(/^.*\//, "");
-    return s.replace(/^\d{10,}-/, "");
+  /* Files that only the deleted blocks pointed at (copies of a block share their files). */
+  function orphanPaths(deleted) {
+    var BE = window.FMMBlockEditors, pid = S.vmist.productId;
+    if (!BE || !BE.helpers || !deleted.length) return [];
+    var ids = deleted.map(function (b) { return String(b.id); });
+    var rest = S.vmist.content.blocks.filter(function (b) { return ids.indexOf(String(b.id)) < 0; });
+    var cand = [];
+    deleted.forEach(function (b) { BE.helpers.collectPaths(b.content, pid).forEach(function (p) { cand.push(p); }); });
+    return BE.helpers.unusedPaths(cand, rest, pid);
   }
 
-  function materialRow(m, idx, list) {
-    var sub = "";
-    if (m.kind === "text") sub = String((m.body || "").length) + " символів";
-    else if (m.kind === "video" || m.kind === "link") sub = m.external_ref || "";
-    else sub = fileNameOf(m.storage_path);
-    return h("li", { class: "ad-row" }, [
-      chip(MATERIAL_KIND_LABEL[m.kind] || m.kind, "k-" + m.kind),
-      h("span", { class: "ad-row-title" }, [h("span", {}, m.title), sub ? h("small", {}, sub) : null]),
-      h("span", { class: "ad-row-actions" }, [
-        h("button", { class: "ad-link", type: "button", onclick: function () { openMaterialEditor(m); } }, "Змінити")
-      ].concat(moveButtons("materials", list, idx, "«" + m.title + "»")).concat([
-        h("button", { class: "ad-link-danger", type: "button", onclick: function (e) { deleteMaterial(e.currentTarget, m); } }, "Видалити")
-      ]))
-    ]);
+  /* Numbers a list 1..n again; only the rows whose number changed are written. */
+  function renumber(list) {
+    return list.reduce(function (p, it, i) {
+      return num(it.position) === i + 1 ? p : p.then(function () { return D.updateRow("lesson_blocks", it.id, { position: i + 1 }); });
+    }, Promise.resolve());
   }
 
-  function deleteMaterial(btn, m) {
-    var isFile = ownFolderPath(m.storage_path, S.vmist.productId);
-    confirmBox({
-      title: "Видалити матеріал?",
-      text: "«" + m.title + "» зникне з курсу" + (isFile ? ", файл теж видалиться зі сховища" : "") + ". Це не можна скасувати.",
-      okLabel: "Так, видалити", danger: true
-    }).then(function (yes) {
-      if (!yes) return;
-      act(btn, function () {
-        return D.deleteRow("materials", m.id).then(function () {
-          return isFile ? D.removeFiles([m.storage_path]).catch(function () {}) : null;
-        });
-      }, "Матеріал видалено.");
+  /* Runs a change, shows the result, redraws. Resolves true (done), false (the
+     database refused: nothing was written) or "unknown" (no answer came back, e.g.
+     the network dropped: the change may or may not have been written). The error
+     is already shown. */
+  function blockStep(makePromise, okMsg) {
+    return Promise.resolve().then(makePromise).then(function () {
+      if (okMsg) toast(okMsg);
+      return refreshContent().then(function () { return true; }, function (e) {
+        toast("Збережено, але список не вдалося оновити. " + friendly(e), "error");
+        return true;
+      });
+    }, function (e) {
+      toast(friendly(e), "error");
+      return H.writeUncertain(e) ? "unknown" : false;
     });
   }
 
-  function exerciseRow(x, idx, list) {
-    var n = x.content && x.content.items ? x.content.items.length : 0;
-    return h("li", { class: "ad-row" }, [
-      chip("Вправи", "k-ex"),
-      h("span", { class: "ad-row-title" }, [h("span", {}, x.title), h("small", {}, n + " " + plural(n, "завдання", "завдання", "завдань"))]),
-      h("span", { class: "ad-row-actions" }, [
-        h("button", { class: "ad-link", type: "button", onclick: function () { openExerciseEditor(x, x.lesson_id); } }, "Змінити")
-      ].concat(moveButtons("exercises", list, idx, "«" + x.title + "»")).concat([
-        h("button", { class: "ad-link-danger", type: "button", onclick: function (e) { deleteExercise(e.currentTarget, x); } }, "Видалити")
-      ]))
-    ]);
-  }
-
-  function deleteExercise(btn, x) {
-    confirmBox({
-      title: "Видалити вправи?",
-      text: "Набір «" + x.title + "» зникне, а разом із ним — результати всіх учнів у ньому. Це не можна скасувати.",
-      okLabel: "Так, видалити", danger: true
-    }).then(function (yes) {
-      if (!yes) return;
-      act(btn, function () { return D.deleteRow("exercises", x.id); }, "Вправи видалено.");
-    });
-  }
-
-  /* ---------- editors: text, video, link, file name ---------- */
-  function saveMaterial(m, lessonId, fields, okMsg) {
-    var p = S.vmist.productId;
-    if (m) return D.updateRow("materials", m.id, fields);
-    return D.insertRow("materials", {
-      product_id: p, lesson_id: lessonId == null ? null : lessonId, kind: fields.kind, title: fields.title,
-      storage_path: null, external_ref: fields.external_ref == null ? null : fields.external_ref,
-      body: fields.body == null ? null : fields.body, position: maxPos(materialsOf(lessonId)) + 1
-    });
-  }
-
-  function openMaterialEditor(m) {
-    if (m.kind === "text") openTextEditor(m, m.lesson_id);
-    else if (m.kind === "video") openVideoEditor(m, m.lesson_id);
-    else if (m.kind === "link") openLinkEditor(m, m.lesson_id);
-    else openTitleEditor(m);
-  }
-
-  function modalButtons(modal, saveLabel, saveBtn) {
-    return h("div", { class: "ad-actions" }, [
-      saveBtn,
-      h("button", { class: "btn btn-ghost", type: "button", onclick: function () { modal.requestClose(); } }, "Скасувати")
-    ]);
-  }
-
-  function openTitleEditor(m) {
-    var input = h("input", { type: "text", maxlength: "200", value: m.title });
-    var f = field("Назва (так її бачать учні)", input, "Файл: " + fileNameOf(m.storage_path));
-    var save = h("button", { class: "btn btn-primary", type: "submit" }, "Зберегти");
-    var form = h("form", { novalidate: true }, [f]);
-    var modal = openModal({ title: "Змінити назву", isDirty: function () { return trim(input.value) !== m.title; } });
-    form.appendChild(modalButtons(modal, "Зберегти", save));
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var t = trim(input.value);
-      if (!t) { setErr(f, "Напиши назву."); input.focus(); return; }
-      busy(save, D.updateRow("materials", m.id, { title: t })).then(function () {
-        modal.close(); toast("Збережено."); refreshContent();
-      }, function (er) { toast(friendly(er), "error"); });
-    });
-    modal.body.appendChild(form);
-  }
-
-  var MD_HELP = [
-    ["## Заголовок", "великий заголовок"], ["### Підзаголовок", "менший заголовок"],
-    ["- пункт", "список (кожен пункт з нового рядка)"], ["**жирний**", "жирний текст"], ["*курсив*", "курсив"],
-    ["[текст](https://…)", "посилання"], ["> цитата", "виділена цитата"], ["порожній рядок", "новий абзац"]
-  ];
-
-  function openTextEditor(m, lessonId) {
-    var title = h("input", { type: "text", maxlength: "200", value: m ? m.title : "", placeholder: "Наприклад: Урок 1 — Привіт!" });
-    var ta = h("textarea", { rows: "14", class: "ad-code", spellcheck: "true", "aria-label": "Текст уроку" });
-    ta.value = m && m.body ? m.body : "";
-    var preview = h("div", { class: "ad-md ad-preview", tabindex: "0", "aria-label": "Попередній перегляд тексту" });
-    var counter = h("p", { class: "pf-hint ad-counter" });
-    var fTitle = field("Назва *", title);
-    var fBody = field("Текст *", ta);
-    var help = h("details", { class: "ad-help" }, [
-      h("summary", {}, "Як оформлювати текст"),
-      h("ul", {}, MD_HELP.map(function (r) { return h("li", {}, [h("code", {}, r[0]), " — " + r[1]]); }))
-    ]);
-    function upd() {
-      var html = mdToHtml(ta.value);
-      preview.innerHTML = html || '<p class="ad-muted">Тут з\'явиться попередній перегляд.</p>'; /* html is escaped by mdToHtml */
-      var n = ta.value.length;
-      counter.textContent = n + " / " + MD_LIMIT + " символів";
-      counter.classList.toggle("is-over", n > MD_LIMIT);
-    }
-    ta.addEventListener("input", upd);
-    upd();
-    var save = h("button", { class: "btn btn-primary", type: "submit" }, "Зберегти");
-    var startT = title.value, startB = ta.value;
-    var modal = openModal({
-      title: m ? "Змінити текст" : "Додати текст", wide: true, sticky: true,
-      isDirty: function () { return title.value !== startT || ta.value !== startB; }
-    });
-    var form = h("form", { novalidate: true, class: "ad-split" }, [
-      h("div", {}, [fTitle, fBody, counter, help, modalButtons(modal, "Зберегти", save)]),
-      h("div", {}, [h("p", { class: "ad-label" }, "Так це побачать учні"), preview])
-    ]);
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var t = trim(title.value), ok = true;
-      setErr(fTitle, ""); setErr(fBody, "");
-      if (!t) { setErr(fTitle, "Напиши назву."); ok = false; }
-      if (!trim(ta.value)) { setErr(fBody, "Напиши текст."); ok = false; }
-      else if (ta.value.length > MD_LIMIT) { setErr(fBody, "Текст задовгий: найбільше " + MD_LIMIT + " символів. Розділи його на два матеріали."); ok = false; }
-      if (!ok) { toast("Перевір поля, які підсвічені червоним.", "error"); return; }
-      busy(save, saveMaterial(m, lessonId, { kind: "text", title: t, body: ta.value })).then(function () {
-        modal.close(); toast("Текст збережено."); refreshContent();
-      }, function (er) { toast(friendly(er), "error"); });
-    });
-    modal.body.appendChild(form);
-  }
-
-  function openVideoEditor(m, lessonId) {
-    var title = h("input", { type: "text", maxlength: "200", value: m ? m.title : "", placeholder: "Наприклад: Відео до уроку" });
-    var url = h("input", { type: "url", value: m ? (m.external_ref || "") : "", placeholder: "https://vimeo.com/…  або  https://www.youtube.com/watch?v=…", autocomplete: "off", spellcheck: "false" });
-    var fTitle = field("Назва", title, "Якщо залишиш порожнім, буде «Відео».");
-    var fUrl = field("Посилання на відео *", url, "Vimeo, YouTube або Bunny. Просто скопіюй адресу сторінки з відео — я сама зроблю з неї плеєр.");
-    var live = h("p", { class: "ad-live", "aria-live": "polite" });
-    function check() {
-      if (!trim(url.value)) { live.textContent = ""; live.className = "ad-live"; return null; }
-      var r = toEmbedUrl(url.value);
-      live.className = "ad-live " + (r.ok ? "is-ok" : "is-bad");
-      live.textContent = r.ok ? "Підходить. Покажемо плеєр: " + r.url : r.error;
-      return r;
-    }
-    url.addEventListener("input", check);
-    check();
-    var save = h("button", { class: "btn btn-primary", type: "submit" }, "Зберегти");
-    var s1 = title.value, s2 = url.value;
-    var modal = openModal({ title: m ? "Змінити відео" : "Додати відео", isDirty: function () { return title.value !== s1 || url.value !== s2; } });
-    var form = h("form", { novalidate: true }, [fTitle, fUrl, live, modalButtons(modal, "Зберегти", save)]);
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      setErr(fUrl, "");
-      var r = toEmbedUrl(url.value);
-      if (!r.ok) { setErr(fUrl, r.error); url.focus(); return; }
-      busy(save, saveMaterial(m, lessonId, { kind: "video", title: trim(title.value) || "Відео", external_ref: r.url })).then(function () {
-        modal.close(); toast("Відео збережено."); refreshContent();
-      }, function (er) { toast(friendly(er), "error"); });
-    });
-    modal.body.appendChild(form);
-  }
-
-  function openLinkEditor(m, lessonId) {
-    var title = h("input", { type: "text", maxlength: "200", value: m ? m.title : "", placeholder: "Наприклад: Стаття про lagom" });
-    var url = h("input", { type: "url", value: m ? (m.external_ref || "") : "", placeholder: "https://…", autocomplete: "off", spellcheck: "false" });
-    var fTitle = field("Назва *", title, "Так на кнопці побачить учень.");
-    var fUrl = field("Посилання *", url, "Тільки сайти з https://");
-    var save = h("button", { class: "btn btn-primary", type: "submit" }, "Зберегти");
-    var s1 = title.value, s2 = url.value;
-    var modal = openModal({ title: m ? "Змінити посилання" : "Додати посилання", isDirty: function () { return title.value !== s1 || url.value !== s2; } });
-    var form = h("form", { novalidate: true }, [fTitle, fUrl, modalButtons(modal, "Зберегти", save)]);
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      setErr(fTitle, ""); setErr(fUrl, "");
-      var t = trim(title.value), r = cleanLink(url.value), ok = true;
-      if (!t) { setErr(fTitle, "Напиши назву."); ok = false; }
-      if (!r.ok) { setErr(fUrl, r.error); ok = false; }
-      if (!ok) { (!t ? title : url).focus(); return; }
-      busy(save, saveMaterial(m, lessonId, { kind: "link", title: t, external_ref: r.url })).then(function () {
-        modal.close(); toast("Посилання збережено."); refreshContent();
-      }, function (er) { toast(friendly(er), "error"); });
-    });
-    modal.body.appendChild(form);
-  }
-
-  /* ---------- exercise editor ---------- */
-  var FALLBACK_TEMPLATE = {
-    version: 1,
-    items: [
-      { type: "choice", prompt: "Вибери правильну відповідь", options: ["варіант А", "варіант Б", "варіант В"], answer: 0, explain: "Чому саме так." },
-      { type: "multi", prompt: "Познач усі правильні", options: ["перший", "другий", "третій"], answer: [0, 2] },
-      { type: "truefalse", statement: "Твердження, яке треба оцінити.", answer: true },
-      { type: "gap", prompt: "Jag ___ kaffe varje morgon.", answers: [["dricker"]], hint: "presens" },
-      { type: "order", prompt: "Склади речення:", words: ["jag", "heter", "Maria"], answer: ["Jag heter Maria"] },
-      { type: "match", prompt: "З'єднай пари:", pairs: [["hund", "собака"], ["katt", "кіт"], ["häst", "кінь"]] }
-    ]
-  };
-  var TYPE_LABEL = { choice: "вибір", multi: "кілька відповідей", truefalse: "правда / неправда", gap: "пропуски", order: "порядок слів", match: "пари" };
-  var templateText = null;
-
-  function loadTemplate(cb) {
-    if (templateText) { cb(templateText); return; }
-    function done(obj) { templateText = JSON.stringify(obj, null, 2); cb(templateText); }
-    try {
-      var x = new XMLHttpRequest();
-      x.open("GET", "assets/exercises-demo.json", true);
-      x.onload = function () {
-        var obj = null;
-        try { obj = JSON.parse(x.responseText); } catch (_) { obj = null; }
-        done(obj && obj.items ? obj : FALLBACK_TEMPLATE);
-      };
-      x.onerror = function () { done(FALLBACK_TEMPLATE); };
-      x.send();
-    } catch (_) { done(FALLBACK_TEMPLATE); }
-  }
-
-  /* text -> { ok, content | errors[] } */
-  function parseExercises(text) {
-    if (!trim(text)) return { ok: false, errors: ["Поле порожнє. Натисни «Вставити шаблон» або встав свої вправи."] };
-    if (!window.FMMExercises) return { ok: false, errors: ["Не завантажився рушій вправ (exercises.js). Онови сторінку."] };
-    var obj;
-    try { obj = JSON.parse(text); }
-    catch (e) { return { ok: false, errors: ["Це не схоже на правильний JSON: " + e.message + ". Перевір лапки, коми та дужки."] }; }
-    var v = window.FMMExercises.validate(obj);
-    if (!v.ok) return { ok: false, errors: v.errors };
-    return { ok: true, content: obj };
-  }
-
-  function summaryOfExercises(content) {
-    var counts = {}, order = [];
-    content.items.forEach(function (it) {
-      if (!counts[it.type]) { counts[it.type] = 0; order.push(it.type); }
-      counts[it.type]++;
-    });
-    return order.map(function (t) { return (TYPE_LABEL[t] || t) + ": " + counts[t]; }).join(", ");
-  }
-
-  function openExerciseEditor(ex, lessonId) {
-    var title = h("input", { type: "text", maxlength: "200", value: ex ? ex.title : "", placeholder: "Наприклад: Привітання" });
-    var instr = h("textarea", { rows: "2", maxlength: "500", placeholder: "Що робити (бачить учень над вправами)" });
-    instr.value = ex && ex.instructions ? ex.instructions : "";
-    var ta = h("textarea", { rows: "16", class: "ad-code", spellcheck: "false", "aria-label": "Вправи у форматі JSON", wrap: "off" });
-    ta.value = ex ? JSON.stringify(ex.content, null, 2) : "";
-    var fTitle = field("Назва *", title);
-    var fInstr = field("Інструкція", instr);
-    var fJson = field("Вправи (JSON) *", ta, "Не вмієш писати JSON? Натисни «Вставити шаблон» і заміни тексти на свої. Потім «Перевірити».");
-    var result = h("div", { class: "ad-check-result", "aria-live": "polite" });
-    var previewBox = h("div", { class: "ad-ex-preview" });
-    var previewNote = h("p", { class: "pf-hint" }, "Тут з'явиться попередній перегляд, коли вправи будуть без помилок.");
-
-    function showResult(r) {
-      clear(result);
-      if (r.ok) {
-        result.className = "ad-check-result is-ok";
-        result.appendChild(h("strong", {}, "Усе гаразд: " + r.content.items.length + " " + plural(r.content.items.length, "завдання", "завдання", "завдань") + "."));
-        result.appendChild(h("span", {}, " " + summaryOfExercises(r.content)));
-      } else {
-        result.className = "ad-check-result is-bad";
-        result.appendChild(h("strong", {}, "Є що виправити:"));
-        result.appendChild(h("ul", {}, r.errors.map(function (er) { return h("li", {}, er); })));
-      }
-    }
-
-    var timer = null;
-    function paintPreview() {
-      var r = parseExercises(ta.value);
-      clear(previewBox);
-      if (!r.ok) {
-        previewNote.hidden = false;
-        previewNote.textContent = trim(ta.value)
-          ? "Попередній перегляд з'явиться, коли в JSON не буде помилок. Натисни «Перевірити», щоб побачити, що виправити."
-          : "Тут з'явиться попередній перегляд, коли вправи будуть без помилок.";
-        return;
-      }
-      previewNote.hidden = true;
-      try {
-        window.FMMExercises.render(previewBox, r.content, { title: trim(title.value) || undefined, instructions: trim(instr.value) || undefined });
-      } catch (e) {
-        previewBox.appendChild(h("p", { class: "ad-live is-bad" }, "Не вдалося показати: " + e.message));
-      }
-    }
-    function schedulePreview() { clearTimeout(timer); timer = setTimeout(paintPreview, 350); }
-    [ta, title, instr].forEach(function (el) { el.addEventListener("input", schedulePreview); });
-
-    var tplBtn = h("button", { class: "btn btn-ghost btn-sm", type: "button" }, "Вставити шаблон");
-    var checkBtn = h("button", { class: "btn btn-ghost btn-sm", type: "button" }, "Перевірити");
-    var save = h("button", { class: "btn btn-primary", type: "submit" }, "Зберегти");
-
-    tplBtn.addEventListener("click", function () {
-      function put() {
-        loadTemplate(function (txt) {
-          ta.value = txt;
-          clear(result); result.className = "ad-check-result";
-          paintPreview();
-          toast("Шаблон вставлено: тут по одному прикладу кожного типу. Заміни тексти на свої.");
-        });
-      }
-      if (trim(ta.value)) {
-        confirmBox({ title: "Замінити вправи шаблоном?", text: "Те, що вже написано в полі, буде замінено прикладом.", okLabel: "Так, замінити", danger: true })
-          .then(function (yes) { if (yes) put(); });
-      } else put();
-    });
-    checkBtn.addEventListener("click", function () { showResult(parseExercises(ta.value)); paintPreview(); });
-
-    var s1 = title.value, s2 = instr.value, s3 = ta.value;
-    var modal = openModal({
-      title: ex ? "Змінити вправи" : "Додати вправи", wide: true, sticky: true,
-      isDirty: function () { return title.value !== s1 || instr.value !== s2 || ta.value !== s3; },
-      onClose: function () { clearTimeout(timer); }
-    });
-    var form = h("form", { novalidate: true, class: "ad-split" }, [
-      h("div", {}, [
-        fTitle, fInstr, fJson,
-        h("div", { class: "ad-adds" }, [tplBtn, checkBtn]),
-        result,
-        h("div", { class: "ad-actions" }, [save, h("button", { class: "btn btn-ghost", type: "button", onclick: function () { modal.requestClose(); } }, "Скасувати")])
-      ]),
-      h("div", {}, [h("p", { class: "ad-label" }, "Попередній перегляд (можна пробувати)"), previewNote, previewBox])
-    ]);
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      setErr(fTitle, ""); setErr(fJson, "");
-      var t = trim(title.value), r = parseExercises(ta.value), ok = true;
-      if (!t) { setErr(fTitle, "Напиши назву."); ok = false; }
-      if (!r.ok) { showResult(r); setErr(fJson, "У вправах є помилки, дивись нижче."); ok = false; }
-      if (!ok) { toast("Спершу виправ помилки, потім збережемо.", "error"); (t ? ta : title).focus(); return; }
-      var fields = { title: t, instructions: trim(instr.value) || null, content: r.content };
-      var op = ex
-        ? D.updateRow("exercises", ex.id, fields)
-        : D.insertRow("exercises", {
-            product_id: S.vmist.productId, lesson_id: lessonId == null ? null : lessonId, title: t,
-            instructions: fields.instructions, content: r.content, position: maxPos(exercisesOf(lessonId)) + 1
-          });
-      busy(save, op).then(function () {
-        modal.close(); toast("Вправи збережено."); refreshContent();
-      }, function (er) { toast(friendly(er), "error"); });
-    });
-    modal.body.appendChild(form);
-    paintPreview();
-  }
-
-  /* ---------- file upload ---------- */
-  function uploadFiles(files, lessonId) {
+  function blockDeps(lessonId) {
     var pid = S.vmist.productId;
-    files = Array.prototype.slice.call(files || []);
-    if (!files.length || pid == null) return;
-    var running = true, okCount = 0;
-    var posCounter = maxPos(materialsOf(lessonId));
+    return {
+      openModal: openModal, confirm: confirmBox, toast: toast, friendly: friendly,
+      upload: function (file) { return D.upload(pid, file); },
+      removeFiles: function (paths) { return D.removeFiles(paths).catch(function () {}); },
+      signedUrl: signedUrlFor,
+      allBlocks: function () { return S.vmist.content.blocks; },
+      insert: function (type, content, afterId) {
+        return blockStep(function () {
+          var siblings = blocksOf(lessonId);
+          return D.insertRow("lesson_blocks", {
+            product_id: pid, lesson_id: lessonId == null ? null : lessonId, type: type, content: content, position: maxPos(siblings) + 1
+          }).then(function (row) {
+            if (afterId == null) return row;
+            var order = siblings.slice(), at = -1;
+            order.forEach(function (x, i) { if (same(x.id, afterId)) at = i; });
+            order.splice(at < 0 ? order.length : at + 1, 0, row);
+            return renumber(order);
+          });
+        }, afterId == null ? "Блок додано." : "Копію зроблено.");
+      },
+      update: function (block, content) {
+        return blockStep(function () { return D.updateRow("lesson_blocks", block.id, { content: content }); }, "Блок збережено.");
+      },
+      remove: function (block) {
+        return blockStep(function () { return D.deleteRow("lesson_blocks", block.id); }, "Блок видалено.");
+      },
+      move: function (block, dir) {
+        var sib = blocksOf(lessonId), idx = -1;
+        sib.forEach(function (x, i) { if (same(x.id, block.id)) idx = i; });
+        return blockStep(function () { return moveItem("lesson_blocks", sib, idx, dir); });
+      }
+    };
+  }
 
-    var items = files.map(function (f) {
-      var status = h("span", { class: "ad-up-status" }, "Чекає");
-      var bar = h("span", { class: "ad-bar", "aria-hidden": "true" }, h("i"));
-      var retry = h("button", { class: "ad-link", type: "button", hidden: true }, "Спробувати ще раз");
-      var row = h("li", { class: "ad-up-row" }, [
-        h("span", { class: "ad-up-name" }, [h("strong", {}, f.name), h("small", {}, " " + fmtSize(f.size))]),
-        bar, status, retry
-      ]);
-      return { file: f, row: row, status: status, retry: retry, state: "wait", path: null };
-    });
-
-    function setState(it, state, text) {
-      it.state = state;
-      it.row.className = "ad-up-row is-" + state;
-      it.status.textContent = text || ({ wait: "Чекає", work: "Завантажується…", ok: "Готово ✓", err: "" }[state]);
-      it.retry.hidden = state !== "err";
+  function blocksPanel(lessonId) {
+    var wrap = h("div", { class: "ad-container" });
+    var BE = window.FMMBlockEditors;
+    if (!BE || typeof BE.mount !== "function") {
+      wrap.appendChild(h("p", { class: "pf-msg is-error" }, "Конструктор блоків не підключився. Онови сторінку (Cmd+Shift+R)."));
+      return wrap;
     }
-
-    var summary = h("p", { class: "ad-up-summary", "aria-live": "polite" });
-    var closeBtn = h("button", { class: "btn btn-primary", type: "button", disabled: true }, "Готово");
-    var modal = openModal({ title: "Завантаження файлів", sticky: true, isDirty: function () { return running; }, focus: false });
-    modal.body.appendChild(h("p", { class: "pf-hint" }, "Не закривай сторінку, поки файли завантажуються."));
-    modal.body.appendChild(h("ul", { class: "ad-up-list" }, items.map(function (it) { return it.row; })));
-    modal.body.appendChild(summary);
-    modal.body.appendChild(h("div", { class: "ad-actions" }, [closeBtn]));
-    closeBtn.addEventListener("click", function () { modal.close(); });
-
-    function one(it) {
-      setState(it, "work");
-      if (!it.file.size) { setState(it, "err", "Файл порожній — не додано."); return Promise.resolve(); }
-      return D.upload(pid, it.file).then(function (path) {
-        it.path = path;
-        posCounter += 1;
-        return D.insertRow("materials", {
-          product_id: pid, lesson_id: lessonId == null ? null : lessonId, kind: kindFromExt(it.file.name),
-          title: titleFromFilename(it.file.name), storage_path: path, external_ref: null, body: null, position: posCounter
-        });
-      }).then(function () {
-        it.path = null; okCount += 1;
-        setState(it, "ok");
-      }, function (e) {
-        if (it.path) { D.removeFiles([it.path]).catch(function () {}); it.path = null; }
-        setState(it, "err", friendly(e));
-      });
-    }
-
-    function runAll(list) {
-      running = true;
-      closeBtn.disabled = true;
-      return list.reduce(function (p, it) { return p.then(function () { return one(it); }); }, Promise.resolve()).then(function () {
-        running = false;
-        closeBtn.disabled = false;
-        var failed = items.filter(function (i) { return i.state === "err"; }).length;
-        summary.className = "ad-up-summary " + (failed ? "is-bad" : "is-ok");
-        summary.textContent = failed
-          ? "Додано " + okCount + " із " + items.length + ". Ті, що не вийшли, позначені червоним."
-          : "Усе додано: " + okCount + " " + plural(okCount, "файл", "файли", "файлів") + ".";
-        if (okCount) toast("Додано файлів: " + okCount + ".");
-        return refreshContent();
-      });
-    }
-    items.forEach(function (it) {
-      it.retry.addEventListener("click", function () { if (!running) runAll([it]); });
-    });
-    return runAll(items);
+    BE.mount(wrap, { productId: S.vmist.productId, lessonId: lessonId, blocks: blocksOf(lessonId), deps: blockDeps(lessonId) });
+    return wrap;
   }
 
   /* =================================================================
@@ -2100,12 +1959,247 @@
   }
 
   /* =================================================================
+     9b. Section: Роботи учнів (open answers and files to check)
+     ================================================================= */
+  var WORK_TYPE = { open_answer: "Відкрита відповідь", student_file: "Файл учня" };
+
+  function workTask(row) {
+    var c = (row.block && row.block.content) || {};
+    return trim(row.block && row.block.type === "student_file" ? c.task : c.question);
+  }
+  function plainTask(row) {
+    return workTask(row).replace(/\[([^\]\n]+)\]\([^)\s]*\)/g, "$1").replace(/^\s*(#{1,6}|>|-)\s+/gm, "").replace(/[*_`]/g, "").replace(/\s+/g, " ");
+  }
+  function studentName(row) {
+    var s = row.student || {};
+    return trim(s.name) || s.email || "Учень";
+  }
+
+  /* the number of unchecked works on the tab (from a count query); unknown -> no number */
+  function updateWorkBadge() {
+    var a = $('#ad-tabs a[data-tab="roboty"]');
+    if (!a) return;
+    var n = S.work.pendingCount;
+    var old = a.querySelector(".ad-tab-count");
+    if (old) old.parentNode.removeChild(old);
+    if (n) a.appendChild(h("span", { class: "ad-tab-count", "aria-label": n + " " + plural(n, "робота очікує", "роботи очікують", "робіт очікують") }, String(n)));
+  }
+  function refreshPendingCount() {
+    return D.countWork("submitted").then(function (n) { S.work.pendingCount = n; updateWorkBadge(); }, function () {});
+  }
+
+  function workKind() { return S.work.filter === "reviewed" ? "reviewed" : "pending"; }
+  /* loads the first page (or, with append, the next one) of pending / reviewed works */
+  function loadWork(kind, append) {
+    var L = S.work[kind], from = append && L.rows ? L.rows.length : 0;
+    return D.listWork({ status: kind === "reviewed" ? "reviewed" : "submitted", from: from, limit: WORK_PAGE }).then(function (res) {
+      L.rows = append && L.rows ? L.rows.concat(res.rows) : res.rows;
+      L.more = !!res.more;
+    });
+  }
+
+  function viewWork(arg, tok) {
+    return Promise.all([loadWork(workKind(), false), refreshPendingCount()]).then(function () {
+      if (!alive(tok)) return;
+      drawWork();
+    });
+  }
+
+  /* after a review: both lists start again from the first page */
+  function reloadWork() {
+    var tok = renderToken;
+    S.work.pending.rows = null; S.work.reviewed.rows = null;
+    return Promise.all([loadWork(workKind(), false), refreshPendingCount()]).then(function () {
+      if (alive(tok) && parseHash().tab === "roboty") drawWork();
+    }, function (e) { toast(friendly(e), "error"); });
+  }
+
+  function drawWork() {
+    var kind = workKind(), L = S.work[kind], rows = L.rows || [];
+    var f = S.work.filter === "reviewed" ? "reviewed" : "pending";
+    var shown = rows;
+    clear(main);
+    main.appendChild(sectionHead("Роботи учнів"));
+    main.appendChild(h("p", { class: "pf-hint" }, "Тут з'являються відповіді й файли, які учні надсилають із блоків «Відкрита відповідь» та «Файл учня». Відкрий роботу, напиши відгук і, якщо хочеш, постав бал — учень побачить це у своєму кабінеті."));
+
+    var pendingLabel = "Очікують" + (S.work.pendingCount != null ? " (" + S.work.pendingCount + ")" : "");
+    var filters = h("div", { class: "ad-seg", role: "group", "aria-label": "Які роботи показати" }, [
+      ["pending", pendingLabel],
+      ["reviewed", "Перевірені"]
+    ].map(function (x) {
+      return h("button", {
+        type: "button", class: "ad-seg-btn" + (f === x[0] ? " is-on" : ""), "aria-pressed": f === x[0] ? "true" : "false",
+        onclick: function () {
+          S.work.filter = x[0];
+          var tok = renderToken, K = S.work[x[0]];
+          if (K.rows) { drawWork(); return; }
+          loadWork(x[0], false).then(function () { if (alive(tok)) drawWork(); }, function (e) { toast(friendly(e), "error"); });
+        }
+      }, x[1]);
+    }));
+    main.appendChild(filters);
+
+    if (!shown.length) {
+      main.appendChild(emptyBox(
+        f === "reviewed" ? "Перевірених робіт ще немає" : "Усе перевірено",
+        f === "pending" ? "Нових робіт від учнів немає. Коли хтось надішле — вони з'являться тут." : "Вони з'являться тут, щойно ти перевіриш першу роботу."));
+      return;
+    }
+    if (f === "pending") main.appendChild(h("p", { class: "pf-hint" }, "Найстаріші зверху: спочатку ті, що чекають довше."));
+
+    var tbody = h("tbody");
+    shown.forEach(function (r) {
+      var done = r.status === "reviewed";
+      var task = plainTask(r);
+      tbody.appendChild(h("tr", {}, [
+        h("td", { "data-label": "Надіслано" }, fmtDate(r.submitted_at, true)),
+        h("td", { "data-label": "Учень", class: "ad-td-main" }, [h("strong", {}, studentName(r)), r.student && r.student.email && trim(r.student.name) ? h("small", {}, r.student.email) : null]),
+        h("td", { "data-label": "Де", class: "ad-td-main" }, [
+          h("strong", {}, r.product_title || "—"),
+          h("small", {}, (r.lesson_title ? r.lesson_title + " · " : "") + (WORK_TYPE[r.block && r.block.type] || "Робота") + (task ? ": " + (task.length > 70 ? task.slice(0, 69) + "…" : task) : ""))
+        ]),
+        h("td", { "data-label": "Стан" }, [
+          badge(done ? "Перевірено" : "Очікує", done ? "is-ok" : "is-warn"),
+          done && r.score != null ? h("small", {}, "Бал: " + r.score) : null
+        ]),
+        h("td", { class: "ad-td-actions" }, h("button", { class: "btn " + (done ? "btn-ghost" : "btn-primary") + " btn-sm", type: "button", onclick: function () { openWorkReview(r); } }, done ? "Переглянути" : "Перевірити"))
+      ]));
+    });
+    main.appendChild(h("table", { class: "ad-table" }, [
+      h("thead", {}, h("tr", {}, [h("th", {}, "Надіслано"), h("th", {}, "Учень"), h("th", {}, "Де"), h("th", {}, "Стан"), h("th", {}, "")])),
+      tbody
+    ]));
+    if (L.more) {
+      var moreBtn = h("button", { class: "btn btn-ghost", type: "button" }, "Показати ще");
+      moreBtn.addEventListener("click", function () {
+        var tok = renderToken;
+        busy(moreBtn, loadWork(kind, true)).then(function () { if (alive(tok)) drawWork(); }, function (e) { toast(friendly(e), "error"); });
+      });
+      main.appendChild(h("div", { class: "ad-actions" }, moreBtn));
+    }
+  }
+
+  function fileKind(f) {
+    var t = String((f && f.type) || "").toLowerCase(), e = extOf(f && (f.name || f.path));
+    if (t.indexOf("audio/") === 0 || /^(mp3|m4a|wav|ogg|aac|webm|oga|opus)$/.test(e) && t.indexOf("video/") !== 0) return "audio";
+    if (t.indexOf("image/") === 0 || /^(jpg|jpeg|png|gif|webp|heic|avif)$/.test(e)) return "image";
+    return "file";
+  }
+
+  /* row: the work as Maria opened it (row.submitted_at is the version she is reading);
+     draft: text she had typed for an earlier version { feedback, score } */
+  function openWorkReview(row, draft) {
+    var done = row.status === "reviewed";
+    var feedback = h("textarea", { class: "ad-review-text", rows: "7", maxlength: "10000", "aria-label": "Відгук для учня", placeholder: "Напиши відгук: що вийшло добре, що виправити. Можна ## заголовки, - списки, **жирний**." });
+    feedback.value = row.feedback || "";
+    var score = h("input", { type: "number", min: "0", max: "100", step: "1", inputmode: "numeric", "aria-label": "Бал", class: "ad-review-score" });
+    score.value = row.score == null ? "" : String(row.score);
+    var preview = h("div", { class: "ad-preview ad-md ad-review-prev", "aria-label": "Так учень побачить відгук" });
+    var err = h("p", { class: "ad-err", role: "alert", hidden: true });
+    var saveBtn = h("button", { class: "btn btn-primary", type: "submit" }, done ? "Зберегти зміни" : "Зберегти перевірку");
+    var closeBtn = h("button", { class: "btn btn-ghost", type: "button" }, "Закрити");
+    var startFb = feedback.value, startScore = score.value;
+    if (draft) { feedback.value = draft.feedback || ""; score.value = draft.score || ""; }
+
+    function paint() {
+      var v = trim(feedback.value);
+      preview.innerHTML = v ? mdToHtml(feedback.value) : "";
+      preview.hidden = !v;
+    }
+    feedback.addEventListener("input", paint);
+
+    var modal = openModal({
+      title: "Робота: " + studentName(row), wide: true, sticky: true, focus: false,
+      isDirty: function () { return feedback.value !== startFb || score.value !== startScore; }
+    });
+
+    /* left: what the student sent */
+    var mine = h("div", { class: "ad-work" });
+    mine.appendChild(h("p", { class: "ad-person-meta" }, [
+      (row.student && row.student.email) ? row.student.email + " · " : "",
+      row.product_title || "", row.lesson_title ? " › " + row.lesson_title : "",
+      " · надіслано " + fmtDate(row.submitted_at, true)
+    ]));
+    mine.appendChild(h("h4", { class: "ad-h4" }, "Завдання"));
+    var taskBox = h("div", { class: "ad-md ad-work-task" });
+    taskBox.innerHTML = workTask(row) ? mdToHtml(workTask(row)) : "";
+    if (!workTask(row)) taskBox.appendChild(h("p", { class: "ad-muted" }, "Завдання не збереглось (блок видалений)."));
+    mine.appendChild(taskBox);
+    mine.appendChild(h("h4", { class: "ad-h4" }, "Відповідь учня"));
+    if (trim(row.text)) mine.appendChild(h("div", { class: "ad-work-text" }, row.text));
+    var files = Array.isArray(row.files) ? row.files : [];
+    if (!trim(row.text) && !files.length) mine.appendChild(h("p", { class: "ad-muted" }, "Нічого не надіслано."));
+    files.forEach(function (f) {
+      var box = h("div", { class: "ad-work-file" }, [h("p", { class: "ad-work-fname" }, [h("strong", {}, f.name || "файл"), f.size ? h("small", {}, " " + fmtSize(f.size)) : null])]);
+      var kind = fileKind(f);
+      var status = h("p", { class: "ad-up-status" }, "Готую файл…");
+      box.appendChild(status);
+      D.workFileUrl(f.path).then(function (url) {
+        status.parentNode && status.parentNode.removeChild(status);
+        if (kind === "audio") box.appendChild(h("audio", { controls: true, preload: "metadata", src: url, class: "ad-work-audio" }));
+        else if (kind === "image") box.appendChild(h("a", { href: url, target: "_blank", rel: "noopener" }, h("img", { src: url, alt: "Картинка від учня: " + (f.name || ""), class: "ad-work-img" })));
+        box.appendChild(h("a", { class: "btn btn-ghost btn-sm", href: url, target: "_blank", rel: "noopener" }, kind === "audio" ? "Відкрити окремо" : "Відкрити файл"));
+      }, function (e) { status.textContent = "Не вдалося відкрити файл: " + friendly(e); });
+      mine.appendChild(box);
+    });
+
+    /* right: feedback */
+    var form = h("form", { class: "ad-review", novalidate: true }, [
+      h("h4", { class: "ad-h4" }, done ? "Відгук (уже надіслано " + fmtDate(row.reviewed_at, true) + ")" : "Твій відгук"),
+      feedback,
+      h("p", { class: "pf-hint" }, "Учень побачить цей текст у своєму кабінеті."),
+      preview,
+      h("div", { class: "field ad-field" }, [
+        h("label", {}, "Бал (необов'язково)"), score,
+        h("p", { class: "pf-hint" }, "Ціле число від 0 до 100. Залиш порожнім, якщо бал не потрібен.")
+      ]),
+      err,
+      h("div", { class: "ad-actions" }, [saveBtn, closeBtn])
+    ]);
+    modal.body.appendChild(h("div", { class: "ad-split" }, [mine, form]));
+    paint();
+    closeBtn.addEventListener("click", function () { modal.requestClose(); });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var fb = trim(feedback.value), sc = trim(score.value), scoreVal = null;
+      err.hidden = true;
+      if (sc !== "") {
+        if (!/^\d{1,3}$/.test(sc) || Number(sc) > 100) { err.textContent = "Бал — це ціле число від 0 до 100."; err.hidden = false; score.focus(); return; }
+        scoreVal = Number(sc);
+      }
+      if (!fb && scoreVal == null) { err.textContent = "Напиши відгук або постав бал."; err.hidden = false; feedback.focus(); return; }
+      busy(saveBtn, D.reviewWork(row.user_id, row.block_id, fb, scoreVal, row.submitted_at)).then(function () {
+        toast("Перевірку збережено.");
+        startFb = feedback.value; startScore = score.value;
+        modal.close();
+        reloadWork();
+      }, function (er) {
+        if (er && er.code === "work_changed") {
+          /* the student sent a new version while this window was open: show it, keep what Maria typed */
+          toast("Учень щойно надіслав нову версію — показую її");
+          var keep = { feedback: feedback.value, score: score.value };
+          D.getWork(row.user_id, row.block_id).then(function (fresh) {
+            startFb = feedback.value; startScore = score.value;
+            modal.close();
+            if (fresh) openWorkReview(fresh, keep);
+            reloadWork();
+          }, function (e2) { toast(friendly(e2), "error"); });
+          return;
+        }
+        toast(friendly(er), "error");
+      });
+    });
+    setTimeout(function () { feedback.focus(); }, 30);
+  }
+
+  /* =================================================================
      10. Start: who is asking?  routes
      ================================================================= */
   function parseHash() {
     var raw = String(window.location.hash || "").replace(/^#/, "");
     var parts = raw.split("/");
-    var tabs = ["produkty", "vmist", "uchni", "zamovlennia"];
+    var tabs = ["produkty", "vmist", "uchni", "zamovlennia", "roboty"];
     return { tab: tabs.indexOf(parts[0]) > -1 ? parts[0] : "produkty", arg: parts[1] || "" };
   }
 
@@ -2118,7 +2212,7 @@
       a.classList.toggle("is-active", on);
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    var views = { produkty: viewProducts, vmist: viewContent, uchni: viewPeople, zamovlennia: viewOrders };
+    var views = { produkty: viewProducts, vmist: viewContent, uchni: viewPeople, zamovlennia: viewOrders, roboty: viewWork };
     clear(main);
     main.appendChild(h("p", { class: "ad-loading", role: "status" }, "Завантажую…"));
     window.scrollTo(0, 0);
@@ -2179,6 +2273,8 @@
           $(".ad-top").appendChild(out);
           window.addEventListener("hashchange", route);
           route();
+          /* the number of unchecked works on the tab; if it cannot be read, no number */
+          refreshPendingCount();
         });
       });
     }).catch(function (err) {
@@ -2192,7 +2288,7 @@
   }
 
   /* Handles for tests and for me when I check the page by script */
-  window.FMMAdmin = { uploadFiles: uploadFiles, route: route, _state: S };
+  window.FMMAdmin = { route: route, _state: S, _data: function () { return D; } };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();

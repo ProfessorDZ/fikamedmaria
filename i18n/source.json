@@ -1456,7 +1456,8 @@
    "kabinet.html",
    "vkhid.html",
    "assets/vkhid.js",
-   "assets/kabinet.js"
+   "assets/kabinet.js",
+   "assets/blocks.js"
   ],
   "ctx": "button.pf-pw-toggle"
  },
@@ -11869,7 +11870,8 @@
    "runtime"
   ],
   "files": [
-   "assets/main.js"
+   "assets/main.js",
+   "assets/blocks.js"
   ],
   "ctx": "js"
  },
@@ -11950,279 +11952,6 @@
   ],
   "files": [
    "assets/fmm-kit.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Правда",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Неправда",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Правильна відповідь:",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Можна обрати кілька відповідей.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Правильні відповіді:",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Пропуск {n}",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Твоя відповідь",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Слова",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Очистити",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Натисни на слова нижче, щоб скласти речення",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "{word} — натисни, щоб прибрати",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Натисни слово ліворуч, потім його пару праворуч. Натисни на пару ще раз, щоб скасувати.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Натисни, щоб скасувати пару",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Правильні пари:",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Цю вправу не вдалося показати. Напиши Марії, будь ласка.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js",
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Перевірити",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Спробувати ще раз",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js",
-   "assets/kabinet.js",
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Аудіо до завдання {n}",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Підказка:",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Правильно!",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Майже! Перевір å / ä / ö",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Без відповіді",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Неправильно",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Пояснення:",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Результат: {score} з {max}",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Чудово, усе правильно!",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Подивись правильні відповіді у завданнях вище й спробуй ще раз.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/exercises.js"
   ],
   "ctx": "js"
  },
@@ -12477,8 +12206,7 @@
    "runtime"
   ],
   "files": [
-   "assets/kabinet.js",
-   "assets/kurs-kabinet.js"
+   "assets/kabinet.js"
   ],
   "ctx": "js"
  },
@@ -12594,6 +12322,26 @@
   "ctx": "js"
  },
  {
+  "key": "Робіт на перевірці: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Марія перевірила робіт: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
   "key": "Доступ: назавжди",
   "kinds": [
    "runtime"
@@ -12620,7 +12368,7 @@
   ],
   "files": [
    "assets/kabinet.js",
-   "assets/kurs-kabinet.js"
+   "assets/blocks.js"
   ],
   "ctx": "js"
  },
@@ -12662,6 +12410,18 @@
   "files": [
    "assets/kabinet.js",
    "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Спробувати ще раз",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kabinet.js",
+   "assets/kurs-kabinet.js",
+   "assets/blocks-exercises.js"
   ],
   "ctx": "js"
  },
@@ -12826,196 +12586,6 @@
   "ctx": "js"
  },
  {
-  "key": "Файл PDF",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Аудіо",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Відео",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Посилання",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Текст",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Файл",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Завантажую аудіо…",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Дивитися відео",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Завантажую відео…",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Відео поки недоступне.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Посилання поки недоступне.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Відкрити посилання",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Файл поки недоступний.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Завантажити PDF",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Завантажити файл",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Готую файл…",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Не вдалося відкрити файл. Спробуй ще раз або напиши мені.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Не вдалося завантажити. Онови сторінку або напиши мені.",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
-  "key": "Найкращий результат: {best} з {max} · спроб: {n}",
-  "kinds": [
-   "runtime"
-  ],
-  "files": [
-   "assets/kurs-kabinet.js"
-  ],
-  "ctx": "js"
- },
- {
   "key": "Результат не вдалося зберегти.",
   "kinds": [
    "runtime"
@@ -13037,6 +12607,16 @@
  },
  {
   "key": "Матеріали для цього уроку скоро зʼявляться.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей урок не вдалося показати. Напиши Марії, будь ласка.",
   "kinds": [
    "runtime"
   ],
@@ -13152,6 +12732,1377 @@
   ],
   "files": [
    "assets/kurs-kabinet.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей тип блоку тут не показується: {type}.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося показати цей блок.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося завантажити.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантаження…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося отримати файл. Спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Закрити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Попередня",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Наступна",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перегляд картинки",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Збільшити: {alt}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Таблиця",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Прослухати: {word}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Показати текст запису",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Це відео не можна показати на сторінці. Відкрий його за посиланням:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відео недоступне.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відео",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відео з YouTube",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Тут ще немає картинок.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Карусель картинок",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Гортай стрілками ← →",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{n} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Попередня картинка",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Наступна картинка",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Картинка {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Завантажити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Посилання недоступне.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цей сервіс не можна показати на сторінці. Відкрий його за посиланням:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Вправа: {name}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Вбудований сервіс",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відкрити в новій вкладці",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Нотатка вчителя — тільки для тебе",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перевірено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Надіслано, Марія перевірить",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Відгук Марії",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Оцінка: {score}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{n} МБ",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{n} КБ",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Файл",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Такий тип файлу не підходить.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна: аудіо (MP3, M4A, AAC, WAV, OGG, FLAC, WebM).",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна: зображення (JPG, PNG, WebP, GIF, HEIC).",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна: PDF, Word (DOC, DOCX), ODT, TXT.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна: аудіо (MP3, M4A, AAC, WAV, OGG, FLAC, WebM), зображення (JPG, PNG, WebP, GIF, HEIC), PDF, Word (DOC, DOCX), ODT, TXT.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна додати не більше {n} файлів.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Файл завеликий: найбільший розмір — 20 МБ.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося надіслати. Спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Твоя відповідь",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js",
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Напиши свою відповідь тут…",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Надіслати ще раз",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Надіслати Марії",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Слів: {n} з {min}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Слів: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Надіслано. Марія перевірить.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Марія вже перевірила цю роботу.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перегляд: відповідь нікуди не надсилається.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Аудіофайл до 20 МБ.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Зображення до 20 МБ.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Документ (PDF, Word, текст) до 20 МБ.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Аудіо, зображення або документ, до 20 МБ кожен файл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Вибрати файл",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Записати голос",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Запис голосу в цьому браузері не працює — додай аудіофайл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Коментар для Марії (необов'язково)",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перегляд: файли нікуди не надсилаються.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Запис голосу",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Прибрати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "«{name}» завелике: найбільший розмір — 20 МБ.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "«{name}» порожній.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Зупинити запис",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Записати ще раз",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не вдалося почати запис. Додай аудіофайл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Запис перервано. Спробуй ще раз або додай аудіофайл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Немає доступу до мікрофона. Дозволь його в налаштуваннях браузера або додай аудіофайл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Мікрофон не знайдено. Додай аудіофайл.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Надіслано:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перевірити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Найкращий результат: {best} з {max} · спроб: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Результат: {score} з {max}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Чудово, усе правильно!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Подивись правильні відповіді вище й спробуй ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Цю вправу не вдалося показати. Напиши Марії, будь ласка.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пояснення:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильно!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Майже! Перевір å / ä / ö",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Без відповіді",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправильно",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправильних відповідей: {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильна відповідь:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильні відповіді:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пропуск {n}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Можна обрати кілька відповідей.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правда",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправда",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Слова",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Очистити",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни на слова нижче, щоб скласти речення",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{word} — натисни, щоб прибрати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Склади речення зі слів.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Розстав речення в правильному порядку: перетягни їх або користуйся стрілками ↑ ↓.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Речення",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Речення тепер на місці {pos} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Підняти вище: {text}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Опустити нижче: {text}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Неправильний порядок",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильний порядок:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Таблиця (гортається вбік)",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перетягни слово в пропуск. Або натисни слово, а потім пропуск. Натисни на слово в реченні, щоб повернути його.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пропуск {n}: {word}. Натисни, щоб повернути слово.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Пропуск {n}: порожньо",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни елемент ліворуч, потім його пару праворуч. Або перетягни одну пару до іншої. Натисни на пару ще раз, щоб скасувати.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни, щоб скасувати пару",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "картинка",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Не всі пари правильні",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильні пари:",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перетягни слово в колонку. Або натисни слово, а потім колонку. Натисни на слово в колонці, щоб повернути його.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Покласти сюди",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Покласти в колонку «{title}»",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "{word} — натисни, щоб повернути",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Усі слова розкладено",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Поки порожньо",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Правильних: {score} з {max}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Картки",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Натисни на картку, щоб перевернути. Стрілки ← → — наступна й попередня.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Прослухати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Назад",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Далі",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Ще повторю",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Знаю",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Перемішати",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Почати спочатку",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Повторити те, що ще не знаю",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Картка {n} з {total}. Натисни, щоб перевернути.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Картка {n} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Знаю: {k} · Ще повторю: {r}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Знаю: {k} з {total}",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Ще повторю: {r}. Можна пройти ці картки ще раз.",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
+  ],
+  "ctx": "js"
+ },
+ {
+  "key": "Чудово, усі картки знаєш!",
+  "kinds": [
+   "runtime"
+  ],
+  "files": [
+   "assets/blocks-exercises.js"
   ],
   "ctx": "js"
  },

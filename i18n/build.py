@@ -47,8 +47,8 @@ OG_LOCALE = {"uk": "uk_UA", "sv": "sv_SE", "en": "en_GB", "pl": "pl_PL"}
 SITE_URL = "https://fikamedmaria.vercel.app"
 
 # Ukrainian pages that get language copies (paths relative to the site root).
-# Pages that stay Ukrainian only: Maria's admin area and the exercise test page.
-UK_ONLY_PAGES = {"admin.html", "uprava-demo.html"}
+# Pages that stay Ukrainian only: Maria's admin area and the block test pages.
+UK_ONLY_PAGES = {"admin.html", "vpravy-demo.html", "blokky-demo.html"}
 
 
 def source_pages():
@@ -58,8 +58,9 @@ def source_pages():
 
 # Files whose JavaScript strings are drawn at runtime.
 RUNTIME_T_FILES = ["assets/i18n.js", "assets/main.js", "assets/fmm-kit.js",     # T("...") calls
-                   "assets/exercises.js", "assets/account.js", "assets/vkhid.js",
-                   "assets/dyakuyu.js", "assets/kabinet.js", "assets/kurs-kabinet.js"]
+                   "assets/account.js", "assets/vkhid.js",
+                   "assets/dyakuyu.js", "assets/kabinet.js", "assets/kurs-kabinet.js",
+                   "assets/blocks.js", "assets/blocks-exercises.js"]
 RUNTIME_DATA_FILES = ["assets/data.js", "assets/lesson-details.js"]            # every Cyrillic literal
 
 CYR = re.compile(r"[Ѐ-ӿ]")

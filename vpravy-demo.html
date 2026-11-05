@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Блоки-вправи: демо — Fika med Maria</title>
+  <meta name="description" content="Тестова сторінка блоків-вправ: по одному прикладу кожного типу." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/blocks.css" />
+  <link rel="stylesheet" href="assets/blocks-exercises.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9749;</text></svg>" />
+</head>
+<body data-page="demo">
+  <div data-include-header></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Тестова сторінка</span>
+        <h1>Блоки-вправи</h1>
+        <p class="lead">По одному прикладу кожного з 11 типів: десять вправ з автоматичною перевіркою й фліп-картки. Нижче видно, що отримає кабінет після «Перевірити».</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <p style="margin-bottom:1.2rem">
+          <label style="display:inline-flex;gap:.5rem;align-items:center;cursor:pointer">
+            <input type="checkbox" id="demo-preview" />
+            <span>Режим перегляду (результат не зберігається)</span>
+          </label>
+        </p>
+        <p id="demo-status" style="color:var(--muted);font-size:.92rem"></p>
+        <div id="demo" style="display:grid;gap:2.2rem"></div>
+
+        <div class="card" style="margin-top:2rem;max-width:46rem;margin-inline:auto">
+          <h3>Що вийшло (onResult)</h3>
+          <pre id="demo-out" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;color:var(--ink-soft)">Ще не перевіряли.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include-footer></div>
+  <script src="assets/i18n.js"></script>
+  <script src="assets/data.js"></script>
+  <script src="assets/fmm-kit.js"></script>
+  <script src="assets/main.js"></script>
+  <script src="assets/blocks.js"></script>
+  <script src="assets/blocks-exercises.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var BLOCKS = [
+        { id: "demo-gap", type: "gap", position: 1, content: {
+          title: "Вправа 1. Заповни пропуски",
+          instructions: "Впиши слово у кожен пропуск. Літери å, ä, ö важливі.",
+          text: "Jag [dricker] kaffe varje morgon och [äter|tar] en kanelbulle.\nPå fredagar går vi på [fika|kafé] med kollegorna."
+        } },
+        { id: "demo-drag", type: "drag_words", position: 2, content: {
+          title: "Вправа 2. Перетягни слова",
+          instructions: "Постав слова на місце. Тут є зайві слова.",
+          text: "Vi tar en fika [på] eftermiddagen.\nKaffet är [varmt] men glassen är [kall].\nJag dricker mitt kaffe [utan] socker.",
+          extra: ["under", "kallt", "med"]
+        } },
+        { id: "demo-choice", type: "choice", position: 3, content: {
+          title: "Вправа 3. Обери правильний варіант",
+          instructions: "У другому питанні правильних відповідей кілька.",
+          questions: [
+            { q: "Vad betyder «kanelbulle»?", options: ["булочка з корицею", "кавова чашка", "шоколадний торт"], correct: [0], explain: "Kanel = кориця, bulle = булочка." },
+            { q: "Vilka ord är drycker (напої)?", options: ["kaffe", "bulle", "te", "kaka"], correct: [0, 2], explain: "Kaffe і te — напої. Bulle і kaka — випічка." },
+            { q: "Hur säger man «Дякую за каву»?", options: ["Tack för kaffet", "Ursäkta kaffet", "Hej då kaffet"], correct: [0] }
+          ]
+        } },
+        { id: "demo-orderwords", type: "order_words", position: 4, content: {
+          title: "Вправа 4. Склади речення",
+          instructions: "Натискай на слова в правильному порядку.",
+          sentences: [
+            { answer: "Vi tar en fika i dag.", alt: ["I dag tar vi en fika."] },
+            { answer: "Jag dricker inte kaffe på kvällen." }
+          ]
+        } },
+        { id: "demo-ordersent", type: "order_sentences", position: 5, content: {
+          title: "Вправа 5. Діалог у кафе",
+          instructions: "Розстав репліки в правильному порядку.",
+          items: [
+            "Hej! Vad önskar du?",
+            "Jag skulle vilja ha en kaffe och en kanelbulle, tack.",
+            "Det blir 55 kronor.",
+            "Varsågod!",
+            "Tack, trevlig fika!"
+          ]
+        } },
+        { id: "demo-dropdown", type: "dropdown_gap", position: 6, content: {
+          title: "Вправа 6. Обери слово зі списку",
+          instructions: "У кожному пропуску обери правильну форму дієслова.",
+          text: "Jag [*dricker|dricka|drack] kaffe varje dag.\nHon [*äter|äta|ät] en bulle till fikan.\nVi [*har|ha|hade] fika klockan tre."
+        } },
+        { id: "demo-tf", type: "truefalse", position: 7, content: {
+          title: "Вправа 7. Правда чи неправда?",
+          instructions: "Прочитай твердження й обери відповідь.",
+          statements: [
+            { text: "Fika är en paus med kaffe eller te och något gott.", answer: true, explain: "Так: fika — це шведська кавова пауза." },
+            { text: "Man får bara fika på måndagar.", answer: false, explain: "Fika можна в будь-який день, хоч кілька разів на день." },
+            { text: "En kanelbulle är en sorts frukt.", answer: false }
+          ]
+        } },
+        { id: "demo-table", type: "table_fill", position: 8, content: {
+          title: "Вправа 8. Заповни таблицю",
+          instructions: "Впиши presens і preteritum. Таблицю можна гортати вбік.",
+          header: ["Infinitiv", "Presens", "Preteritum", "Betydelse"],
+          rows: [
+            ["att dricka", "[dricker]", "[drack]", "пити"],
+            ["att äta", "[äter]", "[åt]", "їсти"],
+            ["att baka", "[bakar]", "[bakade]", "пекти"],
+            ["att fika", "[fikar]", "[fikade]", "пити каву, робити паузу"]
+          ]
+        } },
+        { id: "demo-match", type: "match", position: 9, content: {
+          title: "Вправа 9. З'єднай пари",
+          instructions: "Знайди переклад кожного слова.",
+          pairs: [
+            { left: "kaffe", right: "кава" },
+            { left: "te", right: "чай" },
+            { left: "mjölk", right: "молоко" },
+            { left: "socker", right: "цукор" },
+            { left: "bulle", right: "булочка" }
+          ]
+        } },
+        { id: "demo-cat", type: "categorize", position: 10, content: {
+          title: "Вправа 10. Розклади по колонках",
+          instructions: "Що п'ють, а що їдять?",
+          columns: [
+            { title: "Att dricka (пити)", items: ["kaffe", "te", "mjölk", "juice"] },
+            { title: "Att äta (їсти)", items: ["kanelbulle", "smörgås", "äpple", "kaka"] }
+          ]
+        } },
+        { id: "demo-cards", type: "flashcards", position: 11, content: {
+          title: "Картки: слова до fika",
+          instructions: "Тицни на картку, щоб побачити переклад.",
+          cards: [
+            { front: "kaffe", back: "кава" },
+            { front: "kanelbulle", back: "булочка з корицею" },
+            { front: "fika", back: "кавова пауза зі смаколиком" },
+            { front: "en kopp", back: "чашка" },
+            { front: "Varsågod!", back: "Прошу! / Будь ласка (коли подаєш)" },
+            { front: "Tack för kaffet", back: "Дякую за каву" }
+          ]
+        } }
+      ];
+
+      var out = document.getElementById("demo-out");
+      var status = document.getElementById("demo-status");
+      var preview = document.getElementById("demo-preview");
+      var box = document.getElementById("demo");
+      var log = [];
+      var results = { "demo-gap": { best_score: 2, last_score: 1, max_score: 3, attempts: 3, completed: false } };
+
+      function ctx() {
+        return {
+          mode: preview.checked ? "preview" : "student",
+          lang: document.documentElement.getAttribute("lang") || "uk",
+          results: results,
+          signedUrl: function (src) { return Promise.resolve(src); },
+          onResult: function (blockId, res) {
+            log.push({ blockId: blockId, score: res.score, max: res.max, answers: res.answers });
+            out.textContent = JSON.stringify(log.slice(-6), null, 2);
+          }
+        };
+      }
+
+      function draw() {
+        var bad = [], i, v;
+        for (i = 0; i < BLOCKS.length; i++) {
+          v = FMMBlocks.validate ? FMMBlocks.validate(BLOCKS[i]) : { ok: true, errors: [] };
+          if (!v.ok) bad.push(BLOCKS[i].type + ": " + v.errors.join("; "));
+        }
+        status.textContent = bad.length
+          ? "Помилки формату: " + bad.join(" | ")
+          : "Перевірка формату: усе гаразд (" + BLOCKS.length + " блоків).";
+        FMMBlocks.renderAll(box, BLOCKS, ctx());
+      }
+
+      preview.addEventListener("change", draw);
+      draw();
+    })();
+  </script>
+</body>
+</html>

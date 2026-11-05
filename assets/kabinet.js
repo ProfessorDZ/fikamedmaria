@@ -174,18 +174,26 @@
   var materialsBox = $("#kb-materials");
 
   function progressHtml(row) {
-    var lt = row.lessons_total, et = row.exercises_total;
-    if (!(lt > 0) && !(et > 0)) return "";
-    var parts = [];
-    if (lt > 0) parts.push(T("Уроків пройдено {done} з {total}", { done: row.lessons_done, total: lt }));
-    if (et > 0) parts.push(T("Вправ виконано {done} з {total}", { done: row.exercises_completed, total: et }));
-    var label = parts.join(" · ");
-    var done = Math.min(row.lessons_done, lt) + Math.min(row.exercises_completed, et);
-    var total = lt + et;
-    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-    return '<div class="kb-progress">' +
-      '<div class="pf-progress' + (pct >= 100 ? " is-done" : "") + '" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" aria-label="' + esc(label) + '"><span style="width:' + pct + '%"></span></div>' +
-      '<p class="pf-progress-label">' + esc(label) + "</p></div>";
+    var lt = row.lessons_total, bt = row.blocks_total;
+    var html = "";
+    if (lt > 0 || bt > 0) {
+      var parts = [];
+      if (lt > 0) parts.push(T("Уроків пройдено {done} з {total}", { done: row.lessons_done, total: lt }));
+      if (bt > 0) parts.push(T("Вправ виконано {done} з {total}", { done: row.blocks_completed, total: bt }));
+      var label = parts.join(" · ");
+      var done = Math.min(row.lessons_done, lt) + Math.min(row.blocks_completed, bt);
+      var total = lt + bt;
+      var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      html += '<div class="kb-progress">' +
+        '<div class="pf-progress' + (pct >= 100 ? " is-done" : "") + '" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" aria-label="' + esc(label) + '"><span style="width:' + pct + '%"></span></div>' +
+        '<p class="pf-progress-label">' + esc(label) + "</p></div>";
+    }
+    /* work sent to Maria: waiting for her / already checked */
+    var work = [];
+    if (row.work_pending > 0) work.push('<span class="pf-badge">' + esc(T("Робіт на перевірці: {n}", { n: row.work_pending })) + "</span>");
+    if (row.work_reviewed > 0) work.push('<span class="pf-badge is-ok">' + esc(T("Марія перевірила робіт: {n}", { n: row.work_reviewed })) + "</span>");
+    if (work.length) html += '<p class="kb-work">' + work.join(" ") + "</p>";
+    return html;
   }
 
   function accessText(row) {

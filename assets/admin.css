@@ -215,6 +215,32 @@
 .ad-toast.is-error { background: #8a3516; }
 @keyframes ad-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
+
+/* ---------- Students' work (section «Роботи учнів») ---------- */
+.ad-tab-count {
+  display: inline-grid; place-items: center; min-width: 1.4rem; height: 1.4rem; padding: 0 0.4rem; margin-left: 0.45rem;
+  border-radius: 999px; background: var(--honey); color: #4a3410; font-size: 0.78rem; font-weight: 700;
+}
+.ad-seg { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.25rem; background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; margin: 0.2rem 0 1.1rem; }
+.ad-seg-btn { border: 0; background: none; font: inherit; font-weight: 600; color: var(--muted); padding: 0.5rem 0.95rem; border-radius: 10px; cursor: pointer; min-height: 40px; }
+.ad-seg-btn:hover { color: var(--blue); }
+.ad-seg-btn.is-on { background: var(--blue); color: #fff; }
+.ad-work { min-width: 0; }
+.ad-work-task { padding: 0.7rem 1rem; border-radius: 12px; background: var(--cream-soft); border: 1px solid var(--line); }
+.ad-work-task p:last-child { margin-bottom: 0; }
+.ad-work-text { white-space: pre-wrap; overflow-wrap: anywhere; padding: 0.8rem 1rem; border-radius: 12px; background: var(--paper); border: 1.5px solid var(--line); line-height: 1.55; }
+.ad-work-file { margin: 0.6rem 0; padding: 0.7rem 0.9rem; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); display: grid; gap: 0.5rem; justify-items: start; }
+.ad-work-fname { margin: 0; overflow-wrap: anywhere; }
+.ad-work-fname small { color: var(--muted); }
+.ad-work-audio { width: 100%; max-width: 420px; }
+.ad-work-img { max-width: 100%; max-height: 320px; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+.ad-review-text { width: 100%; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1.5px solid var(--line); font: inherit; line-height: 1.5; background: var(--paper); color: var(--ink); resize: vertical; min-height: 9rem; }
+.ad-review-text:focus, .ad-review-score:focus { outline: 2px solid var(--blue); border-color: transparent; }
+.ad-review-score { width: 8rem; padding: 0.6rem 0.9rem; border-radius: 12px; border: 1.5px solid var(--line); min-height: 44px; font: inherit; background: var(--paper); color: var(--ink); }
+.ad-review-prev { min-height: 0; max-height: 220px; margin: 0.7rem 0 1rem; }
+.ad-review-prev[hidden] { display: none; }
+.ad-td-main small { word-break: normal; }
+
 /* ---------- Phones ---------- */
 @media (max-width: 900px) {
   .ad-split, .ad-people { grid-template-columns: 1fr; }
